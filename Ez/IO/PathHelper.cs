@@ -9,6 +9,9 @@ using System.Text;
 
 namespace Ez.IO
 {
+    /// <summary>
+    /// Helper functions for path manipulation.
+    /// </summary>
     public static class PathHelper
     {
         private static readonly char[] PathSeparators = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar };
@@ -39,6 +42,7 @@ namespace Ez.IO
         /// </summary>
         /// <param name="relativeTo">The source path the output should be relative to. This path is always considered to be a directory.</param>
         /// <param name="path">The destination path.</param>
+        /// <param name="comparisonType">One of the enumeration values that specifies the rules for the string comparison.</param>
         /// <returns>The relative path or <paramref name="path"/> if the paths don't share the same root.</returns>
         /// <exception cref="ArgumentNullException">Thrown if <paramref name="relativeTo"/> or <paramref name="path"/> is <c>null</c> or an empty string.</exception>
         public static string GetRelativePath(string relativeTo, string path, StringComparison comparisonType = StringComparison.Ordinal)

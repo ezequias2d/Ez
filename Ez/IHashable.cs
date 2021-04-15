@@ -8,8 +8,14 @@ using System.Text;
 
 namespace Ez
 {
+    /// <summary>
+    /// An interface that can hash the contents of the structure or class instance. that implements it .
+    /// </summary>
     public interface IHashable
     {
+        /// <summary>
+        /// A hashcode for the content of a instance.
+        /// </summary>
         int Hashcode { get; }
     }
 }

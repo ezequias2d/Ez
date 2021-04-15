@@ -9,11 +9,19 @@ using System.Diagnostics;
 using System.Threading;
 namespace Ez.Threading
 {
+    /// <summary>
+    /// A thread that consumes delegates and invokes them.
+    /// </summary>
     public class ThreadMethodExecutor : IDisposable
     {
         private readonly Thread _thread;
         private readonly BlockingCollection<ThreadMethodEntry> _entries;
         private bool _disposed;
+
+        /// <summary>
+        /// Initializes a new <see cref="ThreadMethodExecutor"/> class.
+        /// </summary>
+        /// <param name="autostart">Auto starts the thread.</param>
         public ThreadMethodExecutor(bool autostart = true)
         {
             _thread = new Thread(Main)
@@ -27,16 +35,33 @@ namespace Ez.Threading
                 StartThread();
         }
 
+        /// <summary>
+        /// Destroys a <see cref="ThreadMethodExecutor"/> class instance.
+        /// </summary>
         ~ThreadMethodExecutor()
         {
             Dispose(false);
         }
 
+        /// <summary>
+        /// Occurs when the thread is started, before the <see cref="Start"/> event.
+        /// </summary>
         public event EventHandler Awake;
+
+        /// <summary>
+        /// Occurs when the thread is started, after the <see cref="Awake"/> event.
+        /// </summary>
         public event EventHandler Start;
+
+        /// <summary>
+        /// Occurs just before a consumed delegate is invoked.
+        /// </summary>
         public event EventHandler BeforeInvoking;
+
+        /// <summary>
+        /// Occurs just after a consumed delegate is invoked.
+        /// </summary>
         public event EventHandler AfterInvoking;
-        public event EventHandler<DisposeEventArgs> OnDispose;
 
         private void Main()
         {
@@ -54,27 +79,57 @@ namespace Ez.Threading
                     methodEntry.Invoke();
                     AfterInvoking?.Invoke(this, EventArgs.Empty);
                 }
-
             }
         }
 
+        /// <summary>
+        /// Starts the execution of this <see cref="ThreadMethodExecutor"/>.
+        /// </summary>
         public void StartThread() => _thread.Start();
 
-        public void Invoke(MethodInvoker methodInvoker) =>
-            Invoke(methodInvoker, null, true);
+        /// <summary>
+        /// Synchronously executes the <paramref name="action"/> on this <see cref="ThreadMethodExecutor"/>.
+        /// </summary>
+        /// <param name="action">A <see cref="Action"/> delegate that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        public void Invoke(Action action) =>
+            Invoke(action, null, true);
 
+        /// <summary>
+        /// Synchronously executes the <paramref name="eventHandler"/> on this <see cref="ThreadMethodExecutor"/>.
+        /// </summary>
+        /// <param name="eventHandler">A <see cref="EventHandler"/> delegate that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="sender">The sender parameter of <see cref="EventHandler"/> to pass to the given method.</param>
+        /// <param name="args">The e parameter of the <see cref="EventHandler"/> to pass to the given method.</param>
         public void Invoke(EventHandler eventHandler, object sender, EventArgs args) =>
             Invoke(eventHandler, new object[] { sender, args }, true);
 
+        /// <summary>
+        /// Synchronously executes the <paramref name="waitCallback"/> on this <see cref="ThreadMethodExecutor"/>.
+        /// </summary>
+        /// <param name="waitCallback">A <see cref="WaitCallback"/> delegate that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="state">The state parameter of <see cref="WaitCallback"/> to pass to the given method.</param>
         public void Invoke(WaitCallback waitCallback, object state) =>
             Invoke(waitCallback, new object[] { state }, true);
 
+        /// <summary>
+        /// Synchronously executes the <paramref name="method"/> on this <see cref="ThreadMethodExecutor"/>.
+        /// </summary>
+        /// <param name="method">A <see cref="Delegate"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="args">An array of type <see cref="Object"/> that represents the arguments to pass to the given method.</param>
+        /// <returns>An <see cref="object"/> that represents the return value from the delegate being invoked, or <see langword="null"/> 
+        /// if the delegate has no return value</returns>
         public object Invoke(Delegate method, params object[] args) =>
             Invoke(method, args, true);
 
-        public T Invoke<T>(Func<T> method)
+        /// <summary>
+        /// Synchronously executes the <paramref name="func"/> on this <see cref="ThreadMethodExecutor"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of return value.</typeparam>
+        /// <param name="func">A <see cref="Func{TResult}"/> delegate that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <returns>The return value from the delegate being invoked.</returns>
+        public T Invoke<T>(Func<T> func)
         {
-            object obj = Invoke(method, null, true);
+            object obj = Invoke(func, null, true);
 
             if (obj is T t)
                 return t;
@@ -82,6 +137,13 @@ namespace Ez.Threading
             throw new EzThreadException($"The returned value is not of {typeof(T)} type, the returned value is of {obj.GetType()} type.");
         }
 
+        /// <summary>
+        /// Synchronously executes the <paramref name="method"/> on this <see cref="ThreadMethodExecutor"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of return value.</typeparam>
+        /// <param name="method">A <see cref="Delegate"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="args">An array of type <see cref="Object"/> that represents the arguments to pass to the given method.</param>
+        /// <returns>The return value from the delegate being invoked, or <see langword="null"/> if the delegate has no return value.</returns>
         public T Invoke<T>(Delegate method, params object[] args)
         {
             object obj = Invoke(method, args, true);
@@ -119,13 +181,35 @@ namespace Ez.Threading
                 return methodEntry;
         }
 
-        public ThreadMethodEntry BeginInvoke(MethodInvoker methodInvoker) =>
-            (ThreadMethodEntry)Invoke(methodInvoker, null, false);
-        public ThreadMethodEntry BeginInvoke(Delegate method, params object[] args) =>
+        /// <summary>
+        /// Asynchronously executes the <see cref="Action"/> delegate on the thread that created this object.
+        /// </summary>
+        /// <param name="action">A <see cref="Action"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <returns>An <see cref="IAsyncResult"/> interface that represents the asynchronous operation started by calling this method.</returns>
+        public IAsyncResult BeginInvoke(Action action) =>
+            (ThreadMethodEntry)Invoke(action, null, false);
+
+        /// <summary>
+        /// Asynchronously executes the <see cref="Delegate"/> on the thread that created this object.
+        /// </summary>
+        /// <param name="method">A <see cref="Delegate"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="args">An array of type <see cref="Object"/> that represents the arguments to pass to the given method.</param>
+        /// <returns>An <see cref="IAsyncResult"/> interface that represents the asynchronous operation started by calling this method.</returns>
+        public IAsyncResult BeginInvoke(Delegate method, params object[] args) =>
             (ThreadMethodEntry)Invoke(method, args, false);
 
-        public object EndInvoke(ThreadMethodEntry entry)
+        /// <summary>
+        /// Waits until the process started by calling <see cref="BeginInvoke(Action)"/> or  <see cref="BeginInvoke(Delegate, object[])"/> completes, 
+        /// and then returns the value generated by the process.
+        /// </summary>
+        /// <param name="result">An <see cref="IAsyncResult"/> interface that represents the asynchronous operation started by calling 
+        /// <see cref="BeginInvoke(Action)"/> or <see cref="BeginInvoke(Delegate, object[])"/>.</param>
+        /// <returns>An <see cref="object"/> that represents the return value generated by the asynchronous operation.</returns>
+        public object EndInvoke(IAsyncResult result)
         {
+            if (!(result is ThreadMethodEntry entry))
+                throw new ArgumentException($"The {nameof(result)} object was not created by a preceding call of the {nameof(BeginInvoke)} method from this object.");
+
             int currentThreadID = Thread.CurrentThread.ManagedThreadId;
 
             if (entry.CallerThreadID == currentThreadID)
@@ -148,9 +232,18 @@ namespace Ez.Threading
                 throw entry.Exception;
             return entry.ReturnValue;
         }
-        public T EndInvoke<T>(ThreadMethodEntry entry)
+
+        /// <summary>
+        /// Waits until the process started by calling <see cref="BeginInvoke(Action)"/> or  <see cref="BeginInvoke(Delegate, object[])"/> completes, 
+        /// and then returns the value generated by the process.
+        /// </summary>
+        /// <typeparam name="T">The type of return value.</typeparam>
+        /// <param name="result">n <see cref="IAsyncResult"/> interface that represents the asynchronous operation started by calling 
+        /// <see cref="BeginInvoke(Action)"/> or <see cref="BeginInvoke(Delegate, object[])"/>.</param>
+        /// <returns>An T value that represents the return value generated by the asynchronous operation.</returns>
+        public T EndInvoke<T>(IAsyncResult result)
         {
-            object obj = EndInvoke(entry);
+            object obj = EndInvoke(result);
 
             if (obj is T t)
                 return t;
@@ -163,13 +256,12 @@ namespace Ez.Threading
             if (!_disposed)
             {
                 _disposed = true;
-                OnDispose?.Invoke(this, new DisposeEventArgs(disposing));
-
+                
                 if (_entries.Count != 0)
                     _thread.Join();
                 else
                 {
-                    MethodInvoker method = Abort;
+                    Action method = Abort;
                     try
                     {
                         Invoke(method);
@@ -181,14 +273,13 @@ namespace Ez.Threading
             }
         }
 
-        private void Abort()
-        {
-            Thread.CurrentThread.Abort();
-        }
-
-        public void Dispose()
-        {
+        /// <summary>
+        /// Release all resources used by this instance.
+        /// </summary>
+        public void Dispose() =>
             Dispose(true);
-        }
+
+        private void Abort() =>
+            Thread.CurrentThread.Abort();
     }
 }

@@ -15,6 +15,5 @@ namespace Ez.Collections
     /// <typeparam name="T">Type of elements using in <see cref="IList{T}"/> interface.</typeparam>
     public interface ISynchronizedList<T> : IList<T>, ISynchronizable
     {
-        ReadOnlySpan<T> GetReadOnlySpan();
     }
 }

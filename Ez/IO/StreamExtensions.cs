@@ -9,6 +9,9 @@ using System.Text;
 
 namespace Ez.IO
 {
+    /// <summary>
+    /// <see cref="Stream"/> extensions.
+    /// </summary>
     public static class StreamExtensions
     {
 
@@ -48,6 +51,12 @@ namespace Ez.IO
             return Encoding.UTF8.GetString(data);
         }
 
+        /// <summary>
+        /// Write a <see cref="ReadOnlySpan{T}"/> array data in the <paramref name="stream"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the <paramref name="array"/>.</typeparam>
+        /// <param name="stream">The stream to write.</param>
+        /// <param name="array">The span to be written.</param>
         public static void WriteSpan<T>(this Stream stream, ReadOnlySpan<T> array) where T : unmanaged
         {
             if (array == null || array.Length == 0)
@@ -65,6 +74,13 @@ namespace Ez.IO
             }
         }
 
+        /// <summary>
+        /// Read a <see cref="ReadOnlySpan{T}"/> from the <paramref name="stream"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of items in the returned <see cref="ReadOnlySpan{T}"/>.</typeparam>
+        /// <param name="stream">The stream to read.</param>
+        /// <param name="count">The count of T items to read.</param>
+        /// <returns>A <see cref="ReadOnlySpan{T}"/> with items read from the <paramref name="stream"/>.</returns>
         public static ReadOnlySpan<T> ReadSpan<T>(this Stream stream, uint count) where T : unmanaged
         {
             if (count == 0)
@@ -82,6 +98,12 @@ namespace Ez.IO
             return array;
         }
 
+        /// <summary>
+        /// Write a T structure data in the stream.
+        /// </summary>
+        /// <typeparam name="T">The type of the structure to write.</typeparam>
+        /// <param name="stream">The stream to write.</param>
+        /// <param name="value">The T structure to written.</param>
         public static void WriteStructure<T>(this Stream stream, T value) where T : unmanaged
         {
             unsafe
@@ -93,6 +115,12 @@ namespace Ez.IO
             }
         }
 
+        /// <summary>
+        /// Read a T structure data from the stream.
+        /// </summary>
+        /// <typeparam name="T">The type of the structure to read.</typeparam>
+        /// <param name="stream">The stream to read.</param>
+        /// <returns>A structure read from the stream.</returns>
         public static T ReadStructure<T>(this Stream stream) where T : unmanaged
         {
             unsafe
@@ -102,23 +130,6 @@ namespace Ez.IO
                 fixed (void* ptr = buffer)
                     return *(T*)ptr;
             }
-        }
-
-        public static void CopyTo(this Stream stream, Stream destination, ulong bytes, uint bufferSize = 131072)
-        {
-            byte[] buffer = new byte[bufferSize];
-            int readed;
-            do
-            {
-                readed = stream.Read(buffer, 0, (int)Math.Min((ulong)buffer.Length, bytes));
-                destination.Write(buffer, 0, readed);
-            } while (readed > 0);
-            //} while (bytes > 0 && readed > 0);
-
-            if (readed == -1)
-                throw new EzException(
-                    $"The CopyTo cannot copy all the bytes, the stream ends before it can copy the requested amount. ({bytes} bytes were missing.)", 
-                    new ArgumentOutOfRangeException(nameof(bytes)));
         }
     }
 }

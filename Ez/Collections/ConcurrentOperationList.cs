@@ -17,7 +17,6 @@ namespace Ez.Collections
     public class ConcurrentOperationList<T> : ISynchronizedList<T>, IDisposable
     {
         private readonly IList<T> _list;
-        private readonly object _sync;
         private bool disposed;
 
         #region Constructors/Destructors
@@ -30,18 +29,23 @@ namespace Ez.Collections
         {
             disposed = false;
             _list = list;
-            _sync = sync;
-            Monitor.Enter(_sync);
+            Sync = sync;
+            Monitor.Enter(Sync);
         }
 
-        ~ConcurrentOperationList()
-        {
-            Dispose();
-        }
+        /// <summary>
+        /// Destroys a instance of the <see cref="ConcurrentOperationList{T}"/> class.
+        /// </summary>
+        ~ConcurrentOperationList() => Dispose();
 
         #endregion Constructors/Destructors
 
         #region Operators
+        /// <summary>
+        /// Gets or sets the element at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get or set.</param>
+        /// <returns>The element at the specified index.</returns>
         public T this[int index]
         {
             get
@@ -62,6 +66,9 @@ namespace Ez.Collections
             }
         }
 
+        /// <summary>
+        /// Gets the number of elements contained in the <see cref="ConcurrentOperationList{T}"/>.
+        /// </summary>
         public int Count
         {
             get
@@ -74,6 +81,9 @@ namespace Ez.Collections
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the <see cref="ConcurrentOperationList{T}"/> is read-only.
+        /// </summary>
         public bool IsReadOnly
         {
             get
@@ -86,11 +96,18 @@ namespace Ez.Collections
             }
         }
 
-        public object Sync => _sync;
+        /// <summary>
+        /// The sync object.
+        /// </summary>
+        public object Sync { get; }
 
         #endregion Operators
 
         #region Methods
+        /// <summary>
+        /// Adds an item to the <see cref="ConcurrentOperationList{T}"/>.
+        /// </summary>
+        /// <param name="item">The object to add to the <see cref="ConcurrentOperationList{T}"/>.</param>
         public void Add(T item)
         {
             if (!disposed)
@@ -99,6 +116,9 @@ namespace Ez.Collections
                 throw new ObjectDisposedException(ToString());
         }
 
+        /// <summary>
+        /// Removes all items from the <see cref="ConcurrentOperationList{T}"/>.
+        /// </summary>
         public void Clear()
         {
             if (!disposed)
@@ -106,6 +126,14 @@ namespace Ez.Collections
             else
                 throw new ObjectDisposedException(ToString());
         }
+
+        /// <summary>
+        /// Copies the elements of the <see cref="ConcurrentOperationList{T}"/> to an <see cref="Array"/>,
+        /// starting at a particular index.
+        /// </summary>
+        /// <param name="array">The one-dimensional Array that is the destination of the elements copied
+        /// from <see cref="ConcurrentOperationList{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
         public void CopyTo(T[] array, int arrayIndex)
         {
             if (!disposed)
@@ -114,6 +142,11 @@ namespace Ez.Collections
                 throw new ObjectDisposedException(ToString());
         }
 
+        /// <summary>
+        /// Inserts an item to the <see cref="ConcurrentOperationList{T}"/> at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
+        /// <param name="item">The object to insert into the <see cref="ConcurrentOperationList{T}"/>.</param>
         public void Insert(int index, T item)
         {
             if (!disposed)
@@ -122,6 +155,12 @@ namespace Ez.Collections
                 throw new ObjectDisposedException(ToString());
         }
 
+        /// <summary>
+        /// Removes the first occurrence of a specific object from the <see cref="ConcurrentOperationList{T}"/>.
+        /// </summary>
+        /// <param name="item">The object to remove from the <see cref="ConcurrentOperationList{T}"/>.</param>
+        /// <returns><see langword="true"/> if item was successfully removed from the 
+        /// <see cref="ConcurrentOperationList{T}"/>; otherwise, <see langword="false"/>.</returns>
         public bool Remove(T item)
         {
             if (!disposed)
@@ -130,6 +169,10 @@ namespace Ez.Collections
                 throw new ObjectDisposedException(ToString());
         }
 
+        /// <summary>
+        /// Removes the <see cref="ConcurrentOperationList{T}"/> item at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the item to remove.</param>
         public void RemoveAt(int index)
         {
             if (!disposed)
@@ -138,16 +181,25 @@ namespace Ez.Collections
                 throw new ObjectDisposedException(ToString());
         }
 
+        /// <summary>
+        /// Releases the sync object.
+        /// </summary>
         public void Dispose()
         {
             if (!disposed)
-                Monitor.Exit(_sync);
+                Monitor.Exit(Sync);
             disposed = true;
         }
         #endregion Methods
 
         #region Functions
 
+        /// <summary>
+        /// Determines whether the <see cref="ConcurrentOperationList{T}"/> contains a specific value.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="ConcurrentOperationList{T}"/>.</param>
+        /// <returns><see langword="true"/> if item is found in the <see cref="ConcurrentOperationList{T}"/>; otherwise, 
+        /// <see langword="false"/>.</returns>
         public bool Contains(T item)
         {
             if(!disposed)
@@ -156,6 +208,10 @@ namespace Ez.Collections
                 throw new ObjectDisposedException(ToString());
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through a collection.
+        /// </summary>
+        /// <returns>An <see cref="IEnumerator{T}"/> object that can be used to iterate through the collection.</returns>
         public IEnumerator<T> GetEnumerator()
         {
             if(!disposed)
@@ -164,18 +220,15 @@ namespace Ez.Collections
                 throw new ObjectDisposedException(ToString());
         }
 
+        /// <summary>
+        /// Determines the index of a specific item in the <see cref="ConcurrentOperationList{T}"/>.
+        /// </summary>
+        /// <param name="item">The object to locate in the <see cref="ConcurrentOperationList{T}"/>.</param>
+        /// <returns>The index of <paramref name="item"/> if found in the list; otherwise, -1.</returns>
         public int IndexOf(T item)
         {
             if(!disposed)
                 return _list.IndexOf(item);
-            else
-                throw new ObjectDisposedException(ToString());
-        }
-
-        public ReadOnlySpan<T> GetReadOnlySpan()
-        {
-            if (!disposed)
-                return this.ToArray();
             else
                 throw new ObjectDisposedException(ToString());
         }

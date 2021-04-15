@@ -8,8 +8,15 @@ using System.Text;
 
 namespace Ez.Collections
 {
+    /// <summary>
+    /// An element that can be auto indexing.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public interface ISelfIndexedElement<T>
     {
+        /// <summary>
+        /// The index for a <see cref="ISelfIndexedElement{T}"/>.
+        /// </summary>
         T Key { get; }
 
         /// <summary>

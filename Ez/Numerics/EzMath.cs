@@ -10,134 +10,93 @@ using System.Text;
 
 namespace Ez.Numerics
 {    
+    /// <summary>
+    /// Provides constants and static methods to complement <see cref="Math"/>.
+    /// </summary>
     public static class EzMath
     {
+        /// <summary>
+        /// Represents the ratio of the circumference of a circle to its diameter, specified by the constant, π.
+        /// </summary>
         public static readonly float PI = (float)Math.PI;
+
+        /// <summary>
+        /// Degrees-to-radians conversion constant.
+        /// <see cref="Rad2Deg"/>
+        /// </summary>
         public static readonly float Deg2Rad = (float)(Math.PI / 180d);
+
+        /// <summary>
+        /// Radians-to-degrees conversion constant.
+        /// <see cref="Deg2Rad"/>
+        /// </summary>
         public static readonly float Rad2Deg = (float)(180d / Math.PI);
-        public static readonly float Epsilon = float.Epsilon;
+
+        /// <summary>
+        /// Natural logarithm of 2 inverted constant(1 / log 2).
+        /// </summary>
         public static readonly double InvLogE2 = 1.0 / Math.Log(2);
 
+        /// <summary>
+        /// Calculates the log on base 2.
+        /// </summary>
+        /// <param name="d">The number whose logarithm is to be found.</param>
+        /// <returns>
+        /// The natural logarithm of <paramref name="d"/>, if <paramref name="d"/> is positive.<br/>
+        /// <see cref="double.NegativeInfinity"/>, if <paramref name="d"/> is zero.<br/>
+        /// <see cref="double.NaN"/>, if <paramref name="d"/> is negative or equal to <see cref="double.NaN"/>.<br/>
+        /// <see cref="double.PositiveInfinity"/>, if <paramref name="d"/> is <see cref="double.PositiveInfinity"/>.</returns>
         public static double Log2(double d) => Math.Log(d) * InvLogE2;
-        public static float ToRadians(float degrees) => degrees * Deg2Rad;
 
-        public static Vector3 ToRadians(this Vector3 degrees) => degrees * Deg2Rad;
-
-        public static float ToDegrees(float radians) => radians * Rad2Deg;
-
-        public static Vector3 ToDegrees(this Vector3 radians) => radians * Rad2Deg;
-
+        /// <summary>
+        /// Compares two floating point values and returns true if they are similar.
+        /// </summary>
+        /// <param name="a">The first value to compare.</param>
+        /// <param name="b">The second value to compare.</param>
+        /// <returns><see langword="true"/>, if they are within a small value epsilon; otherwise, <see langword="false"/>.</returns>
         public static bool Approximately(float a, float b)
         {
             if (a == 0 || b == 0)
-                return Math.Abs(a - b) <= Epsilon;
-            return Math.Abs(a - b) / Math.Abs(a) <= Epsilon && 
-                Math.Abs(a - b) / Math.Abs(b) <= Epsilon;
-        }
-
-        public static float fFloor(float value) => value - (value % 1);
-        public static float fCeiling(float value) 
-        {
-            float m = value % 1;
-            return value - m + (m / (m + Epsilon));
-        }
-
-        public static int iFloor(float value)
-        {
-            int i = (int)value;
-            if (i > value)
-                i--;
-            return i;
+                return Math.Abs(a - b) <= float.Epsilon;
+            return Math.Abs(a - b) / Math.Abs(a) <= float.Epsilon && 
+                Math.Abs(a - b) / Math.Abs(b) <= float.Epsilon;
         }
 
         /// <summary>
-        /// Fast ceiling implementation, the cost of this are some errors in the ceiling that 
-        /// will represent 4.33% of all floating point space, when compared to <see cref="Math.Ceiling(double)"/>.
-        /// 
-        /// Returns the smallest integral value that is greater than or equal to the specified
-        /// double-precision floating-point number.
+        /// Returns the largest integral value less than or equal to the specified number.
         /// </summary>
-        /// <param name="value">A double-precision floating-point number.</param>
-        /// <returns>
-        ///     The smallest integral value that is greater than or equal to value. If value is equal
-        ///     to System.Double.NaN, System.Double.NegativeInfinity, or System.Double.PositiveInfinity,
-        ///     the result will be unpredictable.
-        /// </returns>
+        /// <param name="d">A single-precision floating-point number.</param>
+        /// <returns>The largest integral value less than or equal to <paramref name="d"/>. 
+        /// If <paramref name="d"/> is equal to <see cref="float.NaN"/>, <see cref="float.NegativeInfinity"/>, 
+        /// or <see cref="float.PositiveInfinity"/>, that value is returned.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int Ceiling(float value)
-        {
-            //FloatToInt(0.999999940395f)
-            //return (int)(value + CreatePositiveFloat((126, (0x7F_FFFF << (ExtractExpoentIEEE754(value) + 1)) & 0x7F_FFFF)));
-            return (int)(value + 8388608) - 8388608;
-        }
+        public static float Floor(float d) => (float)Math.Floor(d);
 
-        public static int iCeiling(float value)
-        {
-            int i = (int)value;
-            if (i < value)
-                i++;
-            return i;
-        }
-
-        public static int ExtractExpoentIEEE754(float value)
-        {
-            unsafe
-            {
-                return (((*(int*)&value) & int.MaxValue) >> 23) - 127;
-            }
-        }
-
-        public static float CreatePositiveFloat((byte exponent, int mantissa) value)
-        {
-            value.mantissa = (value.exponent << 23) | (value.mantissa);
-            unsafe
-            {
-                return *(float*)&value.mantissa;
-            }
-        }
-
-        public static float IntToFloat(int value)
-        {
-            unsafe
-            {
-                return *(float*)&value;
-            }
-        }
-
-        public static int FloatToInt(float value)
-        {
-            unsafe
-            {
-                return *(int*)&value;
-            }
-        }
-
-
+        /// <summary>
+        /// Returns the smallest integral value that is greater than or equal to the specified single-precision floating-point number.
+        /// </summary>
+        /// <param name="a">A single-precision floating-point number.</param>
+        /// <returns>The smallest integral value that is greater than or equal to <paramref name="a"/>. 
+        /// If <paramref name="a"/> is equal to <see cref="float.NaN"/>, <see cref="float.NegativeInfinity"/>, 
+        /// or <see cref="float.PositiveInfinity"/>, that value is returned. </returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int Round(float value)
-        {
-            //return (int)(value + 0.4999999701976776123046875f);
-            
-            return (int)(value + IntToFloat(FloatToInt(0.49479162693f) | (FloatToInt(value) & int.MinValue)));
-        }
+        public static float Ceiling(float a) => (float)Math.Ceiling(a);
 
+        /// <summary>
+        /// Rounds a value to the nearest integer or to the specified number of fractional digits.
+        /// </summary>
+        /// <param name="a">A single-precision floating-point number to be rounded.</param>
+        /// <returns>The integer nearest <paramref name="a"/>. If the fractional component of a is halfway between two integers,
+        /// one of which is even and the other odd, then the even number is returned.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int TestRound(float value, float constant)
-        {
-            return (int)(value + IntToFloat(FloatToInt(constant) | (FloatToInt(value) & int.MinValue)));
-        }
+        public static float Round(float a) => (float)Math.Round(a);
 
-        public static float Ceiling2(float value)
-        {
-            float m = value % 1;
-            return value - m + (m == 0 ? 0f : 1f);
-        }
-
-        public static float Ceiling3(float value)
-        {
-            return (float)Math.Ceiling(value);
-        }
-
+        /// <summary>
+        /// Returns the euler angle representation of a <see cref="Quaternion"/>.
+        /// </summary>
+        /// <param name="q">The quaternion to represent in the form of euler angle.</param>
+        /// <returns>An euler angle vector that represents the <paramref name="q"/> quaternion.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Vector3 ToEulerAngles(this Quaternion q)
         {
             Vector3 euler;
@@ -170,6 +129,12 @@ namespace Ez.Numerics
             return euler * Rad2Deg;
         }
 
+        /// <summary>
+        /// Returns the quaternion representation of a euler angle <see cref="Vector3"/>.
+        /// </summary>
+        /// <param name="eulerAngles">The euler angle to represents in the form of quaternion.</param>
+        /// <returns>An quaternion that represents the <paramref name="eulerAngles"/> vector.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Quaternion ToQuaternion(this Vector3 eulerAngles)
         {
             Vector3 eulerAnglesRadians = eulerAngles * Deg2Rad;

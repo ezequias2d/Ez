@@ -4,8 +4,15 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 namespace Ez
 {
+    /// <summary>
+    /// Supports cloning, which creates a new instance of a class with the specific type.
+    /// </summary>
+    /// <typeparam name="T">The type of the clone.</typeparam>
     public interface IClone<T>
     {
+        /// <summary>
+        /// Creates a new T instance that is a copy of the current instance. 
+        /// </summary>
         T Clone { get; }
     }
 }

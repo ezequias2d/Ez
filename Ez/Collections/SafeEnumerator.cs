@@ -21,7 +21,8 @@ namespace Ez.Collections
 
         #region Constructors/Destructors
         /// <summary>
-        /// 
+        /// Initializes a new instance of the <see cref="SafeEnumerator{T}"/> class that 
+        /// contains an <see cref="IEnumerator{T}"/> and a sync object.
         /// </summary>
         /// <param name="inner">Wrapped instance.</param>
         /// <param name="sync">Sync instance.</param>
@@ -34,6 +35,9 @@ namespace Ez.Collections
             Monitor.Enter(sync);
         }
 
+        /// <summary>
+        /// Destroys a instance of <see cref="SafeEnumerator{T}"/> class.
+        /// </summary>
         ~SafeEnumerator()
         {
             Dispose(false);
@@ -42,6 +46,9 @@ namespace Ez.Collections
         #endregion Constructors/Destructors
 
         #region Operators
+        /// <summary>
+        /// Gets the element in the collection at the current position of the enumerator.
+        /// </summary>
         public T Current 
         { 
             get 
@@ -52,6 +59,9 @@ namespace Ez.Collections
             } 
         }
 
+        /// <summary>
+        /// Gets the sync object.
+        /// </summary>
         public object Sync => _sync;
 
         object IEnumerator.Current => Current;
@@ -72,17 +82,30 @@ namespace Ez.Collections
             }
         }
 
+        /// <summary>
+        /// Dispose a instance of <see cref="SafeEnumerator{T}"/> class and release the <see cref="Sync"/> object.
+        /// </summary>
         public void Dispose()
         {
             Dispose(true);
         }
 
+        /// <summary>
+        /// Advances the enumerator to the next element of the collection.
+        /// </summary>
+        /// <returns><see langword="true"/> if the enumerator was successfully advanced to 
+        /// the next element; <see langword="false"/> if the enumerator has passed the end 
+        /// of the collection.</returns>
         public bool MoveNext()
         {
             if (disposed)
                 throw new ObjectDisposedException("SafeEnumerator");
             return inner.MoveNext();
         }
+
+        /// <summary>
+        /// Sets the enumerator to its initial position, which is before the first element in the collection.
+        /// </summary>
         public void Reset()
         {
             if (disposed)

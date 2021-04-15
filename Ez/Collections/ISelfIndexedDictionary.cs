@@ -8,9 +8,12 @@ using System.Text;
 
 namespace Ez.Collections
 {
-    public interface ISelfIndexedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, ICollection<TValue> where TValue : ISelfIndexedElement<TKey>
+    /// <summary>
+    /// Describes a dictionary that can auto-index a type that auto-indexes.
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
+    public interface ISelfIndexedDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>, ICollection<TValue> where TValue : ISelfIndexedElement<TKey>
     {
-
-
     }
 }

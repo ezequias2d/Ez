@@ -7,6 +7,10 @@ using System;
 
 namespace Ez.Memory
 {
+    /// <summary>
+    /// Represents an array pool.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public static class ArrayPool<T>
     {
         private static readonly ObjectPool<T[], ArraySpecs> _objectPool;
@@ -18,16 +22,25 @@ namespace Ez.Memory
             _objectPool = new ObjectPool<T[], ArraySpecs>(new MemoryObjectPoolAssistant());
         }
 
-        public static void Return(T[] memoryBlock)
+        /// <summary>
+        /// Returns an array to the pool.
+        /// </summary>
+        /// <param name="array">The returned array.</param>
+        public static void Return(T[] array)
         {
-            _objectPool.Return(memoryBlock);
+            _objectPool.Return(array);
         }
 
+        /// <summary>
+        /// Gets an array from the pool.
+        /// </summary>
+        /// <param name="size">The minimum size expected.</param>
+        /// <param name="anyWithSize">Flag that indicates that any array with at least the <paramref name="size"/>
+        /// is valid to be get.</param>
+        /// <param name="tolerance">Number of attempts to obtain an object with the proposed conditions.</param>
+        /// <returns></returns>
         public static T[] GetT(long size, bool anyWithSize = false, int tolerance = 256) =>
             _objectPool.GetT(new ArraySpecs { Size = size, AnyWithSize = anyWithSize }, tolerance);
-
-        public static PooledObject<T[]> Get(long size, bool anyWithSize = false, int tolerance = 256) =>
-            _objectPool.Get(new ArraySpecs { Size = size, AnyWithSize = anyWithSize }, tolerance);
 
 
         private struct ArraySpecs
@@ -79,7 +92,7 @@ namespace Ez.Memory
                 }
             }
 
-            public bool MeetsExpectation(in T[] item, in ArraySpecs specs, int currentTolerance) =>
+            public bool Evaluate(in T[] item, in ArraySpecs specs, int currentTolerance) =>
                 item.LongLength >= specs.Size && 
                     (currentTolerance == 0 || (item.LongLength / specs.Size <= 1) || specs.AnyWithSize);
 

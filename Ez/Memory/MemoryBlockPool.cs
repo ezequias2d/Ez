@@ -6,6 +6,9 @@ using Ez.Collections.Pools;
 
 namespace Ez.Memory
 {
+    /// <summary>
+    /// An static <see cref="MemoryBlock"/> pool.
+    /// </summary>
     public static class MemoryBlockPool
     {
         private static readonly ObjectPool<MemoryBlock, MemoryBlockSpecs> _objectPool;
@@ -15,9 +18,20 @@ namespace Ez.Memory
             _objectPool = new ObjectPool<MemoryBlock, MemoryBlockSpecs>(new MemoryBlockPoolAssistant(Tolerance));
         }
 
+        /// <summary>
+        /// Returns a <see cref="MemoryBlock"/> to the pool.
+        /// </summary>
+        /// <param name="memoryBlock">The memory block to return.</param>
         public static void Return(MemoryBlock memoryBlock) =>
             _objectPool.Return(memoryBlock);
-        
+
+        /// <summary>
+        /// Gets a <see cref="MemoryBlock"/> from the pool, or creates a new <see cref="MemoryBlock"/>.
+        /// </summary>
+        /// <param name="size">The size in bytes of <see cref="MemoryBlock"/>.</param>
+        /// <param name="anyWithSize">Flag that says it can be any <see cref="MemoryBlock"/> with enough size.</param>
+        /// <param name="tolerance">Number of attempts to get before creating a new memory block.</param>
+        /// <returns>A <see cref="MemoryBlock"/> with at least the requested size.</returns>
         public static MemoryBlock Get(ulong size, bool anyWithSize = false, int tolerance = 256) =>
             _objectPool.GetT(new MemoryBlockSpecs { Size = size, AnyWithSize = anyWithSize }, tolerance);
 
@@ -46,7 +60,7 @@ namespace Ez.Memory
                 return true;
             }
 
-            public bool MeetsExpectation(in MemoryBlock item, in MemoryBlockSpecs specs, int currentTolerance) =>
+            public bool Evaluate(in MemoryBlock item, in MemoryBlockSpecs specs, int currentTolerance) =>
                 specs.Size <= item.TotalSize &&
                     (specs.AnyWithSize || currentTolerance == 0 || (item.TotalSize / specs.Size) <= 4);
 

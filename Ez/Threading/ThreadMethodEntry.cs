@@ -12,7 +12,10 @@ using Ez.Collections;
 
 namespace Ez.Threading
 {
-    public class ThreadMethodEntry : IAsyncResult, IResettable, IDisposable
+    /// <summary>
+    /// 
+    /// </summary>
+    internal class ThreadMethodEntry : IAsyncResult, IResettable, IDisposable
     {
         private readonly object _invokeSyncObject;
         private readonly ManualResetEventSlim _resetEvent;
@@ -25,14 +28,14 @@ namespace Ez.Threading
             _resetEvent = new ManualResetEventSlim();
         }
 
-        ~ThreadMethodEntry()
-        {
-            Dispose(false);
-        }
+        /// <summary>
+        /// Destroys a <see cref="ThreadMethodEntry"/> class instance.
+        /// </summary>
+        ~ThreadMethodEntry() => Dispose(false);
 
-        public bool Synchronous { get; private set; }
+        public bool IsSynchronous { get; private set; }
 
-        public bool CompletedSynchronously => IsCompleted && Synchronous;
+        public bool CompletedSynchronously => IsCompleted && IsSynchronous;
 
         public bool IsCompleted { get; private set; }
 
@@ -46,7 +49,7 @@ namespace Ez.Threading
         {
             _resetEvent.Set();
             _args = null;
-            Synchronous = false;
+            IsSynchronous = false;
 
             ReturnValue = null;
             IsCompleted = false;
@@ -95,12 +98,11 @@ namespace Ez.Threading
                 _resetEvent.Wait(timeout, cancellationToken);
         }
 
-
-        internal void Invoke()
+        public void Invoke()
         {
             try
             {
-                if (_method is MethodInvoker method)
+                if (_method is Action method)
                     method();
                 else if (_method is EventHandler eventHandler)
                 {
@@ -126,14 +128,14 @@ namespace Ez.Threading
             Complete();
         }
 
-        internal void Initialize(Delegate method, object[] args, bool synchronous)
+        public void Initialize(Delegate method, object[] args, bool synchronous)
         {
             _method = method;
             _args = args;
-            Synchronous = synchronous;
+            IsSynchronous = synchronous;
         }
 
-        private void Complete()
+        public void Complete()
         {
             lock (_invokeSyncObject)
             {

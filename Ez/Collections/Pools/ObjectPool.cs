@@ -16,13 +16,17 @@ namespace Ez.Collections.Pools
     /// A pool of objects.
     /// </summary>
     /// <typeparam name="T">T object</typeparam>
-    /// <typeparam name="PooledObject<T, TSpecs>">Wrapper of T object</typeparam>
+    /// <typeparam name="TSpecs">Wrapper of T object</typeparam>
     public sealed class ObjectPool<T, TSpecs>
     {
         private readonly ConcurrentQueue<PooledObject<T, TSpecs>> _objectWrapper;
         private readonly ConcurrentQueue<PooledObject<T, TSpecs>> _bag;
         private readonly IObjectPoolAssistant<T, TSpecs> _assistant;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectPool{T, TSpecs}"/> class that is empty.
+        /// </summary>
+        /// <param name="assistant"></param>
         public ObjectPool(IObjectPoolAssistant<T, TSpecs> assistant)
         {
             _assistant = assistant;
@@ -30,14 +34,17 @@ namespace Ez.Collections.Pools
             _objectWrapper = new ConcurrentQueue<PooledObject<T, TSpecs>>();
         }
 
+        /// <summary>
+        /// Number of elements in the <see cref="ObjectPool{T, TSpecs}"/>.
+        /// </summary>
         public int Count => _bag.Count;
 
         /// <summary>
         /// Get a wrapper with a T object.
         /// </summary>
-        /// <param name="specs">Object specifications.</param>
+        /// <param name="specs">Specifications for the object taken from the pool.</param>
         /// <param name="tolerance">Maximum number of attempts to acquire an object with specifications.</param>
-        /// <returns></returns>
+        /// <returns>A <see cref="PooledObject{T}"/> object that the <see cref="PooledObject{T}.Value"/> is validated with <paramref name="specs"/>.</returns>
         public PooledObject<T> Get(TSpecs specs = default, int tolerance = 8)
         {
             if (!TryGet(out var result, specs, tolerance))
@@ -51,6 +58,12 @@ namespace Ez.Collections.Pools
             return result;
         }
 
+        /// <summary>
+        /// Get a T object.
+        /// </summary>
+        /// <param name="specs">Specifications for the object taken from the pool.</param>
+        /// <param name="tolerance">Number of attempts to get an object corresponding to <paramref name="specs"/>.</param>
+        /// <returns>A T object that is validated with <paramref name="specs"/>.</returns>
         public T GetT(TSpecs specs = default, int tolerance = 8)
         {
             if(!TryGetT(out var result, specs, tolerance))
@@ -60,10 +73,18 @@ namespace Ez.Collections.Pools
         }
 
         /// <summary>
-        /// Try get a wrapper with a T object. (don't create if you can't find)
+        /// Try get a wrapper with a T object.
         /// </summary>
         /// <param name="pooledObject">A wrapper with a T object.</param>
-        /// <returns>True if found, otherwise false.</returns>
+        /// <param name="specs">Specifications for the object taken from the pool.</param>
+        /// <param name="tolerance">Number of attempts to get an object corresponding to <paramref name="specs"/>.</param>
+        /// <returns>
+        /// If tolerance &lt; 0, or
+        ///  failure <paramref name="tolerance"/> times to find an object whose <paramref name="specs"/> are valid,
+        ///  then returns <see langword="false"/> and <paramref name="pooledObject"/> = <see langword="null"/>,
+        /// otherwise, returns <see langword="true"/> and a <see cref="PooledObject{T}"/> with a valid <see cref="PooledObject{T}.Value"/> 
+        /// in <paramref name="pooledObject"/>.
+        /// </returns>
         public bool TryGet(out PooledObject<T> pooledObject, in TSpecs specs = default, int tolerance = 8)
         {
             tolerance = Math.Min(tolerance, _bag.Count);
@@ -77,7 +98,7 @@ namespace Ez.Collections.Pools
                 if (_bag.TryDequeue(out var po))
                 {
                     //check if the object is acceptable
-                    if (_assistant.MeetsExpectation(po.Value, specs, tolerance))
+                    if (_assistant.Evaluate(po.Value, specs, tolerance))
                     {
                         pooledObject = po;
                         po.Set();
@@ -89,11 +110,20 @@ namespace Ez.Collections.Pools
                 }
             }
 
-            // create if you can't find.
             pooledObject = default;
             return false;
         }
 
+        /// <summary>
+        /// Try get a T object.
+        /// </summary>
+        /// <param name="value">When this method returns <see langword="true"/>, contains the value that had got.</param>
+        /// <param name="specs">Specifications for the object taken from the pool.</param>
+        /// <param name="tolerance">Number of attempts to get an object corresponding to <paramref name="specs"/>.</param>
+        /// <returns>If tolerance &lt; 0, or
+        ///  failure <paramref name="tolerance"/> times to find an object whose <paramref name="specs"/> are valid,
+        ///  then returns <see langword="false"/> and <paramref name="value"/> = <see langword="default"/>,
+        /// otherwise, returns <see langword="true"/> and a valid <paramref name="value"/>.</returns>
         public bool TryGetT(out T value, in TSpecs specs = default, in int tolerance = 8)
         {
             {
@@ -136,7 +166,10 @@ namespace Ez.Collections.Pools
         /// <param name="wrapper">Wrapper of a T object.</param>
         internal void Return(in PooledObject<T, TSpecs> wrapper)
         {
-            wrapper.UpdateValue(default);
+            if (wrapper.Source != this)
+                throw new EzException($"The {nameof(wrapper)} is not created by same ObjectPool.");
+
+            wrapper.Dispose();
             _objectWrapper.Enqueue(wrapper);
 
             if (_objectWrapper.Count > 40000)
@@ -144,7 +177,7 @@ namespace Ez.Collections.Pools
         }
 
         /// <summary>
-        /// Remove and dispose all <see cref="PooledObject<T, TSpecs>"/> in this pool.
+        /// Removes and disposes all of <see cref="PooledObject{T}"/> and your values in this <see cref="ObjectPool{T, TSpecs}"/>.
         /// </summary>
         public void Clear()
         {
@@ -155,8 +188,12 @@ namespace Ez.Collections.Pools
                 if (pooledObject is IDisposable disposable)
                     disposable.Dispose();
             }
+            ClearWrappers();
         }
 
+        /// <summary>
+        /// Removes and disposes all of unused <see cref="PooledObject{T}"/> in this <see cref="ObjectPool{T, TSpecs}"/>
+        /// </summary>
         public void ClearWrappers()
         {
             while (!_objectWrapper.IsEmpty)

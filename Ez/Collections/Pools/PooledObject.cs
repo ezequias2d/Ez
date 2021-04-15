@@ -11,7 +11,8 @@ namespace Ez.Collections.Pools
     /// <summary>
     /// An object that contains a value and is saved in an object pool.
     /// </summary>
-    /// <typeparam name="T">Value type</typeparam>
+    /// <typeparam name="T">Type of value into pool.</typeparam>
+    /// <typeparam name="TSpecs">Type of TSpec in <see cref="PooledObject{T, TSpecs}.Source"/>.</typeparam>
     internal sealed class PooledObject<T, TSpecs> : PooledObject<T>
     {
         private bool _disposed;
@@ -36,10 +37,11 @@ namespace Ez.Collections.Pools
                 if (disposing)
                     Source.Return(this);
 
-                if (IsTemporaryUse)
+                if (IsTemporaryUse && !aux.Equals(default))
                     Source.Return(aux);
 
                 _disposed = true;
+                _value = default;
             }
         }
 
@@ -55,7 +57,7 @@ namespace Ez.Collections.Pools
     /// <typeparam name="T">Value type</typeparam>
     public abstract class PooledObject<T> : IDisposable, IResettable
     {
-        protected T _value;
+        private protected T _value;        
 
         internal PooledObject()
         {
@@ -63,21 +65,19 @@ namespace Ez.Collections.Pools
         }
 
         /// <summary>
+        /// Destroys this instance of <see cref="PooledObject{T}"/>.
+        /// </summary>
+        ~PooledObject() => Dispose(false);
+
+        /// <summary>
         /// Flag indicating whether the value should be returned to the pool(true) when discarded with Dispose or not(false).
         /// </summary>
         public bool IsTemporaryUse { get; set; }
 
-        ~PooledObject() => Dispose(false);
-
-        public void Dispose() => Dispose(true);
-
-        protected abstract void Dispose(bool disposing);
-        internal abstract void Undispose();
-
-        internal void UpdateValue(in T value)
-        {
-            _value = value;
-        }
+        /// <summary>
+        /// Gets
+        /// </summary>
+        public ref readonly T Value => ref _value;
 
         /// <summary>
         /// Reset the <see cref="Value"/> if it implements IResettable.
@@ -97,6 +97,21 @@ namespace Ez.Collections.Pools
                 resettable.Set();
         }
 
-        public ref readonly T Value => ref _value;
+        /// <summary>
+        /// Releases
+        /// </summary>
+        public void Dispose() => Dispose(true);
+
+        internal void UpdateValue(in T value)
+        {
+            _value = value;
+        }
+
+        /// <summary>
+        /// Disposes the <see cref="PooledObject{T}"/>.
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected abstract void Dispose(bool disposing);
+        internal abstract void Undispose();
     }
 }

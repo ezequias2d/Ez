@@ -8,9 +8,20 @@ using System.Text;
 
 namespace Ez.Numerics.Bounding
 {
+    /// <summary>
+    /// Provides a generic interface for bounding volume
+    /// </summary>
     public interface IBoundingVolume
     {
-
+        /// <summary>
+        /// Returns the <see cref="ContainmentType"/> between this and another <see cref="IBoundingVolume"/>.
+        /// </summary>
+        /// <param name="bounding">The other <see cref="IBoundingVolume"/> to compare.</param>
+        /// <returns>
+        /// <see cref="ContainmentType.Disjoint"/>, if there is no overlap between the bounding volumes.<br/>
+        /// <see cref="ContainmentType.Contains"/>, if the instance fully contains the volume of <see cref="IBoundingVolume"/>.<br/>
+        /// <see cref="ContainmentType.Intersects"/>, if only part of the instance contains at least part of
+        /// <paramref name="bounding"/> volume.</returns>
         ContainmentType Contains(IBoundingVolume bounding);
     }
 }

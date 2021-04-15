@@ -33,7 +33,7 @@ namespace Ez.Threading
             public bool IsClear() =>
                 count >= CountMax;
 
-            public bool MeetsExpectation(in ThreadMethodEntry item, in ThreadMethodEntrySpec specs, int currentTolerance)
+            public bool Evaluate(in ThreadMethodEntry item, in ThreadMethodEntrySpec specs, int currentTolerance)
             {
                 return true;
             }

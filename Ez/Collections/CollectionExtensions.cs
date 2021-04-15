@@ -9,6 +9,9 @@ using System.Linq;
 
 namespace Ez.Collections
 {
+    /// <summary>
+    /// Extensions for collections.
+    /// </summary>
     public static class CollectionExtensions
     {
         /// <summary>
@@ -41,7 +44,7 @@ namespace Ez.Collections
         /// <typeparam name="T">The type of each element in the shallow array copy.</typeparam>
         /// <typeparam name="U">The type of each element in the <paramref name="us"/> array.</typeparam>
         /// <param name="us">The array to make a copy.</param>
-        /// <returns>A shallow copy of <paramref name="us"/> with <see cref="T"/> type.</returns>
+        /// <returns>A shallow copy of <paramref name="us"/> with T type.</returns>
         public static T[] ShallowCopy<T, U>(this U[] us) where U : T =>
             Array.ConvertAll(us, (U u) => (T)u);
 
@@ -51,7 +54,7 @@ namespace Ez.Collections
         /// <typeparam name="U">The type of each element in the <paramref name="us"/> array.</typeparam>
         /// <typeparam name="T">The type of each element in the shallow array copy.</typeparam>
         /// <param name="us">The array to make a copy.</param>
-        /// <returns>A shallow copy of <paramref name="us"/> with <see cref="T"/> type.</returns>
+        /// <returns>A shallow copy of <paramref name="us"/> with T type.</returns>
         public static T[] ShallowCopy<U, T>(this U[] us) where T : U =>
             Array.ConvertAll(us, (U u) => (T)u);
 
