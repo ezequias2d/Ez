@@ -219,8 +219,8 @@ namespace Ez.Collections
             {
                 if (!(_invalids.ContainsKey(i) && _invalids[i]))
                 {
-                    action?.Invoke(i, aux.Count);
                     aux.Add(_list[i]);
+                    action?.Invoke(i, aux.Count - 1);
                 }
             }
             Clear();

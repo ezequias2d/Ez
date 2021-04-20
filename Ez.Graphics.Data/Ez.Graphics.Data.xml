@@ -1,0 +1,3133 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Ez.Graphics.Data</name>
+    </assembly>
+    <members>
+        <member name="T:Ez.Graphics.Data.Animations.Animation">
+            <summary>
+            An animation consists of keyframe data for a number of nodes.
+            
+            For each node affected by the animation a separate series of data is given.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.Animation.#ctor(System.String,System.Double,System.Double,System.ReadOnlySpan{Ez.Graphics.Data.Animations.AnimationNode})">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.Animations.Animation"/> class.
+            </summary>
+            <param name="name">The name of the animation.</param>
+            <param name="duration">The animation duration in ticks.</param>
+            <param name="ticksPerSecond">The number of ticks per second.</param>
+            <param name="channels">The channels of animation.</param>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.Animation.Channels">
+            <summary>
+            The animation node channels.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.Animation.Duration">
+            <summary>
+            Duration of the animation in ticks.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.Animation.Name">
+            <summary>
+            The name of the animation.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.Animation.TicksPerSecond">
+            <summary>
+            Ticks per second.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.Animation.Equals(Ez.Graphics.Data.Animations.Animation)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Animations.Animation"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Animations.Animation"/>.</param>
+            <returns><see langword="true"/> if the two animations are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.Animation.Equals(System.Object)">
+            <summary>
+            Returns a value that indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.Animation.GetHashCode">
+            <summary>
+            Gets the hashcode of the animation data.
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.Animations.AnimationBehaviour">
+            <summary>
+            Defines how an animation channel behaves outside the defined time range.
+            
+            <seealso cref="P:Ez.Graphics.Data.Animations.AnimationNode.PreState"/>
+            <seealso cref="P:Ez.Graphics.Data.Animations.AnimationNode.PostState"/>
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Animations.AnimationBehaviour.Default">
+            <summary>
+            The value from the default node transformation is taken.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Animations.AnimationBehaviour.Constant">
+            <summary>
+            The nearest key value is used without interpolation.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Animations.AnimationBehaviour.Linear">
+            <summary>
+            The value of the nearest two keys is linearly extrapolated for the current time value.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Animations.AnimationBehaviour.Repeat">
+            <summary>
+            The animation is repeated.
+            If the animation key go from n to m and the current time is t, use the value at (t-n) % (|m-n|).
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.Animations.AnimationNode">
+             <summary>
+             Describes the animation of a single node.
+             
+             The name specifies the bone/node which is affected by this animation channel. 
+             The keyframes are given in three separate series of values, one each for position, rotation and scaling. 
+             The transformation matrix computed from these values replaces the node's original transformation matrix at a specific time. 
+             This means all keys are absolute and not relative to the bone default pose. 
+             
+             The order in which the transformations are applied is 
+                 as usual - scaling, rotation, translation.
+                 
+            Note:
+                 All keys are returned in their correct, chronological order. Duplicate keys don't pass the validation step. 
+                 Most likely there will be no negative time values, but they are not forbidden also ( so implementations need to cope with them! )
+             </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.AnimationNode.#ctor(System.String,System.ReadOnlySpan{Ez.Graphics.Data.Animations.Vector3Key},System.ReadOnlySpan{Ez.Graphics.Data.Animations.QuaternionKey},System.ReadOnlySpan{Ez.Graphics.Data.Animations.Vector3Key},Ez.Graphics.Data.Animations.AnimationBehaviour,Ez.Graphics.Data.Animations.AnimationBehaviour)">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.Animations.AnimationNode"/> class.
+            </summary>
+            <param name="name">The name of the animation node.</param>
+            <param name="positionKeys">The position keys data.</param>
+            <param name="rotationKeys">The rotation keys data.</param>
+            <param name="scalingKeys">The scaling keys data.</param>
+            <param name="preState">The behaviour of the animation before the first key is encountered.</param>
+            <param name="postState">The behaviour of the animation after the last key was processed.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.AnimationNode.#ctor(Ez.Graphics.Data.Animations.AnimationNode)">
+            <summary>
+            Clone constructor.
+            </summary>
+            <param name="animationNode">The <see cref="T:Ez.Graphics.Data.Animations.AnimationNode"/> cloned.</param>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.AnimationNode.Name">
+            <summary>
+            The name of the node affected by this animation.
+            The node must exist and it must be unique.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.AnimationNode.PostState">
+            <summary>
+            Defines how the animation behaves after the last key was processed.
+            The default value is <see cref="F:Ez.Graphics.Data.Animations.AnimationBehaviour.Default"/>(the original transformation matrix of the affected node is taken).
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.AnimationNode.PreState">
+            <summary>
+            Defines how the animation behaves before the first key is encountered.
+            The default value is <see cref="F:Ez.Graphics.Data.Animations.AnimationBehaviour.Default"/>(the original transformation matrix of the affected node is used).
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.AnimationNode.PositionKeys">
+            <summary>
+            The position keys of this animation channel.
+            Positions are specified as 3D vector.The array is mNumPositionKeys in size.
+            If there are position keys, there will also be at least one scaling and one rotation key.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.AnimationNode.RotationKeys">
+            <summary>
+            The rotation keys of this animation channel.
+            Rotations are given as quaternions, which are 4D vectors.The array is mNumRotationKeys in size.
+            If there are rotation keys, there will also be at least one scaling and one position key.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.AnimationNode.ScalingKeys">
+            <summary>
+            The scaling keys of this animation channel.
+            Scalings are specified as 3D vector.The array is mNumScalingKeys in size.
+            If there are scaling keys, there will also be at least one position and one rotation key.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.AnimationNode.GetHashCode">
+            <summary>
+            Gets the hashcode of the animation node data.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.AnimationNode.Equals(Ez.Graphics.Data.Animations.AnimationNode)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Animations.AnimationNode"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Animations.AnimationNode"/>.</param>
+            <returns><see langword="true"/> if the two animation nodes are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.AnimationNode.Equals(System.Object)">
+            <summary>
+            Returns a value that indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Animations.IAnimationKey">
+            <summary>
+            Provides a key frame for animation.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.IAnimationKey.Time">
+            <summary>
+            The time of this key. 
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.Animations.QuaternionKey">
+            <summary>
+            A time-value pair specifying a rotation for the given time.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.QuaternionKey.Time">
+            <summary>
+            The time of this key.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.QuaternionKey.Value">
+            <summary>
+            The value of this key.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.QuaternionKey.Equals(Ez.Graphics.Data.Animations.QuaternionKey)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Animations.QuaternionKey"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Animations.QuaternionKey"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.Animations.QuaternionKey"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.QuaternionKey.Equals(System.Object)">
+            <summary>
+            Returns a value that indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.QuaternionKey.ToString">
+            <summary>
+            Returns the string representation of the current <see cref="T:Ez.Graphics.Data.Animations.Vector3Key"/> instance.
+            </summary>
+            <returns>The string representation of the current instance.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.QuaternionKey.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Animations.Vector3Key">
+            <summary>
+            A time-value pair specifying a certain 3D vector for a given time.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.Vector3Key.Time">
+            <summary>
+            The time of this key.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Animations.Vector3Key.Value">
+            <summary>
+            The value of this key.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.Vector3Key.Equals(Ez.Graphics.Data.Animations.Vector3Key)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Animations.Vector3Key"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Animations.Vector3Key"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.Animations.Vector3Key"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.Vector3Key.Equals(System.Object)">
+            <summary>
+            Returns a value that indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.Vector3Key.ToString">
+            <summary>
+            Returns the string representation of the current <see cref="T:Ez.Graphics.Data.Animations.Vector3Key"/> instance.
+            </summary>
+            <returns>The string representation of the current instance.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Animations.Vector3Key.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Cameras.Camera">
+            <summary>
+            A virtual camera.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Cameras.Camera.#ctor(System.String,System.Numerics.Vector3,System.Numerics.Vector3,System.Numerics.Quaternion,System.Single,System.Single,System.Single,System.Single,System.Single,Ez.Graphics.Data.Cameras.CameraMode)">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.Cameras.Camera"/> struct
+            </summary>
+            <param name="name"></param>
+            <param name="up"></param>
+            <param name="position"></param>
+            <param name="rotation"></param>
+            <param name="fov"></param>
+            <param name="orthographicSize"></param>
+            <param name="nearDistance"></param>
+            <param name="farDistance"></param>
+            <param name="aspectRatio"></param>
+            <param name="cameraMode"></param>
+        </member>
+        <member name="P:Ez.Graphics.Data.Cameras.Camera.Name">
+            <summary>
+            The name of the camera.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Cameras.Camera.Up">
+            <summary>
+            The up vector of camera.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Cameras.Camera.Position">
+            <summary>
+            Position of camera in world space.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Cameras.Camera.Rotation">
+            <summary>
+            Rotation of camera in world space.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Cameras.Camera.FieldOfView">
+            <summary>
+            The field of view in the y direction, in radians.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Cameras.Camera.OrthographicSize">
+            <summary>
+            Camera's half-size when in orthographic mode.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Cameras.Camera.NearDistance">
+            <summary>
+            The distance to the near view plane.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Cameras.Camera.FarDistance">
+            <summary>
+            The distance to the far view plane.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Cameras.Camera.AspectRatio">
+            <summary>
+            The aspect ratio, defined as view space width divided by height.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Cameras.Camera.CameraMode">
+            <summary>
+            The camera mode.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Cameras.Camera.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Cameras.Camera.CreateOthographic">
+            <summary>
+            Creates an othographic perspective matrix from this <see cref="T:Ez.Graphics.Data.Cameras.Camera"/>.
+            </summary>
+            <returns>The othographic projection matrix.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Cameras.Camera.CreatePerspective">
+            <summary>
+            Creates a perspective projection matrix from this <see cref="T:Ez.Graphics.Data.Cameras.Camera"/>.
+            </summary>
+            <returns>The perspective projection matrix.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Cameras.Camera.CreateView">
+            <summary>
+            Creates a view transform matrix from this <see cref="T:Ez.Graphics.Data.Cameras.Camera"/>.
+            </summary>
+            <returns>The view transform matrix.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Cameras.Camera.CreateProjection">
+            <summary>
+            Creates a projection matrix from this <see cref="T:Ez.Graphics.Data.Cameras.Camera"/>
+            (automatically deciding through <see cref="P:Ez.Graphics.Data.Cameras.Camera.CameraMode"/>).
+            </summary>
+            <returns>The projection matrix.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Cameras.Camera.Equals(Ez.Graphics.Data.Cameras.Camera)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Cameras.Camera"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Cameras.Camera"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.Cameras.Camera"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Cameras.Camera.Equals(System.Object)">
+            <summary>
+            Returns a value that indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Cameras.Camera.LookAt(Ez.Graphics.Data.Cameras.Camera@,System.Numerics.Vector3@)">
+            <summary>
+            Look the camera to the target.
+            </summary>
+            <param name="camera">The camera to look at the <paramref name="target"/>.</param>
+            <param name="target">The target to be looked at.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Cameras.Camera.Translate(Ez.Graphics.Data.Cameras.Camera@,System.Numerics.Vector3@)">
+            <summary>
+            Creates a new translated <see cref="T:Ez.Graphics.Data.Cameras.Camera"/>.
+            </summary>
+            <param name="camera">The <see cref="T:Ez.Graphics.Data.Cameras.Camera"/> to translate.</param>
+            <param name="translation">The translation to apply.</param>
+            <returns>A translated <see cref="T:Ez.Graphics.Data.Cameras.Camera"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Cameras.Camera.SetRotate(Ez.Graphics.Data.Cameras.Camera@,System.Numerics.Quaternion@)">
+            <summary>
+            Creates a new camera with specific rotation.
+            </summary>
+            <param name="camera">The <see cref="T:Ez.Graphics.Data.Cameras.Camera"/> to set.</param>
+            <param name="rotation">The new rotation of <see cref="T:Ez.Graphics.Data.Cameras.Camera"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Cameras.Camera.SetTransform(Ez.Graphics.Data.Cameras.Camera@,System.Numerics.Vector3@,System.Numerics.Quaternion@)">
+            <summary>
+            Creates a new camera with specific postion and rotation.
+            </summary>
+            <param name="camera">The camera to set.</param>
+            <param name="position">The new position of <see cref="T:Ez.Graphics.Data.Cameras.Camera"/>.</param>
+            <param name="rotation">The new rotation of <see cref="T:System.Numerics.Quaternion"/>.</param>
+            <returns></returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Cameras.CameraMode">
+            <summary>
+            Represents a camera mode of <see cref="T:Ez.Graphics.Data.Cameras.Camera"/> instance.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Cameras.CameraMode.Undefined">
+            <summary>
+            Indicates that it is undefined.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Cameras.CameraMode.Orthographic">
+            <summary>
+            Indicates a camera in orthographic mode.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Cameras.CameraMode.Perspective">
+            <summary>
+            Indicates a camera in perspective mode.
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.ColorByte">
+            <summary>
+            A color struct in 8-bits integer values in RGBA format.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorByte.#ctor(System.Byte,System.Byte,System.Byte,System.Byte)">
+            <summary>
+            Constructs a new ColorSingle from the given components.
+            </summary>
+            <param name="r">The red component.</param>
+            <param name="g">The green component.</param>
+            <param name="b">The blue component.</param>
+            <param name="a">The alpha component.</param>
+        </member>
+        <member name="P:Ez.Graphics.Data.ColorByte.R">
+            <summary>
+            The red component.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.ColorByte.G">
+            <summary>
+            The green component.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.ColorByte.B">
+            <summary>
+            The blue component.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.ColorByte.A">
+            <summary>
+            The alpha component.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorByte.GetColor">
+            <summary>
+            Gets the representation of a <see cref="T:Ez.Graphics.Data.ColorByte"/> instance as <see cref="T:System.Drawing.Color"/>.
+            </summary>
+            <returns>A <see cref="T:System.Drawing.Color"/> representation of this <see cref="T:Ez.Graphics.Data.ColorSingle"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorByte.GetColorByte">
+            <summary>
+            Gets the representation of a <see cref="T:Ez.Graphics.Data.ColorByte"/> instance as <see cref="T:Ez.Graphics.Data.ColorByte"/>.
+            </summary>
+            <returns>A <see cref="T:Ez.Graphics.Data.ColorByte"/> representation of this <see cref="T:Ez.Graphics.Data.ColorSingle"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorByte.GetColorSingle">
+            <summary>
+            Gets the representation of a <see cref="T:Ez.Graphics.Data.ColorByte"/> instance as <see cref="T:Ez.Graphics.Data.ColorSingle"/>.
+            </summary>
+            <returns>A <see cref="T:Ez.Graphics.Data.ColorSingle"/> representation of this <see cref="T:Ez.Graphics.Data.ColorByte"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorByte.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorByte.ToString">
+            <summary>
+            Returns the string representation of the current <see cref="T:Ez.Graphics.Data.Animations.Vector3Key"/> instance.
+            </summary>
+            <returns>The string representation of the current instance.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorByte.Equals(System.Object)">
+            <summary>
+            Returns a value that indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorByte.Equals(Ez.Graphics.Data.ColorByte)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.ColorByte"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.ColorByte"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.ColorByte"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorByte.Equals(Ez.Graphics.Data.IColor)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.IColor"/> have equivalent colors in the color space of the first..
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.IColor"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.ColorSingle"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorByte.op_Equality(Ez.Graphics.Data.ColorByte,Ez.Graphics.Data.ColorByte)">
+            <summary>
+            Element-wise equality.
+            </summary>
+            <param name="left">The first value.</param>
+            <param name="right">The second value.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorByte.op_Inequality(Ez.Graphics.Data.ColorByte,Ez.Graphics.Data.ColorByte)">
+            <summary>
+            Element-wise inequality.
+            </summary>
+            <param name="left">The first value.</param>
+            <param name="right">The second value.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorByte.op_Equality(Ez.Graphics.Data.ColorByte,Ez.Graphics.Data.IColor)">
+            <summary>
+            Element-wise equality.
+            </summary>
+            <param name="left">The first value.</param>
+            <param name="right">The second value.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorByte.op_Inequality(Ez.Graphics.Data.ColorByte,Ez.Graphics.Data.IColor)">
+            <summary>
+            Element-wise inequality.
+            </summary>
+            <param name="left">The first value.</param>
+            <param name="right">The second value.</param>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.Red">
+            <summary>
+            Red (255, 0, 0, 255)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.DarkRed">
+            <summary>
+            Dark Red (139, 0, 0, 255)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.Green">
+            <summary>
+            Green (0, 255, 0, 255)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.Blue">
+            <summary>
+            Blue (0, 0, 255, 255)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.Yellow">
+            <summary>
+            Yellow (255, 255, 0, 255)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.Grey">
+            <summary>
+            Grey (128, 128, 128, 255)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.LightGrey">
+            <summary>
+            Light Grey (211, 211, 211, 255)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.Cyan">
+            <summary>
+            Cyan (0, 255, 255, 255)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.White">
+            <summary>
+            White (255, 255, 255, 255)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.CornflowerBlue">
+            <summary>
+            Cornflower Blue (100, 149, 237, 255)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.Clear">
+            <summary>
+            Clear (0, 0, 0, 0)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.Black">
+            <summary>
+            Black (0, 0, 0, 255)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.Pink">
+            <summary>
+            Pink (255, 192, 203, 255)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorByte.Orange">
+            <summary>
+            Orange (255, 165, 0, 255)
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.ColorSingle">
+            <summary>
+            A color struct in 32-bits floating-point values in RGBA format.
+            </summary>
+            <summary>
+            Provides static methods to <see cref="T:Ez.Graphics.Data.ColorSingle"/> manipulation.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.ColorSingle.R">
+            <summary>
+            The red component.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.ColorSingle.G">
+            <summary>
+            The green component.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.ColorSingle.B">
+            <summary>
+            The blue component.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.ColorSingle.A">
+            <summary>
+            The alpha component.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.#ctor(System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Constructs a new ColorSingle from the given components.
+            </summary>
+            <param name="r">The red component.</param>
+            <param name="g">The green component.</param>
+            <param name="b">The blue component.</param>
+            <param name="a">The alpha component.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.#ctor(System.Numerics.Vector4)">
+            <summary>
+            Constructs a new ColorSingle from the XYZW components of a vector.
+            </summary>
+            <param name="channels">The vector containing the color components.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.ToVector4">
+            <summary>
+            Converts this ColorSingle into a Vector4.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.Equals(Ez.Graphics.Data.ColorSingle)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.ColorSingle"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.ColorSingle"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.ColorSingle"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.Equals(System.Object)">
+            <summary>
+            Determines whether the specified object is equal to the current object.
+            </summary>
+            <param name="obj">The object to compare with the current object.</param>
+            <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.Equals(Ez.Graphics.Data.IColor)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.IColor"/> have equivalent colors in the color space of the first..
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.IColor"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.ColorSingle"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.ToString">
+            <summary>
+            Returns a string representation of this color.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.GetColor">
+            <summary>
+            Gets the representation of a <see cref="T:Ez.Graphics.Data.ColorSingle"/> instance as <see cref="T:System.Drawing.Color"/>.
+            </summary>
+            <returns>A <see cref="T:System.Drawing.Color"/> representation of this <see cref="T:Ez.Graphics.Data.ColorSingle"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.GetColorSingle">
+            <summary>
+            Gets the representation of a <see cref="T:Ez.Graphics.Data.ColorSingle"/> instance as <see cref="T:Ez.Graphics.Data.ColorSingle"/>.
+            </summary>
+            <returns>A <see cref="T:Ez.Graphics.Data.ColorSingle"/> representation of this <see cref="T:Ez.Graphics.Data.ColorSingle"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.GetColorByte">
+            <summary>
+            Gets the representation of a <see cref="T:Ez.Graphics.Data.ColorSingle"/> instance as <see cref="T:Ez.Graphics.Data.ColorByte"/>.
+            </summary>
+            <returns>A <see cref="T:Ez.Graphics.Data.ColorByte"/> representation of this <see cref="T:Ez.Graphics.Data.ColorSingle"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.op_Equality(Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle)">
+            <summary>
+            Element-wise equality.
+            </summary>
+            <param name="left">The first value.</param>
+            <param name="right">The second value.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.op_Inequality(Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle)">
+            <summary>
+            Element-wise inequality.
+            </summary>
+            <param name="left">The first value.</param>
+            <param name="right">The second value.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.op_UnaryNegation(Ez.Graphics.Data.ColorSingle)">
+            <summary>
+            Negates the specified color.
+            </summary>
+            <param name="color">The color to negate.</param>
+            <returns>The negated vector.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.op_Addition(Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle)">
+            <summary>
+            Adds two colors together.
+            </summary>
+            <param name="left">The first color.</param>
+            <param name="right">The second color.</param>
+            <returns>The summed color.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.op_Subtraction(Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle)">
+            <summary>
+            Subtracts the second color from the first.
+            </summary>
+            <param name="left">The first color.</param>
+            <param name="right">The second color.</param>
+            <returns>The color that results from subracting <paramref name="right"/> from <paramref name="left"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.op_Multiply(Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle)">
+            <summary>
+            Multiplies two colors together.
+            </summary>
+            <param name="left">The first color.</param>
+            <param name="right">The second color.</param>
+            <returns>The product color.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.op_Division(Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle)">
+            <summary>
+            Divides the first color by the second.
+            </summary>
+            <param name="left">The first color.</param>
+            <param name="right">The second color.</param>
+            <returns>The color that results from dividing <paramref name="left"/> by <paramref name="right"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.op_Multiply(Ez.Graphics.Data.ColorSingle,System.Single)">
+            <summary>
+            Multiples the specified color by the specified scalar value.
+            </summary>
+            <param name="left">The color.</param>
+            <param name="right">The scalar value.</param>
+            <returns>The scaled color.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.op_Division(Ez.Graphics.Data.ColorSingle,System.Single)">
+            <summary>
+            Divides the specified color by a specified scalar value.
+            </summary>
+            <param name="left">The color.</param>
+            <param name="right">The scalar value.</param>
+            <returns>The result of the division.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.op_Multiply(System.Single,Ez.Graphics.Data.ColorSingle)">
+            <summary>
+            Multiples the specified color by the specified scalar value.
+            </summary>
+            <param name="left">The scalar value.</param>
+            <param name="right">The color.</param>
+            <returns>The scaled color.</returns>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.Red">
+            <summary>
+            Red (1, 0, 0, 1)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.DarkRed">
+            <summary>
+            Dark Red (139f / 255f, 0f, 0f, 1f)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.Green">
+            <summary>
+            Green (0f, 1f, 0f, 1f)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.Blue">
+            <summary>
+            Blue (0f, 0f, 1f, 1f)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.Yellow">
+            <summary>
+            Yellow (1f, 1f, 0f, 1f)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.Grey">
+            <summary>
+            Grey (128f / 255f, 128f / 255f, 128 / 255f, 1f)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.LightGrey">
+            <summary>
+            Light Grey (211f / 255f, 211f / 255f, 211f / 255f, 1f)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.Cyan">
+            <summary>
+            Cyan (0f, 1f, 1f, 1f)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.White">
+            <summary>
+            White (1f, 1f, 1f, 1f)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.CornflowerBlue">
+            <summary>
+            Cornflower Blue (100f / 255f, 149f / 255f, 237f / 255f, 1f)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.Clear">
+            <summary>
+            Clear (0f, 0f, 0f, 0f)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.Black">
+            <summary>
+            Black (0f, 0f, 0f, 1f)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.Pink">
+            <summary>
+            Pink (1f, 192f / 255f, 203f / 255f, 1f)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.ColorSingle.Orange">
+            <summary>
+            Orange (1f, 165f / 255f, 0f, 1f)
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.ColorSingle.Lerp(Ez.Graphics.Data.ColorSingle@,Ez.Graphics.Data.ColorSingle@,System.Single)">
+            <summary>
+            Linearly interpolates between two colors.
+            </summary>
+            <param name="a">The first color.</param>
+            <param name="b">The second color.</param>
+            <param name="t">Influence of the second color on the final result.</param>
+            <returns><paramref name="a"/> * (1f - <paramref name="t"/>) + <paramref name="b"/> * <paramref name="t"/>.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.GDHelper">
+            <summary>
+            Graphic data helper.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.GDHelper.IsDepthFormat(Ez.Graphics.Data.PixelFormat@)">
+            <summary>
+            Gets a value indicating whether the <see cref="T:Ez.Graphics.Data.PixelFormat"/> is depth.
+            </summary>
+            <param name="format"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.GDHelper.FormatHasStencil(Ez.Graphics.Data.PixelFormat@)">
+            <summary>
+            Gets whether that indicates whether the pixel format is stencil. 
+            </summary>
+            <param name="format">The <see cref="T:Ez.Graphics.Data.PixelFormat"/> to determine if it is a stencil format.</param>
+            <returns><see langword="true"/> if the <paramref name="format"/> is a stencil format; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.GDHelper.IsCompressedFormat(Ez.Graphics.Data.PixelFormat@)">
+            <summary>
+            Gets a value that indicates whether the <see cref="T:Ez.Graphics.Data.PixelFormat"/> is of the compressed type.
+            </summary>
+            <param name="format">The pixel format.</param>
+            <returns><see langword="true"/>, if <paramref name="format"/> is compressed; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.GDHelper.GetUncompressedFormatSize(Ez.Graphics.Data.PixelFormat@)">
+            <summary>
+            Gets the size of a pixel format.
+            </summary>
+            <param name="format">The <see cref="T:Ez.Graphics.Data.PixelFormat"/> to measure the size.</param>
+            <returns>The size of <paramref name="format"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.GDHelper.GetCompressedFormatInfo(Ez.Graphics.Data.PixelFormat@,System.UInt32@,System.UInt32@,System.UInt32@)">
+            <summary>
+            Gets block size, width and height of a compressed <see cref="T:Ez.Graphics.Data.PixelFormat"/>.
+            </summary>
+            <param name="format">The pixel format.</param>
+            <param name="blockSize">The size of <paramref name="format"/> block.</param>
+            <param name="blockWidth">The width of <paramref name="format"/>.</param>
+            <param name="blockHeight">The height of <paramref name="format"/>.</param>
+        </member>
+        <member name="T:Ez.Graphics.Data.GraphicsDataException">
+            <summary>
+            The execption that is thrown by Ez.Graphics.Data namespace.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.GraphicsDataException.#ctor">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ez.Graphics.Data.GraphicsDataException"/> class.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.GraphicsDataException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ez.Graphics.Data.GraphicsDataException"/> class with a specified error message.
+            </summary>
+            <param name="message">The message that describes the error.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.GraphicsDataException.#ctor(System.String,System.Exception)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ez.Graphics.Data.GraphicsDataException"/> class with serialized data.
+            </summary>
+            <param name="message">The error message that explains the reason for the exception.</param>
+            <param name="innerException">The exception that is the cause of the current exception, or a <see langword="null"/>
+            reference if no inner exception is specified.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.GraphicsDataException.#ctor(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <summary>
+            Initializes a new instance of the <see cref="T:Ez.Graphics.Data.GraphicsDataException"/> class with a specified
+            error message and a reference to the inner exception that is the cause of this exception.
+            </summary>
+            <param name="info">The <see cref="T:System.Runtime.Serialization.SerializationInfo"/> that holds the serialized object 
+            data about the exception being thrown.</param>
+            <param name="context">The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information 
+            about the source or destination.</param>
+        </member>
+        <member name="T:Ez.Graphics.Data.IColor">
+            <summary>
+            Provides methods that can retrieve representations in <see cref="T:System.Drawing.Color"/>, <see cref="T:Ez.Graphics.Data.ColorSingle"/> and <see cref="T:Ez.Graphics.Data.ColorByte"/>.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.IColor.GetColor">
+            <summary>
+            Gets the representation of a <see cref="T:Ez.Graphics.Data.IColor"/> instance as <see cref="T:System.Drawing.Color"/>.
+            </summary>
+            <returns>A <see cref="T:System.Drawing.Color"/> representation of this <see cref="T:Ez.Graphics.Data.ColorSingle"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.IColor.GetColorSingle">
+            <summary>
+            Gets the representation of a <see cref="T:Ez.Graphics.Data.IColor"/> instance as <see cref="T:Ez.Graphics.Data.ColorSingle"/>.
+            </summary>
+            <returns>A <see cref="T:Ez.Graphics.Data.ColorSingle"/> representation of this <see cref="T:Ez.Graphics.Data.IColor"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.IColor.GetColorByte">
+            <summary>
+            Gets the representation of a <see cref="T:Ez.Graphics.Data.IColor"/> instance as <see cref="T:Ez.Graphics.Data.ColorByte"/>.
+            </summary>
+            <returns>A <see cref="T:Ez.Graphics.Data.ColorByte"/> representation of this <see cref="T:Ez.Graphics.Data.IColor"/>.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.IColor`1">
+            <summary>
+            A color struct in T vluas in RGBA format.
+            </summary>
+            <typeparam name="T">The type of a color component.</typeparam>
+        </member>
+        <member name="P:Ez.Graphics.Data.IColor`1.R">
+            <summary>
+            The red component.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.IColor`1.G">
+            <summary>
+            The green component.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.IColor`1.B">
+            <summary>
+            The blue component.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.IColor`1.A">
+            <summary>
+            The alpha component.
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.Instance">
+            <summary>
+            Represents a <see cref="T:Ez.Graphics.Data.Scene"/> instance.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Instance.#ctor(Ez.Graphics.Data.Scene,System.Int32,System.Int32)">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.Instance"/> structure.
+            </summary>
+            <param name="scene">The scene of the <see cref="T:Ez.Graphics.Data.Instance"/>.</param>
+            <param name="meshIndex">The index of <see cref="T:Ez.Graphics.Data.Meshes.Mesh"/> in <paramref name="scene"/>.</param>
+            <param name="transformIndex">The index of <see cref="T:Ez.Graphics.Data.Transform"/> in <paramref name="scene"/>.</param>
+        </member>
+        <member name="F:Ez.Graphics.Data.Instance.MeshIndex">
+            <summary>
+            The mesh index of this instance.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Instance.TransformIndex">
+            <summary>
+            The transform index of this instance.
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.Light">
+            <summary>
+            A structure to store the information of a light.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Light.#ctor(System.String,System.Numerics.Vector3,Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle)">
+            <summary>
+            Initializes a new instance of direction light.
+            </summary>
+            <param name="name">The name of the light.</param>
+            <param name="direction">Direction of the light.</param>
+            <param name="ambient">The ambient color of the light.</param>
+            <param name="diffuse">The diffuse color of the light.</param>
+            <param name="specular">The specular color of the light.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Light.#ctor(System.String,System.Numerics.Vector3,Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of point light.
+            </summary>
+            <param name="name">The name of the light.</param>
+            <param name="position">The position of the light.</param>
+            <param name="ambient">The ambient color of the light.</param>
+            <param name="diffuse">The diffuse color of the light.</param>
+            <param name="specular">The specular color of the light.</param>
+            <param name="constant">The constant light attenuation factor.</param>
+            <param name="linear">The linear light attenuation factor.</param>
+            <param name="quadratic">The quadratic light attenuation factor.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Light.#ctor(System.String,System.Numerics.Vector3,System.Numerics.Vector3,Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of spot light.
+            </summary>
+            <param name="name">The name of the light.</param>
+            <param name="position">The position of the light.</param>
+            <param name="direction">Direction of the light.</param>
+            <param name="ambient">The ambient color of the light.</param>
+            <param name="diffuse">The diffuse color of the light.</param>
+            <param name="specular">The specular color of the light.</param>
+            <param name="constant">The constant light attenuation factor.</param>
+            <param name="linear">The linear light attenuation factor.</param>
+            <param name="quadratic">The quadratic light attenuation factor.</param>
+            <param name="innerConde">The inner angle of a spot light's cone.</param>
+            <param name="outerCone">The outer angle of a spot light</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Light.#ctor(System.String,System.Numerics.Vector2,Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle,System.Numerics.Vector3,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of area light.
+            </summary>
+            <param name="name">The name of the light.</param>
+            <param name="areaSize">The area size of the light.</param>
+            <param name="ambient">The ambient color of the light.</param>
+            <param name="diffuse">The diffuse color of the light.</param>
+            <param name="specular">The specular color of the light.</param>
+            <param name="position">The position of the light.</param>
+            <param name="constant">The constant light attenuation factor.</param>
+            <param name="linear">The linear light attenuation factor.</param>
+            <param name="quadratic">The quadratic light attenuation factor.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Light.#ctor(System.String,Ez.Graphics.Data.LightSource,System.Numerics.Vector3,System.Numerics.Vector3,System.Numerics.Vector2,Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle,Ez.Graphics.Data.ColorSingle,System.Single,System.Single,System.Single,System.Single,System.Single)">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.Light"/> struct.
+            </summary>
+            <param name="name">The name of the light.</param>
+            <param name="lightSource">The light source.</param>
+            <param name="position">The position of the light.</param>
+            <param name="direction">Direction of the light.</param>
+            <param name="areaSize">The area size of the light.</param>
+            <param name="ambient">The ambient color of the light.</param>
+            <param name="diffuse">The diffuse color of the light.</param>
+            <param name="specular">The specular color of the light.</param>
+            <param name="constant">The constant light attenuation factor.</param>
+            <param name="linear">The linear light attenuation factor.</param>
+            <param name="quadratic">The quadratic light attenuation factor.</param>
+            <param name="inner">The inner angle of a spot light's cone.</param>
+            <param name="outer">The outer angle of a spot light</param>
+        </member>
+        <member name="P:Ez.Graphics.Data.Light.Name">
+            <summary>
+            The name of the light.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Light.LightSource">
+            <summary>
+            The type of the light source.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Light.Position">
+            <summary>
+            Position of the light source in space.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Light.Direction">
+            <summary>
+            Direction of the light source in space.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Light.AreaSize">
+            <summary>
+            Area size of a <see cref="F:Ez.Graphics.Data.LightSource.Area"/> Light.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Light.Ambient">
+            <summary>
+            Ambient color of the light source.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Light.Diffuse">
+            <summary>
+            Diffuse color of the light source.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Light.Specular">
+            <summary>
+            Specular color of the light source.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Light.AttenuationConstant">
+            <summary>
+            Constant light attenuation factor.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Light.AttenuationLinear">
+            <summary>
+            Linear light attenuation factor.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Light.AttenuationQuadratic">
+            <summary>
+            Quadratic light attenuation factor.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Light.AngleInnerCone">
+            <summary>
+            Inner angle of a spot light's light cone.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Light.AngleOuterCone">
+            <summary>
+            Outer angle of a spot light's light cone.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Light.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Light.Equals(Ez.Graphics.Data.Light)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Light"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Light"/>.</param>
+            <returns><see langword="true"/> if the two animations are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Light.Equals(System.Object)">
+            <summary>
+            Returns a value that indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.LightSource">
+            <summary>
+            Represents the light source of a <see cref="T:Ez.Graphics.Data.Light"/> structure.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.LightSource.Undefined">
+            <summary>
+            Undefined light.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.LightSource.Directional">
+            <summary>
+            A directional light.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.LightSource.Point">
+            <summary>
+            A point light.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.LightSource.Spot">
+            <summary>
+            A spot light.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.LightSource.Area">
+            <summary>
+            A area light.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.LightSource.Ambient">
+            <summary>
+            A ambient light.
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.Materials.DefaultMaterialPropertyName">
+            <summary>
+            The default material property names.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.DefaultMaterialPropertyName.Opacity">
+            <summary>
+            Defines the opacity of the material in a range between 0..1.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.DefaultMaterialPropertyName.Shininess">
+            <summary>
+            Defines the shininess of a phong-shaded material. 
+            This is actually the exponent of the phong specular equation.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.DefaultMaterialPropertyName.Reflectivity">
+            <summary>
+            Defines the reflectivity of material(float).
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.DefaultMaterialPropertyName.ShininessStrength">
+            <summary>
+            Scales the specular color of the material.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.DefaultMaterialPropertyName.ColorDiffuse">
+            <summary>
+            Diffuse color of the material.
+            This is typically scaled by the amount of incoming diffuse light
+            (e.g. using gouraud shading)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.DefaultMaterialPropertyName.ColorAmbient">
+            <summary>
+            Ambient color of the material. 
+            This is typically scaled by the amount of ambient light
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.DefaultMaterialPropertyName.ColorSpecular">
+            <summary>
+            Specular color of the material. 
+            This is typically scaled by the amount of incoming specular light
+            (e.g. using phong shading)
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.DefaultMaterialPropertyName.ColorEmissive">
+            <summary>
+            Emissive color of the material.
+            This is the amount of light emitted by the object.
+            In real time applications it will usually not affect surrounding objects, 
+            but raytracing applications may wish to treat emissive objects as light sources.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.DefaultMaterialPropertyName.ColorReflective">
+            <summary>
+            Reflective color of the material.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.DefaultMaterialPropertyName.Texture">
+            <summary>
+            A texture of the material.
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.Materials.Material">
+            <summary>
+            A class to store the information of a light.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Materials.Material.#ctor(System.String,System.Collections.Generic.IEnumerable{Ez.Graphics.Data.Materials.MaterialProperty})">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.Materials.Material"/> class.
+            </summary>
+            <param name="name">The name of the material.</param>
+            <param name="properties">Material properties.</param>
+        </member>
+        <member name="P:Ez.Graphics.Data.Materials.Material.Name">
+            <summary>
+            Gets the name of a <see cref="T:Ez.Graphics.Data.Materials.Material"/> instance.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Materials.Material.Properties">
+            <summary>
+            Gets the properties of a <see cref="T:Ez.Graphics.Data.Materials.Material"/> instance.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Materials.Material.Enumerable">
+            <summary>
+            Gets a <see cref="T:System.Collections.Generic.IEnumerable`1"/> with <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty"/> of a <see cref="T:Ez.Graphics.Data.Materials.Material"/> instance.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Materials.Material.Equals(Ez.Graphics.Data.Materials.Material)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Materials.Material"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Materials.Material"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.Materials.Material"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Materials.Material.Equals(System.Object)">
+            <summary>
+            Returns a value that indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Materials.Material.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Materials.MaterialProperty">
+            <summary>
+            Represents a property of a <see cref="T:Ez.Graphics.Data.Materials.Material"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Materials.MaterialProperty.Name">
+            <summary>
+            The name of the property.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Materials.MaterialProperty.ValueType">
+            <summary>
+            The type of property.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Materials.MaterialProperty.TextureType">
+            <summary>
+            If <see cref="P:Ez.Graphics.Data.Materials.MaterialProperty.ValueType"/> is <see cref="F:Ez.Graphics.Data.Materials.MaterialPropertyType.Texture"/>, 
+            this contains the type of texture; otherwise, <see cref="F:Ez.Graphics.Data.Materials.TextureType.None"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Materials.MaterialProperty.Clone">
+            <summary>
+            Gets a clone of this <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty"/> instance.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Materials.MaterialProperty.Equals(System.Object)">
+            <summary>
+            Returns a value that indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Materials.MaterialProperty.Equals(Ez.Graphics.Data.Materials.MaterialProperty)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Materials.MaterialProperty.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Materials.MaterialProperty`1">
+            <summary>
+            Represents a property of a <see cref="T:Ez.Graphics.Data.Materials.Material"/>.
+            </summary>
+            <typeparam name="T"></typeparam>
+        </member>
+        <member name="M:Ez.Graphics.Data.Materials.MaterialProperty`1.#ctor(System.String,`0)">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty`1"/> class.
+            </summary>
+            <param name="name">The name of the property.</param>
+            <param name="value">The value of the property.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Materials.MaterialProperty`1.#ctor(Ez.Graphics.Data.Materials.MaterialProperty{`0})">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty`1"/> class.
+            </summary>
+            <param name="materialProperty"></param>
+        </member>
+        <member name="P:Ez.Graphics.Data.Materials.MaterialProperty`1.Value">
+            <summary>
+            The value of property.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Materials.MaterialProperty`1.ValueType">
+            <summary>
+            The type of property.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Materials.MaterialProperty`1.Clone">
+            <summary>
+            Gets a clone of this <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty"/> instance.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Materials.MaterialProperty`1.TextureType">
+            <summary>
+            If <see cref="P:Ez.Graphics.Data.Materials.MaterialProperty`1.ValueType"/> is <see cref="F:Ez.Graphics.Data.Materials.MaterialPropertyType.Texture"/>, 
+            this contains the type of texture; otherwise, <see cref="F:Ez.Graphics.Data.Materials.TextureType.None"/>.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Materials.MaterialProperty`1.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Materials.MaterialProperty`1.Equals(Ez.Graphics.Data.Materials.MaterialProperty{`0})">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty`1"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty`1"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty`1"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Materials.MaterialPropertyType">
+            <summary>
+            The type of a <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty"/>.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.MaterialPropertyType.Undefined">
+            <summary>
+            Undefined type.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.MaterialPropertyType.Texture">
+            <summary>
+            Texture Type.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.MaterialPropertyType.Color">
+            <summary>
+            Color type.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.MaterialPropertyType.Single">
+            <summary>
+            Single type.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.MaterialPropertyType.Double">
+            <summary>
+            Double type.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.MaterialPropertyType.Integer">
+            <summary>
+            Integer type.
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.Materials.TextureType">
+            <summary>
+            The type of texture in a <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty"/>.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.TextureType.None">
+            <summary>
+            None texture(used for non-<see cref="F:Ez.Graphics.Data.Materials.MaterialPropertyType.Texture"/> property).
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.TextureType.Diffuse">
+            <summary>
+            Diffuse texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.TextureType.Specular">
+            <summary>
+            Specular texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.TextureType.Ambient">
+            <summary>
+            Ambient texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.TextureType.Emissive">
+            <summary>
+            Emissive texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.TextureType.Height">
+            <summary>
+            Height texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.TextureType.Normals">
+            <summary>
+            Normal texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.TextureType.Shininess">
+            <summary>
+            Shininess texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.TextureType.Opacity">
+            <summary>
+            Opacity texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.TextureType.Displacement">
+            <summary>
+            Displacement texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.TextureType.Lightmap">
+            <summary>
+            Lightmap texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.TextureType.Reflection">
+            <summary>
+            Reflection texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Materials.TextureType.Unknown">
+            <summary>
+            Unknown texture.
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.Meshes.Bone">
+            <summary>
+            A single bone of a mesh.
+            
+            A bone has a name by which it can be found in the frame hierarchy and
+            by which it can be addressed by animations. In addition it has a number 
+            of influences on vertices.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Meshes.Bone.#ctor(System.String,System.Numerics.Matrix4x4,System.ReadOnlySpan{Ez.Graphics.Data.Meshes.VertexWeight})">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.Meshes.Bone"/> class.
+            </summary>
+            <param name="name">The name of bone.</param>
+            <param name="offsetMatrix">The offset matrix.</param>
+            <param name="weights">The weights of bones.</param>
+        </member>
+        <member name="P:Ez.Graphics.Data.Meshes.Bone.Name">
+            <summary>
+            Bone name.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Meshes.Bone.OffsetMatrix">
+            <summary>
+            Matrix that transforms from mesh space to bone space in bind pose.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Meshes.Bone.Weights">
+            <summary>
+            The vertices affected by this bone and weights.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Meshes.Bone.Equals(Ez.Graphics.Data.Meshes.Bone)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Meshes.Bone"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Meshes.Bone"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.Meshes.Bone"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Meshes.Bone.Equals(System.Object)">
+            <summary>
+            Returns a value that indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Meshes.Bone.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Meshes.Mesh">
+            <summary>
+            A mesh represents a geometry or model with a single material.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Meshes.Mesh.#ctor(System.String,Ez.Graphics.Data.SceneIndex{Ez.Graphics.Data.Materials.Material},System.ReadOnlySpan{System.Numerics.Vector3},System.ReadOnlySpan{System.Numerics.Vector2},System.ReadOnlySpan{System.Numerics.Vector3},System.ReadOnlySpan{Ez.Graphics.Data.Meshes.TriangleFace},System.ReadOnlySpan{Ez.Graphics.Data.Meshes.Bone},System.ReadOnlySpan{System.Numerics.Vector3},System.ReadOnlySpan{System.Numerics.Vector3},System.ReadOnlySpan{Ez.Graphics.Data.ColorSingle})">
+            <summary>
+            Initialize a new instance of <see cref="T:Ez.Graphics.Data.Meshes.Mesh"/> class.
+            </summary>
+            <param name="name">The name of the mesh.</param>
+            <param name="material">The material index in a <see cref="T:Ez.Graphics.Data.Scene"/> instance.</param>
+            <param name="vertices">The vertices data.</param>
+            <param name="uvs">The UVs data.</param>
+            <param name="normals">The normals data.</param>
+            <param name="faces">The triangles faces data.</param>
+            <param name="bones">The bones of mesh.</param>
+            <param name="tangents">The tangents data.</param>
+            <param name="bitangents">The bitangents data.</param>
+            <param name="colors">The colors data.</param>
+        </member>
+        <member name="P:Ez.Graphics.Data.Meshes.Mesh.Name">
+            <summary>
+            Name of mesh.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Meshes.Mesh.Vertices">
+            <summary>
+            Positions of each vertex.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Meshes.Mesh.UVs">
+            <summary>
+            Texture coordinates of each vertex.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Meshes.Mesh.Faces">
+            <summary>
+            Faces of each vertex.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Meshes.Mesh.Bones">
+            <summary>
+            The bones of this mesh.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Meshes.Mesh.Colors">
+            <summary>
+            Vertex color sets.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Meshes.Mesh.Normals">
+            <summary>
+            Normals of each vertex.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Meshes.Mesh.Tangents">
+            <summary>
+            Vertex tangents.
+            
+            The tangent of a vertex points in the direction of the positive X texture axis. 
+            The array contains normalized vectors, null if not present.
+            The array, when it exists, is the same size as the vertices.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Meshes.Mesh.Bitangents">
+            <summary>
+            Vertex bitangents.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Meshes.Mesh.Material">
+            <summary>
+            The material used by this mesh.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Meshes.Mesh.GetHashCode">
+            <summary>
+            
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Meshes.Mesh.Equals(Ez.Graphics.Data.Meshes.Mesh)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Meshes.Mesh"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Meshes.Mesh"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.Meshes.Mesh"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Meshes.Mesh.Equals(System.Object)">
+            <summary>
+            Returns a value that indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Meshes.TriangleFace">
+            <summary>
+            Represents a triangle face of a <see cref="T:Ez.Graphics.Data.Meshes.Mesh"/>.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Meshes.TriangleFace.Vertex1">
+            <summary>
+            The index of first vertex of triangle.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Meshes.TriangleFace.Vertex2">
+            <summary>
+            The index of second vertex of triangle.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Meshes.TriangleFace.Vertex3">
+            <summary>
+            The index of third vertex of triangle.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Meshes.TriangleFace.Equals(Ez.Graphics.Data.Meshes.TriangleFace)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Meshes.TriangleFace"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Meshes.TriangleFace"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.Meshes.TriangleFace"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Meshes.TriangleFace.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Meshes.VertexWeight">
+            <summary>
+            Represents the influence of a bone on a vertex.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Meshes.VertexWeight.VertexIndex">
+            <summary>
+            Index of the vertex which is influenced by the bone.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.Meshes.VertexWeight.Weight">
+            <summary>
+            The strength of the influence in the range 0 to 1.
+            The influence from all bones at one vertex amounts to 1.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Meshes.VertexWeight.Equals(Ez.Graphics.Data.Meshes.VertexWeight)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Meshes.VertexWeight"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Meshes.VertexWeight"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.Meshes.VertexWeight"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Meshes.VertexWeight.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.PixelFormat">
+            <summary>
+            A pixel format enum.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Undefined">
+            <summary>
+            Specifies that the format is not specified.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R4G4B4A4UNorm">
+            <summary>
+            Specifies a four-component, 16-bit packed unsigned normalized format 
+            that has a 4-bit R component in bits 12..15, a 4-bit G component in 
+            bits 8..11, a 4-bit B component in bits 4..7, and a 4-bit A component
+            in bits 0..3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.B4G4R4A4UNorm">
+            <summary>
+            Specifies a four-component, 16-bit packed unsigned normalized format 
+            that has a 4-bit B component in bits 12..15, a 4-bit G component in 
+            bits 8..11, a 4-bit R component in bits 4..7, and a 4-bit A component 
+            in bits 0..3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R5G6B5UNorm">
+            <summary>
+            Specifies a three-component, 16-bit packed unsigned normalized format 
+            that has a 5-bit R component in bits 11..15, a 6-bit G component in 
+            bits 5..10, and a 5-bit B component in bits 0..4.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.B5G6R5UNorm">
+            <summary>
+            Specifies a three-component, 16-bit packed unsigned normalized format 
+            that has a 5-bit B component in bits 11..15, a 6-bit G component in 
+            bits 5..10, and a 5-bit R component in bits 0..4.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R5G5B5A1UNorm">
+            <summary>
+            Specifies a four-component, 16-bit packed unsigned normalized format 
+            that has a 5-bit R component in bits 11..15, a 5-bit G component in 
+            bits 6..10, a 5-bit B component in bits 1..5, and a 1-bit A component
+            in bit 0.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.B5G5R5A1UNorm">
+            <summary>
+            Specifies a four-component, 16-bit packed unsigned normalized format 
+            that has a 5-bit B component in bits 11..15, a 5-bit G component in 
+            bits 6..10, a 5-bit R component in bits 1..5, and a 1-bit A component
+            in bit 0.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.A1R5G5B5UNorm">
+            <summary>
+            Specifies a four-component, 16-bit packed unsigned normalized format 
+            that has a 1-bit A component in bit 15, a 5-bit R component in bits 
+            10..14, a 5-bit G component in bits 5..9, and a 5-bit B component in 
+            bits 0..4.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R11G11B10UFloat">
+            <summary>
+            Specifies a three-component, 32-bit packed unsigned floating-point format that has a 10-bit B 
+            component in bits 22..31, an 11-bit G component in bits 11..21, an 11-bit R component in bits 
+            0..10.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R9G9B9E5UFloat">
+            <summary>
+            Specifies a three-component, 32-bit packed unsigned floating-point format that has a 5-bit 
+            shared exponent in bits 27..31, a 9-bit B component mantissa in bits 18..26, a 9-bit G component 
+            mantissa in bits 9..17, and a 9-bit R component mantissa in bits 0..8.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R8UNorm">
+            <summary>
+            Specifies a one-component, 8-bit unsigned normalized format that has 
+            a single 8-bit R component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R8SNorm">
+            <summary>
+            Specifies a one-component, 8-bit signed normalized format that has a 
+            single 8-bit R component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R8UInt">
+            <summary>
+            Specifies a one-component, 8-bit unsigned integer format that has a 
+            single 8-bit R component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R8SInt">
+            <summary>
+            Specifies a one-component, 8-bit signed integer format that has a 
+            single 8-bit R component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R8G8UNorm">
+            <summary>
+            Specifies a two-component, 16-bit unsigned normalized format that has
+            an 8-bit R component in byte 0, and an 8-bit G component in byte 1.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R8G8SNorm">
+            <summary>
+            Specifies a two-component, 16-bit signed normalized format that has an
+            8-bit R component in byte 0, and an 8-bit G component in byte 1.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R8G8UInt">
+            <summary>
+            Specifies a two-component, 16-bit unsigned integer format that has an 
+            8-bit R component in byte 0, and an 8-bit G component in byte 1.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R8G8SInt">
+            <summary>
+            Specifies a two-component, 16-bit signed integer format that has an 
+            8-bit R component in byte 0, and an 8-bit G component in byte 1.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R8G8B8A8UNorm">
+            <summary>
+            Specifies a four-component, 32-bit unsigned normalized format that has an 
+            8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B 
+            component in byte 2, and an 8-bit A component in byte 3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R8G8B8A8SNorm">
+            <summary>
+            Specifies a four-component, 32-bit signed normalized format that has an 
+            8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B 
+            component in byte 2, and an 8-bit A component in byte 3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R8G8B8A8UInt">
+            <summary>
+            Specifies a four-component, 32-bit unsigned integer format that has an 
+            8-bit R component in byte 0, an 8-bit G component in byte 1, an 8-bit B 
+            component in byte 2, and an 8-bit A component in byte 3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R8G8B8A8SInt">
+            <summary>
+            Specifies a four-component, 32-bit signed integer format that has an 8-bit
+            R component in byte 0, an 8-bit G component in byte 1, an 8-bit B component 
+            in byte 2, and an 8-bit A component in byte 3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R8G8B8A8Srgb">
+            <summary>
+            Specifies a four-component, 32-bit unsigned normalized format that has an 
+            8-bit R component stored with sRGB nonlinear encoding in byte 0, an 8-bit 
+            G component stored with sRGB nonlinear encoding in byte 1, an 8-bit B 
+            component stored with sRGB nonlinear encoding in byte 2, and an 8-bit A 
+            component in byte 3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.B8G8R8A8UNorm">
+            <summary>
+            Specifies a four-component, 32-bit unsigned normalized format that has an 
+            8-bit B component in byte 0, an 8-bit G component in byte 1, an 8-bit R 
+            component in byte 2, and an 8-bit A component in byte 3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.B8G8R8A8Srgb">
+            <summary>
+            Specifies a four-component, 32-bit unsigned normalized format that has an 
+            8-bit B component stored with sRGB nonlinear encoding in byte 0, an 8-bit 
+            G component stored with sRGB nonlinear encoding in byte 1, an 8-bit R 
+            component stored with sRGB nonlinear encoding in byte 2, and an 8-bit A 
+            component in byte 3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.B10G10R10A2UNorm">
+            <summary>
+            Specifies a four-component, 32-bit packed unsigned normalized format that
+            has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, 
+            a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.B10G10R10A2UInt">
+            <summary>
+            Specifies a four-component, 32-bit packed unsigned integer format that has
+            a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a 
+            10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R10G10B10A2UNorm">
+            <summary>
+            Specifies a four-component, 32-bit packed unsigned normalized format that 
+            has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, 
+            a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R10G10B10A2UInt">
+            <summary>
+            Specifies a four-component, 32-bit packed unsigned integer format that has
+            a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a
+            10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16UNorm">
+            <summary>
+            Specifies a one-component, 16-bit unsigned normalized format that has a 
+            single 16-bit R component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16SNorm">
+            <summary>
+            Specifies a one-component, 16-bit signed normalized format that has a 
+            single 16-bit R component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16UInt">
+            <summary>
+            Specifies a one-component, 16-bit unsigned integer format that has a
+            single 16-bit R component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16SInt">
+            <summary>
+            Specifies a one-component, 16-bit signed integer format that has a single
+            16-bit R component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16SFloat">
+            <summary>
+            Specifies a one-component, 16-bit signed floating-point format that has a
+            single 16-bit R component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16G16UNorm">
+            <summary>
+            Specifies a two-component, 32-bit unsigned normalized format that has a 
+            16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16G16SNorm">
+            <summary>
+            Specifies a two-component, 32-bit signed normalized format that has a 16-bit
+            R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16G16UInt">
+            <summary>
+            Specifies a two-component, 32-bit unsigned integer format that has a 16-bit
+            R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16G16SInt">
+            <summary>
+            Specifies a two-component, 32-bit signed integer format that has a 16-bit R 
+            component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16G16SFloat">
+            <summary>
+            Specifies a two-component, 32-bit signed floating-point format that has a 
+            16-bit R component in bytes 0..1, and a 16-bit G component in bytes 2..3.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16G16B16A16UNorm">
+            <summary>
+            Specifies a four-component, 64-bit unsigned normalized format that has a 16-bit
+            R component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component
+            in bytes 4..5, and a 16-bit A component in bytes 6..7.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16G16B16A16SNorm">
+            <summary>
+            Specifies a four-component, 64-bit signed normalized format that has a 16-bit R 
+            component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component
+            in bytes 4..5, and a 16-bit A component in bytes 6..7.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16G16B16A16UInt">
+            <summary>
+            Specifies a four-component, 64-bit unsigned integer format that has a 16-bit R 
+            component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component 
+            in bytes 4..5, and a 16-bit A component in bytes 6..7.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16G16B16A16SInt">
+            <summary>
+            Specifies a four-component, 64-bit signed integer format that has a 16-bit R 
+            component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component 
+            in bytes 4..5, and a 16-bit A component in bytes 6..7.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R16G16B16A16SFloat">
+            <summary>
+            Specifies a four-component, 64-bit signed floating-point format that has a 16-bit R 
+            component in bytes 0..1, a 16-bit G component in bytes 2..3, a 16-bit B component 
+            in bytes 4..5, and a 16-bit A component in bytes 6..7.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R32UInt">
+            <summary>
+            Specifies a one-component, 32-bit unsigned integer format that has a single 32-bit 
+            R component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R32SInt">
+            <summary>
+            Specifies a one-component, 32-bit signed integer format that has a single 32-bit R
+            component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R32SFloat">
+            <summary>
+            Specifies a one-component, 32-bit signed floating-point format that has a single
+            32-bit R component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R32G32UInt">
+            <summary>
+            Specifies a two-component, 64-bit unsigned integer format that has a 32-bit R 
+            component in bytes 0..3, and a 32-bit G component in bytes 4..7.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R32G32SInt">
+            <summary>
+            Specifies a two-component, 64-bit signed integer format that has a 32-bit R 
+            component in bytes 0..3, and a 32-bit G component in bytes 4..7.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R32G32SFloat">
+            <summary>
+            Specifies a two-component, 64-bit signed floating-point format that has a 32-bit 
+            R component in bytes 0..3, and a 32-bit G component in bytes 4..7.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R32G32B32UInt">
+            <summary>
+            Specifies a three-component, 96-bit unsigned integer format that has a 32-bit R 
+            component in bytes 0..3, a 32-bit G component in bytes 4..7, and a 32-bit B 
+            component in bytes 8..11.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R32G32B32SInt">
+            <summary>
+            Specifies a three-component, 96-bit signed integer format that has a 32-bit R 
+            component in bytes 0..3, a 32-bit G component in bytes 4..7, and a 32-bit B 
+            component in bytes 8..11.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R32G32B32SFloat">
+            <summary>
+            Specifies a three-component, 96-bit signed floating-point format that has a 32-bit 
+            R component in bytes 0..3, a 32-bit G component in bytes 4..7, and a 32-bit B
+            component in bytes 8..11.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R32G32B32A32UInt">
+            <summary>
+            Specifies a four-component, 128-bit unsigned integer format that has a 32-bit R 
+            component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B component
+            in bytes 8..11, and a 32-bit A component in bytes 12..15.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R32G32B32A32SInt">
+            <summary>
+            Specifies a four-component, 128-bit signed integer format that has a 32-bit R component 
+            in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B component in bytes 8..11,
+            and a 32-bit A component in bytes 12..15.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.R32G32B32A32SFloat">
+            <summary>
+            Specifies a four-component, 128-bit signed floating-point format that has a 32-bit R 
+            component in bytes 0..3, a 32-bit G component in bytes 4..7, a 32-bit B component in bytes 
+            8..11, and a 32-bit A component in bytes 12..15.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.D16UNorm">
+            <summary>
+            Specifies a one-component, 16-bit unsigned normalized format that has a single 16-bit depth 
+            component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.D24UNormS8UInt">
+            <summary>
+            Specifies a two-component, 32-bit packed format that has 8 unsigned integer bits in the stencil 
+            component, and 24 unsigned normalized bits in the depth component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.D32SFloat">
+            <summary>
+            Specifies a one-component, 32-bit signed floating-point format that has 32-bits in the depth 
+            component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.D32SFloatS8UInt">
+            <summary>
+            Specifies a two-component format that has 32 signed float bits in the depth component and 8
+            unsigned integer bits in the stencil component. There are optionally: 24-bits that are unused.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.S8UInt">
+            <summary>
+            Specifies a one-component, 8-bit unsigned integer format that has 8-bits in the stencil component.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC1RgbaSrgb">
+            <summary>
+            Specifies a four-component, block-compressed format where each 64-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGB texel data with sRGB nonlinear encoding, 
+            and provides 1 bit of alpha.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC1RgbaUNorm">
+            <summary>
+            Specifies a four-component, block-compressed format where each 64-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGB texel data, and provides 1 bit of alpha.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC1RgbSrgb">
+            <summary>
+            Specifies a three-component, block-compressed format where each 64-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGB texel data with sRGB nonlinear encoding.
+            This format has no alpha and is considered opaque.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC1RgbUNorm">
+            <summary>
+            Specifies a three-component, block-compressed format where each 64-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGB texel data. This format has no alpha and 
+            is considered opaque.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC2Srgb">
+            <summary>
+            Specifies a four-component, block-compressed format where each 128-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGBA texel data with the first 64 bits encoding
+            alpha values followed by 64 bits encoding RGB values with sRGB nonlinear encoding.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC2UNorm">
+            <summary>
+            Specifies a four-component, block-compressed format where each 128-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGBA texel data with the first 64 bits encoding
+            alpha values followed by 64 bits encoding RGB values.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC3Srgb">
+            <summary>
+            Specifies a four-component, block-compressed format where each 128-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGBA texel data with the first 64 bits encoding 
+            alpha values followed by 64 bits encoding RGB values with sRGB nonlinear encoding.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC3UNorm">
+            <summary>
+            Specifies a four-component, block-compressed format where each 128-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGBA texel data with the first 64 bits encoding 
+            alpha values followed by 64 bits encoding RGB values.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC4SNorm">
+            <summary>
+            Specifies a one-component, block-compressed format where each 64-bit compressed texel block 
+            encodes a 4×4 rectangle of signed normalized red texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC4UNorm">
+            <summary>
+            Specifies a one-component, block-compressed format where each 64-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized red texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC5SNorm">
+            <summary>
+            Specifies a two-component, block-compressed format where each 128-bit compressed texel block 
+            encodes a 4×4 rectangle of signed normalized RG texel data with the first 64 bits encoding 
+            red values followed by 64 bits encoding green values.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC5UNorm">
+            <summary>
+            Specifies a two-component, block-compressed format where each 128-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RG texel data with the first 64 bits encoding
+            red values followed by 64 bits encoding green values.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC6HSFloat">
+            <summary>
+            Specifies a three-component, block-compressed format where each 128-bit compressed texel block
+            encodes a 4×4 rectangle of signed floating-point RGB texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC6HUFloat">
+            <summary>
+            Specifies a three-component, block-compressed format where each 128-bit compressed texel block
+            encodes a 4×4 rectangle of unsigned floating-point RGB texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC7Srgb">
+            <summary>
+            Specifies a four-component, block-compressed format where each 128-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding 
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.BC7UNorm">
+            <summary>
+            Specifies a four-component, block-compressed format where each 128-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.EacR11SNorm">
+            <summary>
+            Specifies a one-component, ETC2 compressed format where each 64-bit compressed texel block 
+            encodes a 4×4 rectangle of signed normalized red texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.EacR11UNorm">
+            <summary>
+            Specifies a one-component, ETC2 compressed format where each 64-bit compressed texel block
+            encodes a 4×4 rectangle of unsigned normalized red texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.EacR11G11SNorm">
+            <summary>
+            Specifies a two-component, ETC2 compressed format where each 128-bit compressed texel block 
+            encodes a 4×4 rectangle of signed normalized RG texel data with the first 64 bits encoding 
+            red values followed by 64 bits encoding green values.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.EacR11G11UNorm">
+            <summary>
+            Specifies a two-component, ETC2 compressed format where each 128-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RG texel data with the first 64 bits encoding 
+            red values followed by 64 bits encoding green values.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Etc2R8G8B8Srgb">
+            <summary>
+            Specifies a three-component, ETC2 compressed format where each 64-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGB texel data with sRGB nonlinear encoding. 
+            This format has no alpha and is considered opaque.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Etc2R8G8B8UNorm">
+            <summary>
+            Specifies a three-component, ETC2 compressed format where each 64-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGB texel data with sRGB nonlinear encoding. 
+            This format has no alpha and is considered opaque.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Etc2R8G8B8A1Srgb">
+            <summary>
+            Specifies a four-component, ETC2 compressed format where each 64-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGB texel data with sRGB nonlinear encoding, 
+            and provides 1 bit of alpha.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Etc2R8G8B8A1UNorm">
+            <summary>
+            Specifies a four-component, ETC2 compressed format where each 64-bit compressed texel block
+            encodes a 4×4 rectangle of unsigned normalized RGB texel data, and provides 1 bit of alpha.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Etc2R8G8B8A8Srgb">
+            <summary>
+            Specifies a four-component, ETC2 compressed format where each 128-bit compressed texel block
+            encodes a 4×4 rectangle of unsigned normalized RGBA texel data with the first 64 bits encoding
+            alpha values followed by 64 bits encoding RGB values with sRGB nonlinear encoding applied.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Etc2R8G8B8A8UNorm">
+            <summary>
+            Specifies a four-component, ETC2 compressed format where each 128-bit compressed texel block
+            encodes a 4×4 rectangle of unsigned normalized RGBA texel data with the first 64 bits encoding
+            alpha values followed by 64 bits encoding RGB values.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc10x10Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block
+            encodes a 10×10 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc10x10UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 10×10 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc10x5Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 10×5 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc10x5UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 10×5 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc10x6Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block
+            encodes a 10×6 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding 
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc10x6UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 10×6 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc10x8Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 10×8 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding 
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc10x8UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block
+            encodes a 10×8 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc12x10Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 12×10 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc12x10UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 12×10 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc12x12Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 12×12 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding 
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc12x12UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 12×12 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc4x4Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding 
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc4x4UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 4×4 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc5x4Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block
+            encodes a 5×4 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc5x4UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 5×4 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc5x5Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 5×5 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc5x5UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 5×5 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc6x5Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 6×5 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding 
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc6x5UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 6×5 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc6x6Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes a 6×6 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding 
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc6x6UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block
+            encodes a 6×6 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc8x5Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes an 8×5 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding 
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc8x5UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes an 8×5 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc8x6Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block
+            encodes an 8×6 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc8x6UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block
+            encodes an 8×6 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc8x8Srgb">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block 
+            encodes an 8×8 rectangle of unsigned normalized RGBA texel data with sRGB nonlinear encoding
+            applied to the RGB components.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.PixelFormat.Astc8x8UNorm">
+            <summary>
+            Specifies a four-component, ASTC compressed format where each 128-bit compressed texel block
+            encodes an 8×8 rectangle of unsigned normalized RGBA texel data.
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.Scene">
+            <summary>
+            Represents a graphic scene.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Scene.#ctor(System.Collections.Generic.IEnumerable{Ez.Graphics.Data.Meshes.Mesh},System.Collections.Generic.IEnumerable{Ez.Graphics.Data.Materials.Material},System.Collections.Generic.IEnumerable{Ez.Graphics.Data.Light},System.Collections.Generic.IEnumerable{Ez.Graphics.Data.Cameras.Camera},System.Collections.Generic.IEnumerable{Ez.Graphics.Data.Animations.Animation},System.Collections.Generic.IEnumerable{Ez.Graphics.Data.TextureData},System.Collections.Generic.IEnumerable{Ez.Graphics.Data.Transform},System.Collections.Generic.IEnumerable{Ez.Graphics.Data.Instance})">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.Scene"/> class.
+            </summary>
+            <param name="meshes">The meshes to add.</param>
+            <param name="materials">The materials to add.</param>
+            <param name="lights">The lights to add.</param>
+            <param name="cameras">The cameras to add.</param>
+            <param name="animations">The animations to add.</param>
+            <param name="textures">The textures to add.</param>
+            <param name="transforms">The transforms to add.</param>
+            <param name="instances">The instances to add.</param>
+        </member>
+        <member name="P:Ez.Graphics.Data.Scene.Meshes">
+            <summary>
+            Gets the list of meshes in <see cref="T:Ez.Graphics.Data.Scene"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Scene.Materials">
+            <summary>
+            Gets the list of materials in <see cref="T:Ez.Graphics.Data.Scene"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Scene.Lights">
+            <summary>
+            Gets the list of lights in <see cref="T:Ez.Graphics.Data.Scene"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Scene.Cameras">
+            <summary>
+            Gets the list of cameras in <see cref="T:Ez.Graphics.Data.Scene"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Scene.Animations">
+            <summary>
+            Gets the list of animations in <see cref="T:Ez.Graphics.Data.Scene"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Scene.Textures">
+            <summary>
+            Gets the list of textures in <see cref="T:Ez.Graphics.Data.Scene"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Scene.Transforms">
+            <summary>
+            Gets the list of transform in <see cref="T:Ez.Graphics.Data.Scene"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Scene.Instances">
+            <summary>
+            Gets the list of instance in <see cref="T:Ez.Graphics.Data.Scene"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Scene.MainCameraIndex">
+            <summary>
+            Gets or sets the index of main camera.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Scene.MainCamera">
+            <summary>
+            Gets the main camera.
+            </summary>
+        </member>
+        <member name="E:Ez.Graphics.Data.Scene.SceneChangeAction">
+            <summary>
+            Event called when an element of the <see cref="T:Ez.Graphics.Data.Scene"/> is added, updated, removed or moved .
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Scene.Get``1(Ez.Graphics.Data.SceneIndex{``0})">
+            <summary>
+            Gets the value of a <see cref="T:Ez.Graphics.Data.SceneIndex`1"/>.
+            </summary>
+            <typeparam name="T">The value type of <paramref name="index"/>.</typeparam>
+            <param name="index">The index to remove.</param>
+            <returns>The value of <paramref name="index"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Scene.Add``1(``0@)">
+            <summary>
+            Adds a value to the <see cref="T:Ez.Graphics.Data.Scene"/>.
+            </summary>
+            <typeparam name="T">The type of value to add.</typeparam>
+            <param name="value">The value to add.</param>
+            <returns>The value-added <see cref="T:Ez.Graphics.Data.SceneIndex`1"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Scene.Remove``1(Ez.Graphics.Data.SceneIndex{``0})">
+            <summary>
+            Removes a index from the <see cref="T:Ez.Graphics.Data.Scene"/>.
+            </summary>
+            <typeparam name="T">The type of value in index.</typeparam>
+            <param name="index">The index to remove.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Scene.Update``1(Ez.Graphics.Data.SceneIndex{``0},``0@)">
+            <summary>
+            Update the value of a index.
+            </summary>
+            <typeparam name="T">The type of value to update.</typeparam>
+            <param name="index">The index of value to update.</param>
+            <param name="value">The </param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Scene.NewInstance(System.Int32,System.Int32)">
+            <summary>
+            Creates a new instance, a transform for it and adds to the <see cref="T:Ez.Graphics.Data.Scene"/>.
+            </summary>
+            <param name="meshIndex">The index of the mesh.</param>
+            <param name="fatherInstanceIndex">The father of the new <see cref="T:Ez.Graphics.Data.Instance"/>.</param>
+            <returns>A new <see cref="T:Ez.Graphics.Data.SceneIndex`1"/> with <paramref name="meshIndex"/> and <paramref name="fatherInstanceIndex"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Scene.Defrag">
+            <summary>
+            Defragments the spaces between the indexes used.
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.SceneAction">
+            <summary>
+            The type of an action performed on the scene .
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.SceneAction.Add">
+            <summary>
+            Indicates that the affected object has been added.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.SceneAction.Remove">
+            <summary>
+            Indicates that the affected object has been removed.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.SceneAction.Update">
+            <summary>
+            Indicates that the affected object has been modified.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.SceneAction.Move">
+            <summary>
+            Indicates that the affected object has been moved from index.
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.SceneEventArgs">
+            <summary>
+            Provides data for a <see cref="T:System.EventHandler`1"/> event in <see cref="P:Ez.Graphics.Data.SceneEventArgs.Scene"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.SceneEventArgs.Scene">
+            <summary>
+            The scene that the event was invoked.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.SceneEventArgs.OldIndex">
+            <summary>
+            The old index of the <see cref="P:Ez.Graphics.Data.SceneEventArgs.Value"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.SceneEventArgs.Index">
+            <summary>
+            The index of the <see cref="P:Ez.Graphics.Data.SceneEventArgs.Value"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.SceneEventArgs.Action">
+            <summary>
+            The action of the scene event.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.SceneEventArgs.Value">
+            <summary>
+            The influenced object.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.SceneEventArgs.#ctor(Ez.Graphics.Data.Scene,System.Int32,System.Int32,Ez.Graphics.Data.SceneAction,System.Object)">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.SceneEventArgs"/> class.
+            </summary>
+            <param name="scene">The scene that the event was invoked.</param>
+            <param name="index">The index of the <paramref name="value"/>.</param>
+            <param name="oldIndex">The old index of the <paramref name="value"/>.</param>
+            <param name="action">The action of the scene event.</param>
+            <param name="value">The influenced object.</param>
+        </member>
+        <member name="T:Ez.Graphics.Data.SceneIndex`1">
+            <summary>
+            Represents a index in a <see cref="P:Ez.Graphics.Data.SceneIndex`1.Scene"/>.
+            </summary>
+            <typeparam name="T">The type of value in index.</typeparam>
+        </member>
+        <member name="M:Ez.Graphics.Data.SceneIndex`1.#ctor(System.Int32,Ez.Graphics.Data.Scene)">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.SceneIndex`1"/> struct.
+            </summary>
+            <param name="index"></param>
+            <param name="scene"></param>
+        </member>
+        <member name="P:Ez.Graphics.Data.SceneIndex`1.Value">
+            <summary>
+            Gets the value of index in the <see cref="P:Ez.Graphics.Data.SceneIndex`1.Scene"/>;
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.SceneIndex`1.Scene">
+            <summary>
+            Gets the <see cref="P:Ez.Graphics.Data.SceneIndex`1.Scene"/> of <see cref="P:Ez.Graphics.Data.SceneIndex`1.Index"/>.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.SceneIndex`1.Index">
+            <summary>
+            Gets the index.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.SceneIndex`1.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.SceneIndex`1.Equals(Ez.Graphics.Data.SceneIndex{`0})">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.SceneIndex`1"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.SceneIndex`1"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.SceneIndex`1"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.SceneIndex`1.Equals(`0)">
+            <summary>
+            Returns a value indicating whether the value of this instance and another value are the same.
+            </summary>
+            <param name="other">The other T value.</param>
+            <returns><see langword="true"/> if the <see cref="P:Ez.Graphics.Data.SceneIndex`1.Value"/> is equal to <paramref name="other"/> value; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.SceneIndex`1.Equals(System.Object)">
+            <summary>
+            Returns a value that indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.SceneIndex`1.op_Explicit(Ez.Graphics.Data.SceneIndex{`0})~System.Int32">
+            <summary>
+            Gets the index of a <see cref="T:Ez.Graphics.Data.SceneIndex`1"/>.
+            </summary>
+            <param name="index">The <see cref="T:Ez.Graphics.Data.SceneIndex`1"/> to get the index.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.SceneIndex`1.op_Implicit(Ez.Graphics.Data.SceneIndex{`0})~`0">
+            <summary>
+            Gets the value of a <see cref="T:Ez.Graphics.Data.SceneIndex`1"/>.
+            </summary>
+            <param name="index">The <see cref="T:Ez.Graphics.Data.SceneIndex`1"/> to get the value.</param>
+        </member>
+        <member name="T:Ez.Graphics.Data.Serializer.AnimationStreamExtensions">
+            <summary>
+            A static class that provides serializer and deserializer for <see cref="T:Ez.Graphics.Data.Animations.Animation"/> and <see cref="T:Ez.Graphics.Data.Animations.AnimationNode"/>.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.AnimationStreamExtensions.WriteAnimation(System.IO.Stream,Ez.Graphics.Data.Animations.Animation@)">
+            <summary>
+            Serialize <see cref="T:Ez.Graphics.Data.Animations.Animation"/> into a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream">The stream to write it.</param>
+            <param name="animation">The animation to write.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.AnimationStreamExtensions.WriteAnimationNode(System.IO.Stream,Ez.Graphics.Data.Animations.AnimationNode@)">
+            <summary>
+            Serialize <see cref="T:Ez.Graphics.Data.Animations.AnimationNode"/> into a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream">The stream to write it.</param>
+            <param name="node">The animation node to write.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.AnimationStreamExtensions.ReadAnimation(System.IO.Stream)">
+            <summary>
+            Derializes an <see cref="T:Ez.Graphics.Data.Animations.Animation"/> from a stream.
+            </summary>
+            <param name="stream">The stream to read from.</param>
+            <returns>A new instance of <see cref="T:Ez.Graphics.Data.Animations.Animation"/> with data read from the <paramref name="stream"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.AnimationStreamExtensions.ReadAnimationNode(System.IO.Stream)">
+            <summary>
+            Derializes an <see cref="T:Ez.Graphics.Data.Animations.AnimationNode"/> node from a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream">The stream to read from.</param>
+            <returns>A new instance of <see cref="T:Ez.Graphics.Data.Animations.AnimationNode"/> with data read from the <paramref name="stream"/>.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Serializer.CameraStreamExtensions">
+            <summary>
+            A static class that provides serializer and deserializer for <see cref="T:Ez.Graphics.Data.Cameras.Camera"/>.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.CameraStreamExtensions.WriteCamera(System.IO.Stream,Ez.Graphics.Data.Cameras.Camera@)">
+            <summary>
+            Serialize <see cref="T:Ez.Graphics.Data.Cameras.Camera"/> into a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream">The stream to write it.</param>
+            <param name="camera">The camera to write.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.CameraStreamExtensions.ReadCamera(System.IO.Stream)">
+            <summary>
+            Derializes an <see cref="T:Ez.Graphics.Data.Cameras.Camera"/> from a stream.
+            </summary>
+            <param name="stream">The stream to read from.</param>
+            <returns>A new instance of <see cref="T:Ez.Graphics.Data.Cameras.Camera"/> with data read from the <paramref name="stream"/>.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Serializer.LightStreamExtensions">
+            <summary>
+            A static class that provides serializer and deserializer for <see cref="T:Ez.Graphics.Data.Light"/>.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.LightStreamExtensions.WriteLight(System.IO.Stream,Ez.Graphics.Data.Light@)">
+            <summary>
+            Serialize <see cref="T:Ez.Graphics.Data.Light"/> into a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream">The stream to write it.</param>
+            <param name="light">The light to write.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.LightStreamExtensions.ReadLight(System.IO.Stream)">
+            <summary>
+            Derializes an <see cref="T:Ez.Graphics.Data.Light"/> from a stream.
+            </summary>
+            <param name="stream">The stream to read from.</param>
+            <returns>A new instance of <see cref="T:Ez.Graphics.Data.Light"/> with data read from the <paramref name="stream"/>.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Serializer.MaterialStreamExtensions">
+            <summary>
+            A static class that provides serializer and deserializer for <see cref="T:Ez.Graphics.Data.Materials.Material"/>, <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty"/> or <see cref="T:Ez.Graphics.Data.TextureData"/>.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.MaterialStreamExtensions.ReadMaterial(System.IO.Stream)">
+            <summary>
+            Derializes an <see cref="T:Ez.Graphics.Data.Materials.Material"/> from a stream.
+            </summary>
+            <param name="stream">The stream to read from.</param>
+            <returns>A new instance of <see cref="T:Ez.Graphics.Data.Materials.Material"/> with data read from the <paramref name="stream"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.MaterialStreamExtensions.ReadMaterialProperty(System.IO.Stream)">
+            <summary>
+            Derializes an <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty"/> from a stream.
+            </summary>
+            <param name="stream">The stream to read from.</param>
+            <returns>A new instance of <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty"/> with data read from the <paramref name="stream"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.MaterialStreamExtensions.ReadTexture(System.IO.Stream)">
+            <summary>
+            Derializes an <see cref="T:Ez.Graphics.Data.TextureData"/> from a stream.
+            </summary>
+            <param name="stream">The stream to read from.</param>
+            <returns>A new instance of <see cref="T:Ez.Graphics.Data.TextureData"/> with data read from the <paramref name="stream"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.MaterialStreamExtensions.WriteMaterial(System.IO.Stream,Ez.Graphics.Data.Materials.Material@)">
+            <summary>
+            Serialize <see cref="T:Ez.Graphics.Data.Materials.Material"/> into a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream">The stream to write it.</param>
+            <param name="material">The material to write.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.MaterialStreamExtensions.WriteMaterialProperty(System.IO.Stream,Ez.Graphics.Data.Materials.MaterialProperty@)">
+            <summary>
+            Serialize <see cref="T:Ez.Graphics.Data.Materials.MaterialProperty"/> into a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream">The stream to write it.</param>
+            <param name="property">The property to write.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.MaterialStreamExtensions.WriteTexture(System.IO.Stream,Ez.Graphics.Data.TextureData@)">
+            <summary>
+            Serialize <see cref="T:Ez.Graphics.Data.TextureData"/> into a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream">The stream to write it.</param>
+            <param name="texture">The texture to write.</param>
+        </member>
+        <member name="T:Ez.Graphics.Data.Serializer.MeshStreamExtensions">
+            <summary>
+            A static class that provides serializer and deserializer for <see cref="T:Ez.Graphics.Data.Meshes.Mesh"/>.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.MeshStreamExtensions.ReadMesh(System.IO.Stream,Ez.Graphics.Data.Scene)">
+            <summary>
+            Derializes an <see cref="T:Ez.Graphics.Data.Meshes.Mesh"/> from a stream.
+            </summary>
+            <param name="stream">The stream to read from.</param>
+            <param name="scene">The scene with the mesh material.</param>
+            <returns>A new instance of <see cref="T:Ez.Graphics.Data.Meshes.Mesh"/> with data read from the <paramref name="stream"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.MeshStreamExtensions.ReadBone(System.IO.Stream)">
+            <summary>
+            Derializes an <see cref="T:Ez.Graphics.Data.Meshes.Bone"/> from a stream.
+            </summary>
+            <param name="stream">The stream to read from.</param>
+            <returns>A new instance of <see cref="T:Ez.Graphics.Data.Meshes.Bone"/> with data read from the <paramref name="stream"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.MeshStreamExtensions.WriteMesh(System.IO.Stream,Ez.Graphics.Data.Meshes.Mesh@)">
+            <summary>
+            Serialize <see cref="T:Ez.Graphics.Data.Meshes.Mesh"/> into a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream">The stream to write it.</param>
+            <param name="mesh">The mesh to write.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.MeshStreamExtensions.WriteBone(System.IO.Stream,Ez.Graphics.Data.Meshes.Bone@)">
+            <summary>
+            Serialize <see cref="T:Ez.Graphics.Data.Meshes.Bone"/> into a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream">The stream to write it.</param>
+            <param name="bone">The bone to write.</param>
+        </member>
+        <member name="T:Ez.Graphics.Data.Serializer.TransformStreamExtensions">
+            <summary>
+            A static class that provides serializer and deserializer for <see cref="T:Ez.Graphics.Data.Transform"/>.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.TransformStreamExtensions.WriteTransform(System.IO.Stream,Ez.Graphics.Data.Transform@)">
+            <summary>
+            Serialize <see cref="T:Ez.Graphics.Data.Transform"/> into a <see cref="T:System.IO.Stream"/>.
+            </summary>
+            <param name="stream">The stream to write it.</param>
+            <param name="transform">The transform to write.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Serializer.TransformStreamExtensions.ReadTransform(System.IO.Stream,Ez.Graphics.Data.Scene@)">
+            <summary>
+            Derializes an <see cref="T:Ez.Graphics.Data.Transform"/> from a stream.
+            </summary>
+            <param name="stream">The stream to read from.</param>
+            <param name="scene">The scene of the transform.</param>
+            <returns>A new instance of <see cref="T:Ez.Graphics.Data.Transform"/> with data read from the <paramref name="stream"/>.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.Texture">
+            <summary>
+            Represents a texture.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Texture.#ctor(Ez.Graphics.Data.PixelFormat,System.UInt32,System.UInt32,System.UInt32,System.UInt32,System.UInt32,Ez.Graphics.Data.TextureType,System.ReadOnlySpan{System.Byte})">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.Texture"/> class.
+            </summary>
+            <param name="pixelFormat">The pixel format of texture.</param>
+            <param name="width">The width of texture.</param>
+            <param name="height">The height of texture.</param>
+            <param name="depth">The depth of texture.</param>
+            <param name="mipmapLevels">The number of mipmap levels of texture.</param>
+            <param name="layers">The number of layers of texture.</param>
+            <param name="textureType">The texture type of texture.</param>
+            <param name="data">The pixels data.</param>
+        </member>
+        <member name="P:Ez.Graphics.Data.Texture.PixelFormat">
+            <summary>
+            The pixel format.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Texture.Width">
+            <summary>
+            Width of the texture, in pixels.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Texture.Height">
+            <summary>
+            Height of the texture, in pixels.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Texture.Depth">
+            <summary>
+            Depth of the texture, in pixels.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Texture.MipmapLevels">
+            <summary>
+            Number of mipmaps in texture.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Texture.ArrayLayers">
+            <summary>
+            Number of layers in texture.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Texture.TextureType">
+            <summary>
+            Texture type of this texture.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Texture.Data">
+            <summary>
+            Data of texture.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Texture.Equals(Ez.Graphics.Data.Texture)">
+            <summary>
+            Returns a value that indicates whether this instance and another <see cref="T:Ez.Graphics.Data.Texture"/> are equal.
+            </summary>
+            <param name="other">The other <see cref="T:Ez.Graphics.Data.Texture"/>.</param>
+            <returns><see langword="true"/> if the two <see cref="T:Ez.Graphics.Data.Texture"/> are equals; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Texture.Equals(System.Object)">
+            <summary>
+            Returns a value that indicates whether this instance and a specified object are equal.
+            </summary>
+            <param name="obj">The object to compare with the current instance.</param>
+            <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        </member>
+        <member name="M:Ez.Graphics.Data.Texture.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.TextureData">
+            <summary>
+            Represents a Texture as a <see cref="T:Ez.Graphics.Data.Texture"/>  or <see cref="T:Ez.Graphics.Data.TextureReference"/>.
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.TextureReference">
+            <summary>
+            Represents a reference for a texture file.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.TextureReference.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.TextureReference"/> class.
+            </summary>
+            <param name="reference">The reference path.</param>
+        </member>
+        <member name="P:Ez.Graphics.Data.TextureReference.Reference">
+            <summary>
+            Gets the reference path.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.TextureReference.GetHashCode">
+            <summary>
+            Returns the hash code for this instance.
+            </summary>
+            <returns>The hash code.</returns>
+        </member>
+        <member name="T:Ez.Graphics.Data.TextureType">
+            <summary>
+            Specifying the basic dimensionality of an texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.TextureType.Texture1D">
+            <summary>
+            Specifies a one-dimensional texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.TextureType.Texture2D">
+            <summary>
+            Specifies a two-dimensional texture.
+            </summary>
+        </member>
+        <member name="F:Ez.Graphics.Data.TextureType.Texture3D">
+            <summary>
+            Specifies a three-dimensional image.
+            </summary>
+        </member>
+        <member name="T:Ez.Graphics.Data.Transform">
+            <summary>
+            Represents a transformation with hierarchy support.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Transform.Position">
+            <summary>
+            Gets the position of this transform.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Transform.Scale">
+            <summary>
+            Gets the scale of this transform.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Transform.EulerAngles">
+            <summary>
+            Gets the rotation in euler angles format of this transform.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Transform.Rotation">
+            <summary>
+            Gets the rotation of this transform.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Transform.TransformMatrix">
+            <summary>
+            Gets the local transform matrix of this transform.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Transform.IsStatic">
+            <summary>
+            Gets a flag that indicates whether the transform is static. 
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Transform.GlobalTransformMatrix">
+            <summary>
+            Gets the global transform matrix of this transform.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Transform.Scene">
+            <summary>
+            The scene of this transform.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Transform.FatherIndex">
+            <summary>
+            The index in <see cref="P:Ez.Graphics.Data.Transform.Scene"/> of father transform.
+            </summary>
+        </member>
+        <member name="P:Ez.Graphics.Data.Transform.Father">
+            <summary>
+            The father transform.
+            </summary>
+        </member>
+        <member name="M:Ez.Graphics.Data.Transform.#ctor(Ez.Graphics.Data.Scene,System.Numerics.Matrix4x4,System.Int32)">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.Transform"/> class.
+            </summary>
+            <param name="scene">The <see cref="P:Ez.Graphics.Data.Transform.Scene"/> of this transform.</param>
+            <param name="transformMatrix">The local transform matrix.</param>
+            <param name="fatherIndex">The index of father.</param>
+        </member>
+        <member name="M:Ez.Graphics.Data.Transform.#ctor(Ez.Graphics.Data.Scene,System.Numerics.Vector3,System.Numerics.Vector3,System.Numerics.Vector3,System.Int32)">
+            <summary>
+            Initializes a new instance of <see cref="T:Ez.Graphics.Data.Transform"/> class.
+            </summary>
+            <param name="scene">The <see cref="P:Ez.Graphics.Data.Transform.Scene"/> of this transform.</param>
+            <param name="position">The local position of transform.</param>
+            <param name="scale">The local scale of transform.</param>
+            <param name="eulerAngles">The local euler angles of transform.</param>
+            <param name="fatherIndex">The index of father.</param>
+        </member>
+    </members>
+</doc>
