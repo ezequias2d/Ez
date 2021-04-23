@@ -131,5 +131,40 @@ namespace Ez.IO
                     return *(T*)ptr;
             }
         }
+
+        /// <summary>
+        /// Reads bytes from current stream and writes them to another stream.
+        /// </summary>
+        /// <param name="source">The source stream.</param>
+        /// <param name="destination">The destination stream.</param>
+        /// <param name="count">The number of bytes to copy.</param>
+        /// <param name="bufferSize">The size of the buffer. This value must be 
+        /// greater than zero. The default size is 1048576.</param>
+        /// <returns>The number of bytes copied.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="destination"/> or
+        /// <paramref name="source"/> is <see langword="null"/></exception>
+        /// <exception cref="NotSupportedException">When <paramref name="source"/> cannot be read or <paramref name="destination"/> cannot be written.</exception>
+        public static long CopyTo(this Stream source, Stream destination, long count, int bufferSize = 1048576)
+        {
+            if (source == null)
+                throw new ArgumentNullException(nameof(source));
+            if (destination == null)
+                throw new ArgumentNullException(nameof(destination));
+            if (!source.CanRead)
+                throw new NotSupportedException("The current stream does not support reading.");
+            if (!destination.CanWrite)
+                throw new NotSupportedException("The destination does not support writing.");
+
+            byte[] buffer = ArrayPool<byte>.GetT(bufferSize);
+            long copied = 0;
+            int readed;
+            bufferSize = (int)Math.Min(buffer.Length, count);
+            while(copied < count && (readed = source.Read(buffer, 0, bufferSize)) != 0)
+            {
+                copied += readed;
+                destination.Write(buffer, 0, readed);
+            }
+            return copied;
+        }
     }
 }
