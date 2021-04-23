@@ -15,6 +15,9 @@ namespace Ez.Memory
     /// </summary>
     public unsafe class MemoryBlock : IDisposable, IResettable
     {
+        /// <summary>
+        /// returns an empty <see cref="MemoryBlock"/> object.
+        /// </summary>
         public static MemoryBlock Empty => new MemoryBlock();
         /// <summary>
         /// The default size of a <see cref="MemoryBlock"/>.
