@@ -22,8 +22,11 @@ namespace Ez.Memory
         /// Returns a <see cref="MemoryBlock"/> to the pool.
         /// </summary>
         /// <param name="memoryBlock">The memory block to return.</param>
-        public static void Return(MemoryBlock memoryBlock) =>
-            _objectPool.Return(memoryBlock);
+        public static void Return(MemoryBlock memoryBlock)
+        {
+            if(memoryBlock != null && memoryBlock != MemoryBlock.Empty)
+                _objectPool.Return(memoryBlock);
+        }
 
         /// <summary>
         /// Gets a <see cref="MemoryBlock"/> from the pool, or creates a new <see cref="MemoryBlock"/>.
