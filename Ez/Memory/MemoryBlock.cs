@@ -15,6 +15,7 @@ namespace Ez.Memory
     /// </summary>
     public unsafe class MemoryBlock : IDisposable, IResettable
     {
+        public static MemoryBlock Empty => new MemoryBlock();
         /// <summary>
         /// The default size of a <see cref="MemoryBlock"/>.
         /// </summary>
@@ -34,6 +35,17 @@ namespace Ez.Memory
             TotalSize = storageBlockSize;
             _end = 0;
             _disposed = false;
+        }
+
+        /// <summary>
+        /// Empty constructor.
+        /// </summary>
+        internal MemoryBlock()
+        {
+            BasePtr = null;
+            TotalSize = 0;
+            _end = 0;
+            _disposed = true;
         }
 
         /// <summary>
