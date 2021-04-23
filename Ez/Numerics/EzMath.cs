@@ -46,6 +46,7 @@ namespace Ez.Numerics
         /// <see cref="double.NegativeInfinity"/>, if <paramref name="d"/> is zero.<br/>
         /// <see cref="double.NaN"/>, if <paramref name="d"/> is negative or equal to <see cref="double.NaN"/>.<br/>
         /// <see cref="double.PositiveInfinity"/>, if <paramref name="d"/> is <see cref="double.PositiveInfinity"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static double Log2(double d) => Math.Log(d) * InvLogE2;
 
         /// <summary>
@@ -54,6 +55,7 @@ namespace Ez.Numerics
         /// <param name="a">The first value to compare.</param>
         /// <param name="b">The second value to compare.</param>
         /// <returns><see langword="true"/>, if they are within a small value epsilon; otherwise, <see langword="false"/>.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static bool Approximately(float a, float b)
         {
             if (a == 0 || b == 0)
