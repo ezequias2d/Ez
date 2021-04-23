@@ -5,8 +5,10 @@
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Numerics;
 using Ez.Collections;
 using Ez.Collections.Pools;
+using Ez.Numerics;
 
 namespace Ez.Memory
 {
@@ -255,7 +257,7 @@ namespace Ez.Memory
             unsafe
             {
                 ulong srcSize = SizeOf(source);
-                if (srcSize < SizeOf<TDestination>(destination))
+                if (srcSize > SizeOf<TDestination>(destination))
                     throw new ArgumentOutOfRangeException($"The destination is too small to copy all data from the source. \nSource size: {srcSize} bytes.\nDestination size: {SizeOf<TDestination>(destination)} bytes.");
 
                 fixed (void* dst = destination, src = source)
@@ -313,6 +315,14 @@ namespace Ez.Memory
         /// <param name="destination">The destination address to copy to.</param>
         /// <param name="source">The source address to copy from.</param>
         /// <param name="byteCount">The number of bytes to copy.</param>
+        public static unsafe void Copy(IntPtr destination, IntPtr source, ulong byteCount) => Copy((void*)destination, (void*)source, byteCount);
+
+        /// <summary>
+        /// Copies bytes from the source address to the destination address.
+        /// </summary>
+        /// <param name="destination">The destination address to copy to.</param>
+        /// <param name="source">The source address to copy from.</param>
+        /// <param name="byteCount">The number of bytes to copy.</param>
         public static unsafe void Copy(void* destination, void* source, ulong byteCount)
         {
             if(byteCount <= uint.MaxValue)
@@ -345,8 +355,5 @@ namespace Ez.Memory
         /// </summary>
         /// <param name="ptr">The handle returned by the original matching call to <see cref="Alloc(ulong)"/>.</param>
         public static unsafe void Free(void* ptr) => Marshal.FreeHGlobal((IntPtr)ptr);
-
-        //public static unsafe void Write<T>(void* destination, T value) => Unsafe.Write(destination, value);
-        //public static unsafe T Read<T>(void* source) => Unsafe.Read<T>(source);
     }
 }
