@@ -19,6 +19,7 @@ namespace Ez.Memory
         /// returns an empty <see cref="MemoryBlock"/> object.
         /// </summary>
         public static MemoryBlock Empty => new MemoryBlock();
+
         /// <summary>
         /// The default size of a <see cref="MemoryBlock"/>.
         /// </summary>
@@ -31,7 +32,7 @@ namespace Ez.Memory
         /// <summary>
         /// Initializes a new instance of <see cref="MemoryBlock"/> class.
         /// </summary>
-        /// <param name="storageBlockSize">The size of memory in <see cref="MemoryBlock"/>.</param>
+        /// <param name="storageBlockSize">The size of memory in <see cref="MemoryBlock"/>. <seealso cref="MemUtil.MaxAllocSize"/></param>
         public MemoryBlock(ulong storageBlockSize = DefaultStorageBlockSize)
         {
             BasePtr = (byte*)MemUtil.Alloc(storageBlockSize);

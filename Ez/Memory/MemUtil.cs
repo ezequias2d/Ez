@@ -344,6 +344,14 @@ namespace Ez.Memory
         }
 
         /// <summary>
+        /// Gets the theoretical limit for an allocation.
+        /// <seealso cref="Alloc(ulong)"/>.
+        /// </summary>
+        public static readonly ulong MaxAllocSize =
+            // Maximum allocable memory based on the largest positive number that an IntPtr can represent.
+            (1ul << ((int)SizeOf<IntPtr>() * 8 - 1)) - 1ul;
+
+        /// <summary>
         /// Allocates memory from unmanaged memory of process.
         /// </summary>
         /// <param name="size">The required number of bytes in memory.</param>
