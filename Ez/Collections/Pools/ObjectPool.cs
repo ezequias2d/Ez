@@ -169,7 +169,6 @@ namespace Ez.Collections.Pools
             if (wrapper.Source != this)
                 throw new EzException($"The {nameof(wrapper)} is not created by same ObjectPool.");
 
-            wrapper.Dispose();
             _objectWrapper.Enqueue(wrapper);
 
             if (_objectWrapper.Count > 40000)
@@ -185,8 +184,12 @@ namespace Ez.Collections.Pools
             {
                 _bag.TryDequeue(out PooledObject<T, TSpecs> pooledObject);
 
-                if (pooledObject is IDisposable disposable)
+                pooledObject.IsTemporaryUse = false;
+
+                if (pooledObject.Value is IDisposable disposable)
                     disposable.Dispose();
+
+                pooledObject.Dispose();
             }
             ClearWrappers();
         }
