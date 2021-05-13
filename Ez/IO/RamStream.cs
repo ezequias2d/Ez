@@ -137,6 +137,11 @@ namespace Ez.IO
         }
 
         /// <summary>
+        /// Gets an EphemeralMemoryBlock for the internal <see cref="MemoryBlock"/>.
+        /// </summary>
+        public EphemeralMemoryBlock EphemeralMemoryBlock => _memoryBlock;
+
+        /// <summary>
         /// Overrides the <see cref="Stream.Flush"/> method so that no action is performed.
         /// </summary>
         public override void Flush()
@@ -191,7 +196,7 @@ namespace Ez.IO
 
             int toRead = (int)Math.Min(_length - _position, count);
 
-            if (toRead == 0)
+            if (toRead <= 0)
                 return 0;
 
             unsafe
@@ -361,7 +366,7 @@ namespace Ez.IO
         }
 
         /// <summary>
-        /// Return the <see cref="MemoryBlock"/> to the <see cref="MemoryBlockPool"/>.
+        /// Return the <see cref="EphemeralMemoryBlock"/> to the <see cref="MemoryBlockPool"/>.
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to release both managed and
         /// unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
