@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 
-namespace Ez.Graphics.Data
+namespace Ez.Graphics
 {
     /// <summary>
     /// Provides static methods to <see cref="ColorSingle"/> manipulation.

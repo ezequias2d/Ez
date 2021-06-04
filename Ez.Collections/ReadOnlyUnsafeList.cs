@@ -5,6 +5,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Ez.Collections
@@ -13,9 +15,10 @@ namespace Ez.Collections
     /// Represents a strongly typed unsafe read-only list that can be accessed by index.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public unsafe class ReadOnlyUnsafeList<T> : IReadOnlyList<T> where T : unmanaged
+    public class ReadOnlyUnsafeList<T> : IReadOnlyList<T> where T : unmanaged
     {
-        private T* _ptr;
+        private static readonly int TSize = Marshal.SizeOf<T>();
+        private IntPtr _ptr;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ReadOnlyUnsafeList{T}"/> class that 
@@ -25,7 +28,7 @@ namespace Ez.Collections
         /// <param name="count">Number of T elements in the <see cref="ReadOnlyUnsafeList{T}"/>.</param>
         public ReadOnlyUnsafeList(IntPtr ptr, int count)
         {
-            _ptr = (T*)ptr;
+            _ptr = ptr;
             Count = count;
         }
 
@@ -41,7 +44,7 @@ namespace Ez.Collections
                 if (index < 0 || index >= Count)
                     throw new IndexOutOfRangeException();
 
-                return _ptr[index];
+                return Marshal.PtrToStructure<T>(_ptr + TSize * index);
             }
         }
 

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Text;
 
-namespace Ez.Graphics.Data
+namespace Ez.Graphics
 {
     /// <summary>
     /// Provides methods that can retrieve representations in <see cref="Color"/>, <see cref="ColorSingle"/> and <see cref="ColorByte"/>.

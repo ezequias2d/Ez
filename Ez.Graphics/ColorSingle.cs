@@ -9,7 +9,7 @@ using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Ez.Graphics.Data
+namespace Ez.Graphics
 {
     /// <summary>
     /// A color struct in 32-bits floating-point values in RGBA format.

@@ -1,14 +1,10 @@
-﻿// Copyright (c) 2021 ezequias2d <ezequiasmoises@gmail.com> and the Ez contributors
+// Copyright (c) 2021 ezequias2d <ezequiasmoises@gmail.com> and the Ez contributors
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using System.Numerics;
-using Ez.Collections;
-using Ez.Collections.Pools;
-using Ez.Numerics;
 
 namespace Ez.Memory
 {
@@ -192,6 +188,22 @@ namespace Ez.Memory
             }
         }
 
+        public static unsafe void Set<TBuffer, TValue>(ReadOnlySpan<TBuffer> span, TValue value) where TBuffer : unmanaged where TValue : unmanaged
+        {
+            fixed (void* ptr = span)
+            {
+                Set((IntPtr)ptr, value, ((ulong)span.Length * (ulong)sizeof(TBuffer)) / (ulong)sizeof(TValue));
+            }
+        }
+
+        public static unsafe TValue Get<TBuffer, TValue>(ReadOnlySpan<TBuffer> span) where TBuffer : unmanaged where TValue :unmanaged
+        {
+            fixed (void* ptr = span)
+                return *(TValue*)ptr;
+        }
+
+        public static unsafe T Get<T>(IntPtr ptr) where T : unmanaged => *(T*)ptr.ToPointer();
+
         /// <summary>
         /// Sets all first <paramref name="byteCount"/> bytes to the <paramref name="value"/> byte. 
         /// </summary>
@@ -223,15 +235,19 @@ namespace Ez.Memory
         /// <param name="ptr">The pointer to the first T to set.</param>
         /// <param name="value">The value to set.</param>
         /// <param name="count">The number of Ts to set.</param>
-        public static unsafe void SetValue<T>(T* ptr, in T value, ulong count) where T : unmanaged
+        public static unsafe void Set<T>(IntPtr ptr, in T value, ulong count) where T : unmanaged
         {
+            var pptr = (T*)ptr;
             while (count > 0)
             {
-                *ptr = value;
+                *pptr = value;
                 count--;
-                ptr++;
+                pptr++;
             }
         }
+
+        public static unsafe void Set<T>(IntPtr ptr, in T value) where T : unmanaged =>
+            *((T*)ptr.ToPointer()) = value;
 
         /// <summary>
         /// Copies all data from one <see cref="ReadOnlySpan{T}"/> to a <see cref="Span{T}"/>.
@@ -241,6 +257,9 @@ namespace Ez.Memory
         /// <param name="source">The <see cref="ReadOnlySpan{T}"/> that contains the data to copy.</param>
         /// <returns>Number of bytes copied.</returns>
         public static ulong Copy<T>(Span<T> destination, ReadOnlySpan<T> source) where T : unmanaged => Copy<T, T>(destination, source);
+
+        public static ulong Copy<T>(Span<T> destination, IntPtr source) where T : unmanaged =>
+            Copy(destination, GetSpan<T>(source, destination.Length));
 
         /// <summary>
         /// Copies all data from one <see cref="ReadOnlySpan{T}"/> to a <see cref="Span{T}"/>.
@@ -363,5 +382,13 @@ namespace Ez.Memory
         /// </summary>
         /// <param name="ptr">The handle returned by the original matching call to <see cref="Alloc(ulong)"/>.</param>
         public static unsafe void Free(void* ptr) => Marshal.FreeHGlobal((IntPtr)ptr);
+
+        public unsafe static Span<T> GetSpan<T>(IntPtr ptr, int length) where T : unmanaged =>
+            new Span<T>((T*)ptr, length);
+
+        public unsafe static Memory<T> GetMemory<T>(IntPtr ptr, int length) where T : unmanaged =>
+            new UnmanagedMemoryManager<T>(ptr, length).Memory;
+
+        public static string GetUtf8String(IntPtr ptr) => Marshal.PtrToStringUTF8(ptr);
     }
 }

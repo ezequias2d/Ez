@@ -199,10 +199,9 @@ namespace Ez.IO
             if (toRead <= 0)
                 return 0;
 
-            unsafe
-            {
-                MemUtil.Copy(buffer, new ReadOnlySpan<byte>(_memoryBlock.BasePtr + _position, toRead));
-            }
+            
+            MemUtil.Copy<byte>(buffer, MemUtil.Add(_memoryBlock.BaseIntPtr, (ulong)_position));
+
             _position += toRead;
 
             return toRead;
@@ -279,10 +278,8 @@ namespace Ez.IO
 
             bool allocatedNewArray = EnsureCapacity(value);
             if(!allocatedNewArray && value > _length)
-                unsafe
-                {
-                    MemUtil.Set(_memoryBlock.BasePtr + _length, 0, (ulong)(value - _length));
-                }
+                MemUtil.Set(MemUtil.Add(_memoryBlock.BaseIntPtr, (ulong)_length), 0, (ulong)(value - _length));
+                
 
             _length = value;
             if (_position > value)
@@ -314,10 +311,8 @@ namespace Ez.IO
                 _length = size;
             }
 
-            unsafe
-            {
-                MemUtil.Copy(_memoryBlock.BasePtr + _position, new ReadOnlySpan<byte>(buffer, offset, count));
-            }
+            MemUtil.Copy(MemUtil.Add(_memoryBlock.BaseIntPtr, (ulong)_position), new ReadOnlySpan<byte>(buffer, offset, count));
+            
             _position = size;
         }
 

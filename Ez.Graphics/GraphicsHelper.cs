@@ -12,7 +12,7 @@ namespace Ez.Graphics.Data
     /// <summary>
     /// Graphic data helper.
     /// </summary>
-    public static class GDHelper
+    public static class GraphicsHelper
     {
         /// <summary>
         /// Gets a value indicating whether the <see cref="PixelFormat"/> is depth.
@@ -216,7 +216,7 @@ namespace Ez.Graphics.Data
                     return 16;
 
                 default:
-                    throw new GraphicsDataException("Invalid PixelFormat: " + format);
+                    throw new GraphicsException("Invalid PixelFormat: " + format);
             }
         }
 

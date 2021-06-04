@@ -2,14 +2,13 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
-using Ez.Graphics.Data.Animations;
 using Ez.Numerics;
 using System;
 using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 
-namespace Ez.Graphics.Data
+namespace Ez.Graphics
 {
     /// <summary>
     /// A color struct in 8-bits integer values in RGBA format.

@@ -62,16 +62,9 @@ namespace Ez.IO
             if (array == null || array.Length == 0)
                 return;
 
-            unsafe
-            {
-                fixed (void* ptr = array)
-                {
-                    byte[] buffer = new byte[array.Length * sizeof(T)];
-                    fixed (void* dst = buffer)
-                        MemUtil.Copy(dst, ptr, (ulong)buffer.Length);
-                    stream.Write(buffer, 0, buffer.Length);
-                }
-            }
+            byte[] buffer = new byte[array.Length * MemUtil.SizeOf<T>()];
+            MemUtil.Copy<byte, T>(buffer, array);
+            stream.Write(buffer, 0, buffer.Length);
         }
 
         /// <summary>
@@ -87,14 +80,12 @@ namespace Ez.IO
                 return Array.Empty<T>();
 
             T[] array = new T[count];
-            unsafe
-            {
-                byte[] buffer = new byte[count * sizeof(T)];
+            
+                byte[] buffer = new byte[count * MemUtil.SizeOf<T>()];
                 stream.Read(buffer, 0, buffer.Length);
 
-                fixed (void* src = buffer, dst = array)
-                    MemUtil.Copy(dst, src, (ulong)buffer.Length);
-            }
+            MemUtil.Copy<T, byte>(array, buffer);
+            
             return array;
         }
 
@@ -106,13 +97,11 @@ namespace Ez.IO
         /// <param name="value">The T structure to written.</param>
         public static void WriteStructure<T>(this Stream stream, T value) where T : unmanaged
         {
-            unsafe
-            {
-                byte[] buffer = new byte[sizeof(T)];
-                fixed (void* ptr = buffer)
-                    *(T*)ptr = value;
-                stream.Write(buffer, 0, buffer.Length);
-            }
+            byte[] buffer = new byte[MemUtil.SizeOf<T>()];
+
+            MemUtil.Set<byte, T>(buffer, value);
+
+            stream.Write(buffer, 0, buffer.Length);
         }
 
         /// <summary>
@@ -123,13 +112,9 @@ namespace Ez.IO
         /// <returns>A structure read from the stream.</returns>
         public static T ReadStructure<T>(this Stream stream) where T : unmanaged
         {
-            unsafe
-            {
-                byte[] buffer = new byte[sizeof(T)];
-                stream.Read(buffer, 0, buffer.Length);
-                fixed (void* ptr = buffer)
-                    return *(T*)ptr;
-            }
+            byte[] buffer = new byte[MemUtil.SizeOf<T>()];
+            stream.Read(buffer, 0, buffer.Length);
+            return MemUtil.Get<byte, T>(buffer);
         }
 
         /// <summary>

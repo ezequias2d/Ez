@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Ez.Assets
 {
@@ -16,7 +14,7 @@ namespace Ez.Assets
         /// <typeparam name="T">The asset type to be get.</typeparam>
         /// <param name="assetName">The asset name to get.</param>
         /// <returns>The first asset found that matches the type 
-        /// and name, otherwise <see langword="null""/></returns>
+        /// and name, otherwise <see langword="null"/></returns>
         T GetAsset<T>(string assetName);
 
         /// <summary>
