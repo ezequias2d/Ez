@@ -29,7 +29,7 @@ namespace Ez.Magics
         }
 
         /// <summary>
-        /// Try gets a <typeparamref name="TMagiced"/> instance with <see cref="T"/> support.
+        /// Try gets a <typeparamref name="TMagiced"/> instance with <typeparamref name="T"/> support.
         /// </summary>
         /// <typeparam name="T">The type expected to be supported in 
         /// <paramref name="magiced"/>.</typeparam>
