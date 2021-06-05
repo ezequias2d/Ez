@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>E:\Ez\Ez.IO\Ez.IO.xml</DocumentationFile>
+    <DocumentationFile>..\doc\Ez.IO.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>E:\Ez\Ez.IO\Ez.IO.xml</DocumentationFile>
+    <DocumentationFile>..\doc\Ez.IO.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

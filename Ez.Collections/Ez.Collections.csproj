@@ -5,11 +5,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>E:\Ez\Ez.Collections\Ez.Collections.xml</DocumentationFile>
+    <DocumentationFile>..\doc\Ez.Collections.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>E:\Ez\Ez.Collections\Ez.Collections.xml</DocumentationFile>
+    <DocumentationFile>..\doc\Ez.Collections.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

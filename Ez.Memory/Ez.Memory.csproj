@@ -6,12 +6,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>E:\Ez\Ez.Memory\Ez.Memory.xml</DocumentationFile>
+    <DocumentationFile>..\doc\Ez.Memory.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>E:\Ez\Ez.Memory\Ez.Memory.xml</DocumentationFile>
+    <DocumentationFile>..\doc\Ez.Memory.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

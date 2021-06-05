@@ -6,12 +6,12 @@
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>C:\Users\ezequ\source\repos\Ez\Ez\Ez.xml</DocumentationFile>
+    <DocumentationFile>..\doc\Ez.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>C:\Users\ezequ\source\repos\Ez\Ez\Ez.xml</DocumentationFile>
+    <DocumentationFile>..\doc\Ez.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

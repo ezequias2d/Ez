@@ -6,11 +6,11 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>E:\Ez\Ez.Graphics\Ez.Graphics.xml</DocumentationFile>
+    <DocumentationFile>..\doc\Ez.Graphics.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>E:\Ez\Ez.Graphics\Ez.Graphics.xml</DocumentationFile>
+    <DocumentationFile>..\doc\Ez.Graphics.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
