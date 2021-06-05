@@ -67,9 +67,9 @@ namespace Ez.Graphics.Data.Animations
             var rotations = Sort(rotationKeys);
             var scales = Sort(scalingKeys);
 
-            GDHelper.Set(ref _positionKeys, ref _positionKeysCount, positions);
-            GDHelper.Set(ref _rotationKeys, ref _rotationKeysCount, rotations);
-            GDHelper.Set(ref _scalingKeys, ref _scalingKeysCount, scales);
+            InternalHelper.Set(ref _positionKeys, ref _positionKeysCount, positions);
+            InternalHelper.Set(ref _rotationKeys, ref _rotationKeysCount, rotations);
+            InternalHelper.Set(ref _scalingKeys, ref _scalingKeysCount, scales);
 
             _hashcode = 0;
             _hashcode = HashHelper<AnimationNode>.Combine(

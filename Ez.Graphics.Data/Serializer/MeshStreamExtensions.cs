@@ -23,9 +23,9 @@ namespace Ez.Graphics.Data.Serializer
         /// Derializes an <see cref="Mesh"/> from a stream.
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
-        /// <param name="scene">The scene with the mesh material.</param>
+        /// <param name="materialTable">The material table to get a material by index.</param>
         /// <returns>A new instance of <see cref="Mesh"/> with data read from the <paramref name="stream"/>.</returns>
-        public static Mesh ReadMesh(this Stream stream, Scene scene)
+        public static Mesh ReadMesh(this Stream stream, IReadOnlyDictionary<int, Material> materialTable)
         {
             var name = stream.ReadString();
 
@@ -38,7 +38,7 @@ namespace Ez.Graphics.Data.Serializer
             var normals = stream.ReadSpan<Vector3>(raw.NormalsCount);
             var tangents = stream.ReadSpan<Vector3>(raw.TangentsCount);
             var bitangents = stream.ReadSpan<Vector3>(raw.BitangentsCount);
-            var material = new SceneIndex<Material>(raw.MaterialIndex, scene);
+            var material = materialTable[raw.MaterialIndex];
 
             Bone[] bones = new Bone[raw.BonesCount];
             for (uint i = 0; i < bones.Length; i++)
@@ -69,7 +69,8 @@ namespace Ez.Graphics.Data.Serializer
         /// </summary>
         /// <param name="stream">The stream to write it.</param>
         /// <param name="mesh">The mesh to write.</param>
-        public static void WriteMesh(this Stream stream, in Mesh mesh)
+        /// <param name="materialTable">The material table to get a index by material.</param>
+        public static void WriteMesh(this Stream stream, in Mesh mesh, IReadOnlyDictionary<Material, int> materialTable)
         {
             stream.WriteString(mesh.Name);
 
@@ -83,7 +84,7 @@ namespace Ez.Graphics.Data.Serializer
             raw.NormalsCount = (uint)mesh.Normals.Length;
             raw.TangentsCount = (uint)mesh.Tangents.Length;
             raw.BitangentsCount = (uint)mesh.Bitangents.Length;
-            raw.MaterialIndex = (int)mesh.Material;
+            raw.MaterialIndex = materialTable[mesh.Material];
 
             stream.WriteStructure(raw);
 

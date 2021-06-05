@@ -40,7 +40,7 @@ namespace Ez.Graphics.Data.Meshes
             _weights = default;
             _weightsCount = 0;
 
-            GDHelper.Set(ref _weights, ref _weightsCount, weights);
+            InternalHelper.Set(ref _weights, ref _weightsCount, weights);
 
             _hashcode = 0;
             _hashcode = HashHelper<Bone>.Combine(OffsetMatrix, HashHelper<VertexWeight>.Combine(Weights));

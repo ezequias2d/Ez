@@ -47,7 +47,7 @@ namespace Ez.Graphics.Data
             MipmapLevels = mipmapLevels;
             ArrayLayers = layers;
             TextureType = textureType;
-            GDHelper.Set(ref _data, ref _length, data);
+            InternalHelper.Set(ref _data, ref _length, data);
 
             _hashcode = HashHelper<Texture>.Combine(PixelFormat, Width, Height, Depth, MipmapLevels, ArrayLayers, TextureType, HashHelper<Texture>.Combine(Data));
         }

@@ -33,7 +33,7 @@ namespace Ez.Graphics.Data.Animations
             Duration = duration;
             TicksPerSecond = ticksPerSecond;
 
-            GDHelper.SetManaged(ref _channels, ref _channelsCount, channels);
+            InternalHelper.SetManaged(ref _channels, ref _channelsCount, channels);
 
             _hashcode = HashHelper<Animation>.Combine(HashHelper<AnimationNode>.Combine(Channels), Duration, Name, TicksPerSecond);
         }

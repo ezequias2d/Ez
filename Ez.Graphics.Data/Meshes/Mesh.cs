@@ -3,14 +3,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using Ez.Graphics.Data.Materials;
-using Ez.Memory;
 using Ez.Numerics;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Numerics;
-using System.Text;
 
 namespace Ez.Graphics.Data.Meshes
 {
@@ -62,7 +58,7 @@ namespace Ez.Graphics.Data.Meshes
         /// <param name="colors">The colors data.</param>
         public Mesh(
             string name,
-            SceneIndex<Material> material,
+            Material material,
             ReadOnlySpan<Vector3> vertices,
             ReadOnlySpan<Vector2> uvs,
             ReadOnlySpan<Vector3> normals,
@@ -93,14 +89,14 @@ namespace Ez.Graphics.Data.Meshes
             Name = name;
             Material = material;
 
-            GDHelper.Set(ref _vertices, ref _verticesCount, vertices);
-            GDHelper.Set(ref _uvs, ref _uvsCount, uvs);
-            GDHelper.Set(ref _faces, ref _facesCount, faces);
-            GDHelper.SetManaged(ref _bones, ref _bonesCount, bones);
-            GDHelper.Set(ref _colors, ref _colorsCount, colors);
-            GDHelper.Set(ref _normals, ref _normalsCount, normals);
-            GDHelper.Set(ref _tangents, ref _tangetsCount, tangents);
-            GDHelper.Set(ref _bitangents, ref _bitangentsCount, bitangents);
+            InternalHelper.Set(ref _vertices, ref _verticesCount, vertices);
+            InternalHelper.Set(ref _uvs, ref _uvsCount, uvs);
+            InternalHelper.Set(ref _faces, ref _facesCount, faces);
+            InternalHelper.SetManaged(ref _bones, ref _bonesCount, bones);
+            InternalHelper.Set(ref _colors, ref _colorsCount, colors);
+            InternalHelper.Set(ref _normals, ref _normalsCount, normals);
+            InternalHelper.Set(ref _tangents, ref _tangetsCount, tangents);
+            InternalHelper.Set(ref _bitangents, ref _bitangentsCount, bitangents);
 
             _hashcode = HashHelper<Mesh>.Combine(
                 HashHelper<Vector3>.Combine(Vertices),
@@ -172,7 +168,7 @@ namespace Ez.Graphics.Data.Meshes
         /// <summary>
         /// The material used by this mesh.
         /// </summary>
-        public SceneIndex<Material> Material { get; }
+        public Material Material { get; }
 
         /// <summary>
         /// 

@@ -30,7 +30,7 @@ namespace Ez.Graphics.Data.Materials
 
             _array = default;
             _count = 0;
-            GDHelper.SetManaged(ref _array, ref _count, properties.ToArray());
+            InternalHelper.SetManaged(ref _array, ref _count, properties.ToArray());
 
             _hashcode = 0;
             _hashcode = HashHelper<Material>.Combine(Name, HashHelper<MaterialProperty>.Combine(Properties));
