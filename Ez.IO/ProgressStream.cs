@@ -5,6 +5,10 @@ using System.Text;
 
 namespace Ez.IO
 {
+    /// <summary>
+    /// Provides a wrapper for <see cref="Stream"/> instances with a event to report the progress
+    /// of the <see cref="Position"/> in relation of <see cref="Length"/>.
+    /// </summary>
     public sealed class ProgressStream : Stream
     {
         private readonly Stream _inner;
@@ -13,6 +17,13 @@ namespace Ez.IO
         private long _current;
         private long _size;
         private double _invSize;
+
+        /// <summary>
+        /// Creates a new <see cref="ProgressStream"/> instance.
+        /// </summary>
+        /// <param name="inner">The inner stream.</param>
+        /// <param name="leaveOpen"><see langword="true"/> to leave the stream open after the 
+        /// <see cref="ProgressStream"/> object is disposed; otherwise, <see langword="false"/>.</param>
         public ProgressStream(Stream inner, bool leaveOpen)
         {
             _inner = inner;
@@ -23,16 +34,24 @@ namespace Ez.IO
             UpdateSize();
         }
 
+        /// <summary>
+        /// The event that reports progress.
+        /// </summary>
         public event EventHandler<ProgressEventArgs> Report;
 
+        /// <inheritdoc/>
         public override bool CanRead => _inner.CanRead;
 
+        /// <inheritdoc/>
         public override bool CanSeek => _inner.CanSeek;
 
+        /// <inheritdoc/>
         public override bool CanWrite => _inner.CanWrite;
 
+        /// <inheritdoc/>
         public override long Length => _inner.Length;
 
+        /// <inheritdoc/>
         public override long Position 
         { 
             get =>  _inner.Position;
@@ -44,8 +63,10 @@ namespace Ez.IO
             }
         }
 
+        /// <inheritdoc/>
         public override void Flush() => _inner.Flush();
 
+        /// <inheritdoc/>
         public override int Read(byte[] buffer, int offset, int count)
         {
             var bytes = _inner.Read(buffer, offset, count);
@@ -54,6 +75,7 @@ namespace Ez.IO
             return bytes;
         }
 
+        /// <inheritdoc/>
         public override long Seek(long offset, SeekOrigin origin)
         {
             var position = _inner.Seek(offset, origin);
@@ -62,12 +84,14 @@ namespace Ez.IO
             return position;
         }
 
+        /// <inheritdoc/>
         public override void SetLength(long value)
         {
             _inner.SetLength(value);
             UpdateSize();
         }
 
+        /// <inheritdoc/>
         public override void Write(byte[] buffer, int offset, int count)
         {
             _inner.Write(buffer, offset, count);
@@ -86,6 +110,7 @@ namespace Ez.IO
             _invSize = 1.0 / _size;
         }
 
+        /// <inheritdoc/>
         protected override void Dispose(bool disposing)
         {
             if(!_leaveOpen)
