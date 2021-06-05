@@ -18,21 +18,16 @@ namespace Ez.Graphics
     {
         private readonly Vector4 _literal;
 
-        /// <summary>
-        /// The red component.
-        /// </summary>
+        /// <inheritdoc/>
         public float R => _literal.X;
-        /// <summary>
-        /// The green component.
-        /// </summary>
+
+        /// <inheritdoc/>
         public float G => _literal.Y;
-        /// <summary>
-        /// The blue component.
-        /// </summary>
+
+        /// <inheritdoc/>
         public float B => _literal.Z;
-        /// <summary>
-        /// The alpha component.
-        /// </summary>
+
+        /// <inheritdoc/>
         public float A => _literal.W;
 
         /// <summary>
@@ -66,67 +61,37 @@ namespace Ez.Graphics
             return _literal;
         }
 
-        /// <summary>
-        /// Returns a value that indicates whether this instance and another <see cref="ColorSingle"/> are equal.
-        /// </summary>
-        /// <param name="other">The other <see cref="ColorSingle"/>.</param>
-        /// <returns><see langword="true"/> if the two <see cref="ColorSingle"/> are equals; otherwise, <see langword="false"/>.</returns>
+        /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool Equals(ColorSingle other) =>
             _literal.Equals(other._literal);
 
-        /// <summary>
-        /// Determines whether the specified object is equal to the current object.
-        /// </summary>
-        /// <param name="obj">The object to compare with the current object.</param>
-        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        /// <inheritdoc/>
         public override bool Equals(object obj) =>
             obj is ColorSingle other && Equals(other);
 
-        /// <summary>
-        /// Returns a value that indicates whether this instance and another <see cref="IColor"/> have equivalent colors in the color space of the first..
-        /// </summary>
-        /// <param name="other">The other <see cref="IColor"/>.</param>
-        /// <returns><see langword="true"/> if the two <see cref="ColorSingle"/> are equals; otherwise, <see langword="false"/>.</returns>
+        /// <inheritdoc/>
         public bool Equals(IColor other) => Equals(other.GetColorSingle());
 
         bool IEquatable<IColor<float>>.Equals(IColor<float> other) => Equals(other.GetColorSingle());
 
-        /// <summary>
-        /// Returns the hash code for this instance.
-        /// </summary>
-        /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+        /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int GetHashCode()
         {
             return HashHelper<ColorSingle>.Combine(R, G, B, A);
         }
 
-        /// <summary>
-        /// Returns a string representation of this color.
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            return string.Format("R:{0}, G:{1}, B:{2}, A:{3}", R, G, B, A);
-        }
+        /// <inheritdoc/>
+        public override string ToString() =>  string.Format("R:{0}, G:{1}, B:{2}, A:{3}", R, G, B, A);
 
-        /// <summary>
-        /// Gets the representation of a <see cref="ColorSingle"/> instance as <see cref="Color"/>.
-        /// </summary>
-        /// <returns>A <see cref="Color"/> representation of this <see cref="ColorSingle"/>.</returns>
+        /// <inheritdoc/>
         public Color GetColor() => Color.FromArgb((byte)(A * 255), (byte)(R * 255), (byte)(G * 255), (byte)(B * 255));
 
-        /// <summary>
-        /// Gets the representation of a <see cref="ColorSingle"/> instance as <see cref="ColorSingle"/>.
-        /// </summary>
-        /// <returns>A <see cref="ColorSingle"/> representation of this <see cref="ColorSingle"/>.</returns>
+        /// <inheritdoc/>
         public ColorSingle GetColorSingle() => this;
 
-        /// <summary>
-        /// Gets the representation of a <see cref="ColorSingle"/> instance as <see cref="ColorByte"/>.
-        /// </summary>
-        /// <returns>A <see cref="ColorByte"/> representation of this <see cref="ColorSingle"/>.</returns>
+        /// <inheritdoc/>
         public ColorByte GetColorByte() => new ColorByte((byte)(R * 255), (byte)(G * 255), (byte)(B * 255), (byte)(A * 255));
 
         /// <summary>

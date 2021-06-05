@@ -30,69 +30,42 @@ namespace Ez.Graphics
             A = a;
         }
 
-        /// <summary>
-        /// The red component.
-        /// </summary>
+        /// <inheritdoc/>
         public byte R { get; }
 
-        /// <summary>
-        /// The green component.
-        /// </summary>
+        /// <inheritdoc/>
         public byte G { get; }
 
-        /// <summary>
-        /// The blue component.
-        /// </summary>
+        /// <inheritdoc/>
         public byte B { get; }
 
-        /// <summary>
-        /// The alpha component.
-        /// </summary>
+        /// <inheritdoc/>
         public byte A { get; }
 
-        /// <summary>
-        /// Gets the representation of a <see cref="ColorByte"/> instance as <see cref="Color"/>.
-        /// </summary>
-        /// <returns>A <see cref="Color"/> representation of this <see cref="ColorSingle"/>.</returns>
+        /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public Color GetColor() =>
             Color.FromArgb(A, R, G, B);
 
-        /// <summary>
-        /// Gets the representation of a <see cref="ColorByte"/> instance as <see cref="ColorByte"/>.
-        /// </summary>
-        /// <returns>A <see cref="ColorByte"/> representation of this <see cref="ColorSingle"/>.</returns>
+        /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ColorByte GetColorByte() => this;
 
-        /// <summary>
-        /// Gets the representation of a <see cref="ColorByte"/> instance as <see cref="ColorSingle"/>.
-        /// </summary>
-        /// <returns>A <see cref="ColorSingle"/> representation of this <see cref="ColorByte"/>.</returns>
+        /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ColorSingle GetColorSingle() =>
             new ColorSingle(new Vector4(R, G, B, A) * (1f / 255f));
 
-        /// <summary>
-        /// Returns the hash code for this instance.
-        /// </summary>
-        /// <returns>The hash code.</returns>
+        /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int GetHashCode() =>
             HashHelper<ColorByte>.Combine(R, G, B, A);
 
-        /// <summary>
-        /// Returns the string representation of the current <see cref="Vector3Key"/> instance.
-        /// </summary>
-        /// <returns>The string representation of the current instance.</returns>
+        /// <inheritdoc/>
         public override string ToString() =>
             $"R:{R}, G:{G}, B:{B}, A:{A}";
 
-        /// <summary>
-        /// Returns a value that indicates whether this instance and a specified object are equal.
-        /// </summary>
-        /// <param name="obj">The object to compare with the current instance.</param>
-        /// <returns><see langword="true"/> if the current instance and <paramref name="obj"/> are equal; otherwise, <see langword="false"/>.</returns>
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if(obj is IColor color)
@@ -105,18 +78,10 @@ namespace Ez.Graphics
             return false;
         }
 
-        /// <summary>
-        /// Returns a value that indicates whether this instance and another <see cref="ColorByte"/> are equal.
-        /// </summary>
-        /// <param name="other">The other <see cref="ColorByte"/>.</param>
-        /// <returns><see langword="true"/> if the two <see cref="ColorByte"/> are equals; otherwise, <see langword="false"/>.</returns>
+        /// <inheritdoc/>
         public bool Equals(ColorByte other) => Equals((IColor<byte>)other);
 
-        /// <summary>
-        /// Returns a value that indicates whether this instance and another <see cref="IColor"/> have equivalent colors in the color space of the first..
-        /// </summary>
-        /// <param name="other">The other <see cref="IColor"/>.</param>
-        /// <returns><see langword="true"/> if the two <see cref="ColorSingle"/> are equals; otherwise, <see langword="false"/>.</returns>
+        /// <inheritdoc/>
         public bool Equals(IColor other) =>
            Equals(other.GetColorByte());
 
