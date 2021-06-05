@@ -117,61 +117,44 @@ namespace Ez.Graphics.Data
         {
             get
             {
-                if(FatherIndex >= 0)
+                if(Father != null)
                     return TransformMatrix * Father.GlobalTransformMatrix;
                 return TransformMatrix;
             }
         }
 
         /// <summary>
-        /// The scene of this transform.
-        /// </summary>
-        public Scene Scene { get; }
-        /// <summary>
-        /// The index in <see cref="Scene"/> of father transform.
-        /// </summary>
-        public int FatherIndex { get; set; }
-
-        /// <summary>
         /// The father transform.
         /// </summary>
-        public Transform Father 
-        {
-            get => FatherIndex < 0 ? null : Scene.Transforms[FatherIndex];
-        }
+        public Transform Father { get; set; }
 
         /// <summary>
         /// Initializes a new instance of <see cref="Transform"/> class.
         /// </summary>
-        /// <param name="scene">The <see cref="Scene"/> of this transform.</param>
         /// <param name="transformMatrix">The local transform matrix.</param>
-        /// <param name="fatherIndex">The index of father.</param>
-        public Transform(Scene scene, Matrix4x4 transformMatrix, int fatherIndex = -1)
+        /// <param name="father">The father transform.</param>
+        public Transform(Matrix4x4 transformMatrix, Transform father)
         {
-            Scene = scene;
             _transform = transformMatrix;
             Matrix4x4.Decompose(transformMatrix, out _scale, out _rotation, out _position);
             _eulerAngles = _rotation.ToEulerAngles();
-            FatherIndex = fatherIndex;
             IsStatic = false;
         }
 
         /// <summary>
         /// Initializes a new instance of <see cref="Transform"/> class.
         /// </summary>
-        /// <param name="scene">The <see cref="Scene"/> of this transform.</param>
         /// <param name="position">The local position of transform.</param>
         /// <param name="scale">The local scale of transform.</param>
         /// <param name="eulerAngles">The local euler angles of transform.</param>
-        /// <param name="fatherIndex">The index of father.</param>
-        public Transform(Scene scene, Vector3 position, Vector3 scale, Vector3 eulerAngles, int fatherIndex = -1)
+        /// <param name="father">The father transform.</param>
+        public Transform(Vector3 position, Vector3 scale, Vector3 eulerAngles, Transform father)
         {
-            Scene = scene;
             _scale = scale;
             _position = position;
             _eulerAngles = eulerAngles;
             _rotation = _eulerAngles.ToQuaternion();
-            FatherIndex = fatherIndex;
+            Father = father;
 
             _transformChange = true;
             IsStatic = false;

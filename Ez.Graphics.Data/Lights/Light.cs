@@ -14,7 +14,7 @@ namespace Ez.Graphics.Data
     /// <summary>
     /// A structure to store the information of a light.
     /// </summary>
-    public readonly struct Light : IEquatable<Light>
+    public class Light : IEquatable<Light>
     {
         private readonly int _hashcode;
 

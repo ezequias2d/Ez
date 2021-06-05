@@ -13,7 +13,7 @@ namespace Ez.Graphics.Data.Cameras
     /// <summary>
     /// A virtual camera.
     /// </summary>
-    public readonly struct Camera : IEquatable<Camera>
+    public class Camera : IEquatable<Camera>
     {
         private readonly int _hashcode;
 

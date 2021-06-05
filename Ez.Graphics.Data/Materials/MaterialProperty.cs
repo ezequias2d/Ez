@@ -75,7 +75,7 @@ namespace Ez.Graphics.Data.Materials
         static MaterialProperty()
         {
             Type t = typeof(T);
-            if (t == typeof(SceneIndex<TextureData>))
+            if (t == typeof(TextureData))
                 PropertyType = MaterialPropertyType.Texture;
             else if (t == typeof(ColorSingle))
                 PropertyType = MaterialPropertyType.Color;

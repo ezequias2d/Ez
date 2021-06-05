@@ -21,14 +21,15 @@ namespace Ez.Graphics.Data.Serializer
         /// </summary>
         /// <param name="stream">The stream to write it.</param>
         /// <param name="transform">The transform to write.</param>
-        public static void WriteTransform(this Stream stream, in Transform transform)
+        /// <param name="transformTable">The transform table to get a index by transform.</param>
+        public static void WriteTransform(this Stream stream, in Transform transform, IReadOnlyDictionary<Transform, int> transformTable)
         {
             stream.WriteStructure(new TransformRaw
             {
                 Position = transform.Position,
                 Scale = transform.Scale,
                 EulerAngles = transform.EulerAngles,
-                FatherIndex = transform.FatherIndex
+                FatherIndex = transform is not null ? transformTable[transform.Father] : -1
             });
         }
 
@@ -36,12 +37,16 @@ namespace Ez.Graphics.Data.Serializer
         /// Derializes an <see cref="Transform"/> from a stream.
         /// </summary>
         /// <param name="stream">The stream to read from.</param>
-        /// <param name="scene">The scene of the transform.</param>
+        /// <param name="transformTable">The transform table to get a transform by index.</param>
         /// <returns>A new instance of <see cref="Transform"/> with data read from the <paramref name="stream"/>.</returns>
-        public static Transform ReadTransform(this Stream stream, in Scene scene)
+        public static Transform ReadTransform(this Stream stream, IReadOnlyDictionary<int, Transform> transformTable)
         {
             var raw = stream.ReadStructure<TransformRaw>();
-            return new Transform(scene, raw.Position, raw.Scale, raw.EulerAngles, raw.FatherIndex);
+            return new Transform(
+                raw.Position, 
+                raw.Scale, 
+                raw.EulerAngles,
+                raw.FatherIndex != -1 ? transformTable[raw.FatherIndex] : null);
         }
     }
 }

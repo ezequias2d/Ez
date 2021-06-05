@@ -9,28 +9,27 @@ namespace Ez.Graphics.Data
     /// <summary>
     /// Represents a <see cref="Scene"/> instance.
     /// </summary>
-    public struct Instance
+    public class Instance
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="Instance"/> structure.
+        /// Initializes a new instance of <see cref="Instance"/> class.
         /// </summary>
-        /// <param name="scene">The scene of the <see cref="Instance"/>.</param>
-        /// <param name="meshIndex">The index of <see cref="Mesh"/> in <paramref name="scene"/>.</param>
-        /// <param name="transformIndex">The index of <see cref="Transform"/> in <paramref name="scene"/>.</param>
-        public Instance(Scene scene, int meshIndex, int transformIndex)
+        /// <param name="mesh">The mesh of the instance.</param>
+        /// <param name="transform">The transform of the instance.</param>
+        public Instance(Mesh mesh, Transform transform)
         {
-            MeshIndex = new SceneIndex<Mesh>(meshIndex, scene);
-            TransformIndex = new SceneIndex<Transform>(transformIndex, scene);
+            Mesh = mesh;
+            Transform = transform;
         }
 
         /// <summary>
         /// The mesh index of this instance.
         /// </summary>
-        public SceneIndex<Mesh> MeshIndex;
+        public Mesh Mesh;
 
         /// <summary>
         /// The transform index of this instance.
         /// </summary>
-        public SceneIndex<Transform> TransformIndex;
+        public Transform Transform;
     }
 }
