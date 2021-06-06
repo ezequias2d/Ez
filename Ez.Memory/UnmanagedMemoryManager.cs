@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Ez.Memory
 {
-    public class UnmanagedMemoryManager<T> : MemoryManager<T> where T : unmanaged
+    internal class UnmanagedMemoryManager<T> : MemoryManager<T> where T : unmanaged
     {
         public UnmanagedMemoryManager(IntPtr ptr, int length)
         {
