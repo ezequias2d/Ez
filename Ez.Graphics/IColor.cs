@@ -31,6 +31,18 @@ namespace Ez.Graphics
         /// </summary>
         /// <returns>A <see cref="ColorByte"/> representation of this <see cref="IColor"/>.</returns>
         ColorByte GetColorByte();
+
+        /// <summary>
+        /// Gets the representation of a <see cref="IColor"/> instance as <see cref="ColorInt"/>.
+        /// </summary>
+        /// <returns>A <see cref="ColorInt"/> representation of this <see cref="IColor"/>.</returns>
+        ColorInt GetColorInt();
+
+        /// <summary>
+        /// Gets the representation of a <see cref="IColor"/> instance as <see cref="ColorUInt"/>.
+        /// </summary>
+        /// <returns>A <see cref="ColorUInt"/> representation of this <see cref="IColor"/>.</returns>
+        ColorUInt GetColorUInt();
     }
 
     /// <summary>

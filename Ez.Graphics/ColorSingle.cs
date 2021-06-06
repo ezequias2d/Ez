@@ -7,7 +7,6 @@ using System;
 using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
-using System.Text;
 
 namespace Ez.Graphics
 {
@@ -17,6 +16,27 @@ namespace Ez.Graphics
     public readonly partial struct ColorSingle : IColor<float>, IEquatable<ColorSingle>
     {
         private readonly Vector4 _literal;
+
+        /// <summary>
+        /// Creates a new <see cref="ColorSingle"/> struct.
+        /// </summary>
+        /// <param name="r">The red component.</param>
+        /// <param name="g">The green component.</param>
+        /// <param name="b">The blue component.</param>
+        /// <param name="a">The alpha component.</param>
+        public ColorSingle(float r, float g, float b, float a)
+        {
+            _literal = new Vector4(r, g, b, a);
+        }
+
+        /// <summary>
+        /// Creates a new <see cref="ColorSingle"/> struct.
+        /// </summary>
+        /// <param name="channels">The vector containing the color components.</param>
+        public ColorSingle(Vector4 channels)
+        {
+            _literal = channels;
+        }
 
         /// <inheritdoc/>
         public float R => _literal.X;
@@ -29,27 +49,6 @@ namespace Ez.Graphics
 
         /// <inheritdoc/>
         public float A => _literal.W;
-
-        /// <summary>
-        /// Constructs a new ColorSingle from the given components.
-        /// </summary>
-        /// <param name="r">The red component.</param>
-        /// <param name="g">The green component.</param>
-        /// <param name="b">The blue component.</param>
-        /// <param name="a">The alpha component.</param>
-        public ColorSingle(float r, float g, float b, float a)
-        {
-            _literal = new Vector4(r, g, b, a);
-        }
-
-        /// <summary>
-        /// Constructs a new ColorSingle from the XYZW components of a vector.
-        /// </summary>
-        /// <param name="channels">The vector containing the color components.</param>
-        public ColorSingle(Vector4 channels)
-        {
-            _literal = channels;
-        }
 
         /// <summary>
         /// Converts this ColorSingle into a Vector4.
@@ -94,16 +93,23 @@ namespace Ez.Graphics
         /// <inheritdoc/>
         public ColorByte GetColorByte() => new ColorByte((byte)(R * 255), (byte)(G * 255), (byte)(B * 255), (byte)(A * 255));
 
+        /// <inheritdoc/>
+        public ColorInt GetColorInt() => new(ToInt(R), ToInt(G), ToInt(B), ToInt(A));
+
+        /// <inheritdoc/>
+        public ColorUInt GetColorUInt() => new(ToUInt(R), ToUInt(G), ToUInt(B), ToUInt(A));
+        
+        private static uint ToUInt(in float value) => (uint)(Math.Clamp(value, 0, 1) * uint.MaxValue);
+        private static int ToInt(in float value) => (int)(Math.Clamp(value, -1, 1) * (double)uint.MaxValue + int.MinValue);
+
         /// <summary>
         /// Element-wise equality.
         /// </summary>
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator ==(ColorSingle left, ColorSingle right)
-        {
-            return left.Equals(right);
-        }
+        public static bool operator ==(ColorSingle left, ColorSingle right) =>
+            left.Equals(right);
 
         /// <summary>
         /// Element-wise inequality.
@@ -111,10 +117,8 @@ namespace Ez.Graphics
         /// <param name="left">The first value.</param>
         /// <param name="right">The second value.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static bool operator !=(ColorSingle left, ColorSingle right)
-        {
-            return !left.Equals(right);
-        }
+        public static bool operator !=(ColorSingle left, ColorSingle right) => 
+            !left.Equals(right);
 
         /// <summary>
         /// Negates the specified color.

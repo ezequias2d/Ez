@@ -11,12 +11,12 @@ using System.Runtime.CompilerServices;
 namespace Ez.Graphics
 {
     /// <summary>
-    /// A color struct in 8-bits integer values in RGBA format.
+    /// A color struct in 8-bits unsigned integer values in RGBA format.
     /// </summary>
     public readonly struct ColorByte : IColor<byte>, IEquatable<ColorByte>
     {
         /// <summary>
-        /// Constructs a new ColorSingle from the given components.
+        /// Creates a new <see cref="ColorByte"/> struct.
         /// </summary>
         /// <param name="r">The red component.</param>
         /// <param name="g">The green component.</param>
@@ -55,6 +55,14 @@ namespace Ez.Graphics
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public ColorSingle GetColorSingle() =>
             new ColorSingle(new Vector4(R, G, B, A) * (1f / 255f));
+
+        /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ColorInt GetColorInt() => new(ToInt(R), ToInt(G), ToInt(B), ToInt(A));
+
+        /// <inheritdoc/>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public ColorUInt GetColorUInt() => new(ToUInt(R), ToUInt(G), ToUInt(B), ToUInt(A));
 
         /// <inheritdoc/>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -132,6 +140,10 @@ namespace Ez.Graphics
         {
             return !left.Equals(right);
         }
+
+        private static uint ToUInt(in byte value) => ((uint)value) << (3 * 8);
+
+        private static int ToInt(in byte value) => (int)(ToUInt(value) + int.MinValue);
 
         /// <summary>
         /// Red (255, 0, 0, 255)
