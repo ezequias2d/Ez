@@ -82,6 +82,22 @@ namespace Ez.Threading
         }
 
         /// <summary>
+        /// Gets or sets a value indicating the scheduling priority of the thread.
+        /// <para>
+        ///     The default value is <see cref="ThreadPriority.Normal"/>.
+        /// </para>
+        /// </summary>
+        public ThreadPriority Priority { get => _thread.Priority; set => _thread.Priority = value; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether or not a thread is a background thread.
+        /// <para>
+        ///     The default value is <see langword="true"/>.
+        /// </para>
+        /// </summary>
+        public bool IsBackground { get => _thread.IsBackground; set => _thread.IsBackground = value; }
+
+        /// <summary>
         /// Starts the execution of this <see cref="ThreadMethodExecutor"/>.
         /// </summary>
         public void StartThread() => _thread.Start();
