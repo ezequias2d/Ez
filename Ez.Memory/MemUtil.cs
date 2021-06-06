@@ -35,11 +35,11 @@ namespace Ez.Memory
         /// <typeparam name="T">The unmanaged type to measure.</typeparam>
         /// <param name="span">The span to measure</param>
         /// <returns>Size in bytes of <paramref name="span"/>.</returns>
-        public static ulong SizeOf<T>(ReadOnlySpan<T> span) where T : unmanaged
+        public static long SizeOf<T>(ReadOnlySpan<T> span) where T : unmanaged
         {
             unsafe
             {
-                return (ulong)span.Length * (ulong)sizeof(T);
+                return (long)span.Length * sizeof(T);
             }
         }
 
@@ -50,13 +50,8 @@ namespace Ez.Memory
         /// <param name="offset">The offset to add.</param>
         /// <returns>A new pointer that reflects the addition of <paramref name="offset"/> 
         /// to <paramref name="ptr"/>.</returns>
-        public static IntPtr Add(IntPtr ptr, ulong offset)
-        {
-            unsafe
-            {
-                return new IntPtr((byte*)ptr.ToPointer() + offset);
-            }
-        }
+        public static IntPtr Add(IntPtr ptr, long offset) => 
+            new IntPtr(ptr.ToInt64() + offset);
 
         /// <summary>
         /// Returns a value indicating whether an instance is anywhere in the array.
@@ -77,7 +72,7 @@ namespace Ez.Memory
 
                     while(current < max)
                     {
-                        if (Equals(current, &value, (ulong)sizeof(T)))
+                        if (Equals(current, &value, SizeOf<T>()))
                             return true;
                         current++;
                     }
@@ -107,7 +102,7 @@ namespace Ez.Memory
 
                 fixed (void* ptrA = a, ptrB = b)
                 {
-                    return Equals(ptrA, ptrB, (ulong)count * (ulong)sizeof(T));
+                    return Equals(ptrA, ptrB, SizeOf(a));
                 }
             }
         }
@@ -121,17 +116,17 @@ namespace Ez.Memory
         /// <param name="byteCount">The number of bytes to compare.</param>
         /// <returns><see langword="true"/> if the contents of the pointer <paramref name="a"/> 
         /// are equal to contents of the pointer <paramref name="b"/> by <paramref name="byteCount"/> bytes.</returns>
-        public static unsafe bool Equals(void* a, void* b, ulong byteCount)
+        public static unsafe bool Equals(void* a, void* b, long byteCount)
         {
-            ulong i1 = 0;
-            ulong i2 = 0;
-            ulong i4 = 0;
-            ulong i8 = 0;
+            var i1 = 0L;
+            var i2 = 0L;
+            var i4 = 0L;
+            var i8 = 0L;
 
-            ulong c8 = (byteCount >> 3);
-            ulong c4 = (byteCount - (c8 << 3)) >> 2;
-            ulong c2 = (byteCount - (c4 << 2) - (c8 << 3)) >> 1;
-            ulong c1 = (byteCount - (c2 << 1) - (c4 << 2) - (c8 << 3));
+            var c8 = (byteCount >> 3);
+            var c4 = (byteCount - (c8 << 3)) >> 2;
+            var c2 = (byteCount - (c4 << 2) - (c8 << 3)) >> 1;
+            var c1 = (byteCount - (c2 << 1) - (c4 << 2) - (c8 << 3));
 
             byte* aPos = (byte*)a;
             byte* bPos = (byte*)b;
@@ -183,26 +178,18 @@ namespace Ez.Memory
             {
                 fixed (T* spanPtr = span)
                 {
-                    Set(spanPtr, value, (ulong)span.Length * (ulong)sizeof(T));
+                    Set(spanPtr, value, SizeOf<T>(span));
                 }
             }
         }
 
-        public static unsafe void Set<TBuffer, TValue>(ReadOnlySpan<TBuffer> span, TValue value) where TBuffer : unmanaged where TValue : unmanaged
-        {
-            fixed (void* ptr = span)
-            {
-                Set((IntPtr)ptr, value, ((ulong)span.Length * (ulong)sizeof(TBuffer)) / (ulong)sizeof(TValue));
-            }
-        }
-
-        public static unsafe TValue Get<TBuffer, TValue>(ReadOnlySpan<TBuffer> span) where TBuffer : unmanaged where TValue :unmanaged
-        {
-            fixed (void* ptr = span)
-                return *(TValue*)ptr;
-        }
-
-        public static unsafe T Get<T>(IntPtr ptr) where T : unmanaged => *(T*)ptr.ToPointer();
+        /// <summary>
+        /// Turns a pointer into a ref <typeparamref name="T"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the reference.</typeparam>
+        /// <param name="ptr">The pointer to referenced memory.</param>
+        /// <returns>A T reference of <paramref name="ptr"/>.</returns>
+        public static unsafe ref T GetRef<T>(IntPtr ptr) where T : unmanaged => ref *(T*)ptr.ToPointer();
 
         /// <summary>
         /// Sets all first <paramref name="byteCount"/> bytes to the <paramref name="value"/> byte. 
@@ -210,8 +197,11 @@ namespace Ez.Memory
         /// <param name="memoryPtr">The pointer to the first byte.</param>
         /// <param name="value">The byte value to set.</param>
         /// <param name="byteCount">The number of bytes to set.</param>
-        public static unsafe void Set(void* memoryPtr, byte value, ulong byteCount)
+        public static unsafe void Set(void* memoryPtr, byte value, long byteCount)
         {
+            if (byteCount < 0)
+                throw new ArgumentOutOfRangeException(nameof(byteCount));
+
             if(byteCount <= uint.MaxValue)
                 Unsafe.InitBlockUnaligned(memoryPtr, value, (uint)byteCount);
             else
@@ -229,13 +219,27 @@ namespace Ez.Memory
         }
 
         /// <summary>
+        /// Sets all first <paramref name="byteCount"/> bytes to the <paramref name="value"/> byte. 
+        /// </summary>
+        /// <param name="memoryPtr">The pointer to the first byte.</param>
+        /// <param name="value">The byte value to set.</param>
+        /// <param name="byteCount">The number of bytes to set.</param>
+        public static void Set(IntPtr memoryPtr, byte value, long byteCount)
+        {
+            unsafe
+            {
+                Set((void*)memoryPtr, value, byteCount);
+            }
+        }
+
+        /// <summary>
         /// Sets all the first <paramref name="count"/> Ts to the <paramref name="value"/>.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="ptr">The pointer to the first T to set.</param>
         /// <param name="value">The value to set.</param>
         /// <param name="count">The number of Ts to set.</param>
-        public static unsafe void Set<T>(IntPtr ptr, in T value, ulong count) where T : unmanaged
+        public static unsafe void Set<T>(IntPtr ptr, in T value, long count) where T : unmanaged
         {
             var pptr = (T*)ptr;
             while (count > 0)
@@ -246,19 +250,23 @@ namespace Ez.Memory
             }
         }
 
-        public static unsafe void Set<T>(IntPtr ptr, in T value) where T : unmanaged =>
-            *((T*)ptr.ToPointer()) = value;
-
         /// <summary>
         /// Copies all data from one <see cref="ReadOnlySpan{T}"/> to a <see cref="Span{T}"/>.
         /// </summary>
         /// <typeparam name="T">The type of items in the <paramref name="destination"/> and <paramref name="source"/>.</typeparam>
         /// <param name="destination">The <see cref="Span{T}"/> that receives the data.</param>
         /// <param name="source">The <see cref="ReadOnlySpan{T}"/> that contains the data to copy.</param>
-        /// <returns>Number of bytes copied.</returns>
-        public static ulong Copy<T>(Span<T> destination, ReadOnlySpan<T> source) where T : unmanaged => Copy<T, T>(destination, source);
+        /// <returns>The number of bytes copied.</returns>
+        public static long Copy<T>(Span<T> destination, ReadOnlySpan<T> source) where T : unmanaged => Copy<T, T>(destination, source);
 
-        public static ulong Copy<T>(Span<T> destination, IntPtr source) where T : unmanaged =>
+        /// <summary>
+        /// Copies all data from <paramref name="source"/> to <paramref name="destination"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of items in <paramref name="destination"/>.</typeparam>
+        /// <param name="destination">The destination span.</param>
+        /// <param name="source">The source address to copy from.</param>
+        /// <returns>The number of bytes copied.</returns>
+        public static long Copy<T>(Span<T> destination, IntPtr source) where T : unmanaged =>
             Copy(destination, GetSpan<T>(source, destination.Length));
 
         /// <summary>
@@ -268,14 +276,14 @@ namespace Ez.Memory
         /// <typeparam name="TSource">The type of items in the <paramref name="source"/>.</typeparam>
         /// <param name="destination">The <see cref="Span{T}"/> that receives the data.</param>
         /// <param name="source">The <see cref="ReadOnlySpan{T}"/> that contains the data to copy.</param>
-        /// <returns>Number of bytes copied.</returns>
-        public static ulong Copy<TDestination, TSource>(Span<TDestination> destination, ReadOnlySpan<TSource> source) 
+        /// <returns>The number of bytes copied.</returns>
+        public static long Copy<TDestination, TSource>(Span<TDestination> destination, ReadOnlySpan<TSource> source) 
             where TDestination : unmanaged 
             where TSource : unmanaged
         {
             unsafe
             {
-                ulong srcSize = SizeOf(source);
+                var srcSize = SizeOf(source);
                 if (srcSize > SizeOf<TDestination>(destination))
                     throw new ArgumentOutOfRangeException($"The destination is too small to copy all data from the source. \nSource size: {srcSize} bytes.\nDestination size: {SizeOf<TDestination>(destination)} bytes.");
 
@@ -292,8 +300,8 @@ namespace Ez.Memory
         /// <typeparam name="T">The type of items in the <paramref name="src"/>.</typeparam>
         /// <param name="dst">The destination address to copy to.</param>
         /// <param name="src">The <see cref="ReadOnlySpan{T}"/> that contains the data to copy.</param>
-        /// <returns>Number of bytes copied.</returns>
-        public static unsafe ulong Copy<T>(IntPtr dst, ReadOnlySpan<T> src) where T : unmanaged => Copy(dst.ToPointer(), src);
+        /// <returns>The number of bytes copied.</returns>
+        public static unsafe long Copy<T>(IntPtr dst, ReadOnlySpan<T> src) where T : unmanaged => Copy(dst.ToPointer(), src);
 
         /// <summary>
         /// Copies all data from a <see cref="ReadOnlySpan{T}"/> to a destination address.
@@ -301,12 +309,12 @@ namespace Ez.Memory
         /// <typeparam name="T">The type of items in the <paramref name="src"/>.</typeparam>
         /// <param name="dst">The destination address to copy to.</param>
         /// <param name="src">The <see cref="ReadOnlySpan{T}"/> that contains the data to copy.</param>
-        /// <returns>Number of bytes copied.</returns>
-        public static unsafe ulong Copy<T>(void* dst, ReadOnlySpan<T> src) where T : unmanaged
+        /// <returns>The number of bytes copied.</returns>
+        public static unsafe long Copy<T>(void* dst, ReadOnlySpan<T> src) where T : unmanaged
         {
             fixed (void* srcPtr = src)
             {
-                ulong size = SizeOf(src);
+                var size = SizeOf(src);
                 Copy(dst, srcPtr, size);
                 return size;
             }
@@ -318,8 +326,8 @@ namespace Ez.Memory
         /// <typeparam name="T">The type of data to copy.</typeparam>
         /// <param name="dst">The destination address to copy to.</param>
         /// <param name="src">The value to copy.</param>
-        /// <returns>Number of bytes copied.</returns>
-        public static ulong Copy<T>(IntPtr dst, in T src) where T : unmanaged
+        /// <returns>The number of bytes copied.</returns>
+        public static long Copy<T>(IntPtr dst, in T src) where T : unmanaged
         {
             unsafe
             {
@@ -334,7 +342,7 @@ namespace Ez.Memory
         /// <param name="destination">The destination address to copy to.</param>
         /// <param name="source">The source address to copy from.</param>
         /// <param name="byteCount">The number of bytes to copy.</param>
-        public static unsafe void Copy(IntPtr destination, IntPtr source, ulong byteCount) => Copy((void*)destination, (void*)source, byteCount);
+        public static unsafe void Copy(IntPtr destination, IntPtr source, long byteCount) => Copy((void*)destination, (void*)source, byteCount);
 
         /// <summary>
         /// Copies bytes from the source address to the destination address.
@@ -342,7 +350,7 @@ namespace Ez.Memory
         /// <param name="destination">The destination address to copy to.</param>
         /// <param name="source">The source address to copy from.</param>
         /// <param name="byteCount">The number of bytes to copy.</param>
-        public static unsafe void Copy(void* destination, void* source, ulong byteCount)
+        public static unsafe void Copy(void* destination, void* source, long byteCount)
         {
             if(byteCount <= uint.MaxValue)
                 Unsafe.CopyBlockUnaligned(destination, source, (uint)byteCount);            
@@ -364,31 +372,73 @@ namespace Ez.Memory
 
         /// <summary>
         /// Gets the theoretical limit for an allocation.
-        /// <seealso cref="Alloc(ulong)"/>.
+        /// <seealso cref="Alloc(long)"/>.
         /// </summary>
-        public static readonly ulong MaxAllocSize =
-            // Maximum allocable memory based on the largest positive number that an IntPtr can represent.
-            (1ul << ((int)SizeOf<IntPtr>() * 8 - 1)) - 1ul;
+        public static readonly long MaxAllocSize = (long)IntPtr.MaxValue;
 
         /// <summary>
         /// Allocates memory from unmanaged memory of process.
         /// </summary>
         /// <param name="size">The required number of bytes in memory.</param>
-        /// <returns>A pointer to the newly allocated memory. This memory must be released using the <see cref="Free(void*)"/> method.</returns>
-        public static unsafe void* Alloc(ulong size) => Marshal.AllocHGlobal((IntPtr)size).ToPointer();
+        /// <returns>A pointer to the newly allocated memory. This memory must be released using
+        /// the <see cref="Free(IntPtr)"/> method.</returns>
+        public static unsafe IntPtr Alloc(long size) => Marshal.AllocHGlobal((IntPtr)size);
 
         /// <summary>
         /// Frees memory previously allocated from the unmanaged memory of the process.
         /// </summary>
-        /// <param name="ptr">The handle returned by the original matching call to <see cref="Alloc(ulong)"/>.</param>
-        public static unsafe void Free(void* ptr) => Marshal.FreeHGlobal((IntPtr)ptr);
+        /// <param name="ptr">The handle returned by the original matching call to <see cref="Alloc(long)"/>.</param>
+        public static unsafe void Free(IntPtr ptr) => Marshal.FreeHGlobal(ptr);
 
+        /// <summary>
+        /// Gets a <see cref="Span{T}"/> from a pointer and length.
+        /// </summary>
+        /// <typeparam name="T">The type of items in <see cref="Span{T}"/>.</typeparam>
+        /// <param name="ptr">A pointer to the starting address.</param>
+        /// <param name="length">The number of <typeparamref name="T"/> elements in <see cref="Span{T}"/></param>
+        /// <returns>The span of <paramref name="ptr"/> and <paramref name="length"/> params.</returns>
         public unsafe static Span<T> GetSpan<T>(IntPtr ptr, int length) where T : unmanaged =>
             new Span<T>((T*)ptr, length);
 
+        /// <summary>
+        /// Gets a <see cref="Memory{T}"/> from a pointer and length.
+        /// </summary>
+        /// <typeparam name="T">The type of items in <see cref="Memory{T}"/>.</typeparam>
+        /// <param name="ptr">A pointer to the starting address.</param>
+        /// <param name="length">The number of <typeparamref name="T"/> elements in <see cref="Memory{T}"/></param>
+        /// <returns>The span of <paramref name="ptr"/> and <paramref name="length"/> params.</returns>
         public unsafe static Memory<T> GetMemory<T>(IntPtr ptr, int length) where T : unmanaged =>
             new UnmanagedMemoryManager<T>(ptr, length).Memory;
 
+        /// <summary>
+        /// Gets a null-terminated UTF-8 string from a pointer.
+        /// </summary>
+        /// <param name="ptr">The pointer of memory to read from.</param>
+        /// <returns>A string with the characters read from <paramref name="ptr"/>.</returns>
         public static string GetUtf8String(IntPtr ptr) => Marshal.PtrToStringUTF8(ptr);
+
+        /// <summary>
+        /// Casts a span of one primitive type to a span of another primitive type.
+        /// </summary>
+        /// <typeparam name="TFrom">The type of source <paramref name="span"/>.</typeparam>
+        /// <typeparam name="TTo">The type of target span.</typeparam>
+        /// <param name="span">The source slice to convert.</param>
+        /// <returns>The converted span.</returns>
+        public unsafe static Span<TTo> Cast<TFrom, TTo>(Span<TFrom> span)
+            where TTo : unmanaged 
+            where TFrom : unmanaged =>
+            MemoryMarshal.Cast<TFrom, TTo>(span);
+
+        /// <summary>
+        /// Casts a read-only span of one primitive type to a span of another primitive type.
+        /// </summary>
+        /// <typeparam name="TFrom">The type of source <paramref name="span"/>.</typeparam>
+        /// <typeparam name="TTo">The type of target span.</typeparam>
+        /// <param name="span">The source slice to convert.</param>
+        /// <returns>The converted read-only span.</returns>
+        public unsafe static ReadOnlySpan<TTo> Cast<TFrom, TTo>(ReadOnlySpan<TFrom> span) 
+            where TTo : unmanaged 
+            where TFrom : unmanaged =>
+            MemoryMarshal.Cast<TFrom, TTo>(span);
     }
 }

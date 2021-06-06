@@ -12,7 +12,7 @@ namespace Ez.Memory
     public static class MemoryBlockPool
     {
         private static readonly ObjectPool<MemoryBlock, MemoryBlockSpecs> _objectPool;
-        private const ulong Tolerance = 268435456; // 256 MB
+        private const long Tolerance = 268435456; // 256 MB
         static MemoryBlockPool()
         {
             _objectPool = new ObjectPool<MemoryBlock, MemoryBlockSpecs>(new MemoryBlockPoolAssistant(Tolerance));
@@ -35,20 +35,20 @@ namespace Ez.Memory
         /// <param name="anyWithSize">Flag that says it can be any <see cref="MemoryBlock"/> with enough size.</param>
         /// <param name="tolerance">Number of attempts to get before creating a new memory block.</param>
         /// <returns>A <see cref="MemoryBlock"/> with at least the requested size.</returns>
-        public static MemoryBlock Get(ulong size, bool anyWithSize = false, int tolerance = 256) =>
+        public static MemoryBlock Get(long size, bool anyWithSize = false, int tolerance = 256) =>
             _objectPool.GetT(new MemoryBlockSpecs { Size = size, AnyWithSize = anyWithSize }, tolerance);
 
         internal struct MemoryBlockSpecs
         {
-            public ulong Size;
+            public long Size;
             public bool AnyWithSize;
         }
 
         internal class MemoryBlockPoolAssistant : IObjectPoolAssistant<MemoryBlock, MemoryBlockSpecs>
         {
-            private readonly ulong _tolerance;
-            private ulong _totalUsed;
-            public MemoryBlockPoolAssistant(ulong tolerance)
+            private readonly long _tolerance;
+            private long _totalUsed;
+            public MemoryBlockPoolAssistant(long tolerance)
             {
                 _tolerance = tolerance;
             }
