@@ -22,7 +22,7 @@ namespace Ez.Threading
         /// </summary>
         /// <param name="autostart">Auto starts the thread.</param>
         public ThreadMethodExecutor(bool autostart = true)
-        {
+        {   
             _thread = new Thread(Main)
             {
                 IsBackground = true
@@ -272,20 +272,7 @@ namespace Ez.Threading
             if (!_disposed)
             {
                 _disposed = true;
-                
-                if (_entries.Count != 0)
-                    _thread.Join();
-                else
-                {
-                    Action method = Abort;
-                    try
-                    {
-                        Invoke(method);
-                    } catch (Exception e)
-                    {
-                        Debug.WriteLine(e.Message);
-                    }
-                }
+                _thread.Join();
             }
         }
 
@@ -294,8 +281,5 @@ namespace Ez.Threading
         /// </summary>
         public void Dispose() =>
             Dispose(true);
-
-        private void Abort() =>
-            Thread.CurrentThread.Abort();
     }
 }
