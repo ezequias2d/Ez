@@ -15,6 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Ez\Ez.csproj" />
     <ProjectReference Include="..\Ez.Collections\Ez.Collections.csproj" />
   </ItemGroup>
 

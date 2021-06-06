@@ -6,7 +6,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Ez.Windowing.GLFW\Ez.Windowing.Glfw.csproj" />
+    <ProjectReference Include="..\Ez.Windowing\Ez.Windowing.csproj" />
+    <ProjectReference Include="..\Ez.Windowing.Glfw\Ez.Windowing.Glfw.csproj" />
   </ItemGroup>
 
 </Project>
