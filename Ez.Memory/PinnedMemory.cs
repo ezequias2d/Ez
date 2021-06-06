@@ -1,37 +1,50 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace Ez.Memory
 {
-    public struct PinnedMemory<T> : IReadOnlyList<T> where T : unmanaged
+    /// <summary>
+    /// Provides a implementation of <see cref="IPinnedMemory{T}"/> to wraps a
+    /// pinned memory pointer.
+    /// </summary>
+    /// <typeparam name="T">The type of elements in pinned memory.</typeparam>
+    public struct PinnedMemory<T> : IPinnedMemory<T> where T : unmanaged
     {
         private static readonly uint TSize = MemUtil.SizeOf<T>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ReadOnlyUnsafeList{T}"/> class that 
-        /// uses a specific fixed area of the memory.
+        /// Initializes a new instance of the <see cref="PinnedMemory{T}"/> struct.
         /// </summary>
         /// <param name="ptr">Pointer to the fixed memory.</param>
-        /// <param name="count">Number of T elements in the <see cref="ReadOnlyUnsafeList{T}"/>.</param>
+        /// <param name="count">Number of T elements in the <see cref="PinnedMemory{T}"/>.</param>
+        /// <param name="locker">An object to control access (optional, use <see langword="null"/> to disable).</param>
         public PinnedMemory(IntPtr ptr, int count, ReaderWriterLockSlim locker)
         {
             Ptr = ptr;
             Count = count;
-            Locker = locker;
+            ReaderWriterLock = locker;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PinnedMemory{T}"/> struct.
+        /// </summary>
+        /// <param name="ptr">Pointer to the fixed memory.</param>
+        /// <param name="count">Number of T elements in the <see cref="PinnedMemory{T}"/>.</param>
+        public PinnedMemory(IntPtr ptr, int count)
+            : this(ptr, count, new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion))
+        {
+
+        }
+
+        /// <inheritdoc/>
         public IntPtr Ptr { get; }
 
-        public ReaderWriterLockSlim Locker { get; }
+        /// <inheritdoc/>
+        public ReaderWriterLockSlim ReaderWriterLock { get; }
 
-        /// <summary>
-        /// Gets the element at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to get.</param>
-        /// <returns>The element of the specified index.</returns>
+        /// <inheritdoc/>
         public T this[int index]
         {
             get
@@ -39,12 +52,12 @@ namespace Ez.Memory
                 CheckIndex(index);
                 try
                 {
-                    Locker?.EnterReadLock();
-                    return MemUtil.Get<T>(GetPtr(index));
+                    ReaderWriterLock?.EnterReadLock();
+                    return MemUtil.GetRef<T>(GetPtr(index));
                 }
                 finally
                 {
-                    Locker?.ExitReadLock();
+                    ReaderWriterLock?.ExitReadLock();
                 }
             }
             set
@@ -52,18 +65,17 @@ namespace Ez.Memory
                 CheckIndex(index);
                 try
                 {
-                    Locker?.EnterWriteLock();
-                    MemUtil.Set(GetPtr(index), value);
+                    ReaderWriterLock?.EnterWriteLock();
+                    MemUtil.GetRef<T>(GetPtr(index)) = value;
                 }
                 finally
                 {
-                    Locker?.ExitWriteLock();
+                    ReaderWriterLock?.ExitWriteLock();
                 }
             }
         }
 
-        /// <summary>
-        /// Gets the number of elements contained in the <see cref="Read
+        /// <inheritdoc/>
         public int Count { get; }
 
         private IntPtr GetPtr(int index) => new IntPtr(Ptr.ToInt64() + index * TSize);
@@ -74,6 +86,7 @@ namespace Ez.Memory
                 throw new IndexOutOfRangeException();
         }
 
+        /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator()
         {
             for (var i = 0u; i < Count; i++)
@@ -82,7 +95,39 @@ namespace Ez.Memory
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
+        /// <summary>
+        /// Cast a <see cref="PinnedMemory{T}"/> to a <see cref="Span{T}"/>.
+        /// </summary>
+        /// <param name="memory">The <see cref="PinnedMemory{T}"/> to cast.</param>
         public static implicit operator Span<T>(PinnedMemory<T> memory) =>
             MemUtil.GetSpan<T>(memory.Ptr, memory.Count);
+
+        /// <summary>
+        /// Cast a <see cref="PinnedMemory{T}"/> to a <see cref="Memory{T}"/>.
+        /// </summary>
+        /// <param name="memory">The <see cref="PinnedMemory{T}"/> to cast.</param>
+        public static implicit operator Memory<T>(PinnedMemory<T> memory) =>
+            MemUtil.GetMemory<T>(memory.Ptr, memory.Count);
+
+        /// <summary>
+        /// Cast a <see cref="PinnedMemory{T}"/> to a <see cref="ReadOnlySpan{T}"/>.
+        /// </summary>
+        /// <param name="memory">The <see cref="PinnedMemory{T}"/> to cast.</param>
+        public static implicit operator ReadOnlySpan<T>(PinnedMemory<T> memory) =>
+            MemUtil.GetSpan<T>(memory.Ptr, memory.Count);
+
+        /// <summary>
+        /// Cast a <see cref="PinnedMemory{T}"/> to a <see cref="ReadOnlyMemory{T}"/>.
+        /// </summary>
+        /// <param name="memory">The <see cref="PinnedMemory{T}"/> to cast.</param>
+        public static implicit operator ReadOnlyMemory<T>(PinnedMemory<T> memory) =>
+            MemUtil.GetMemory<T>(memory.Ptr, memory.Count);
+
+        /// <summary>
+        /// Cast a <see cref="PinnedMemory{T}"/> to a <see cref="ReadOnlyPinnedMemory{T}"/>.
+        /// </summary>
+        /// <param name="memory">The <see cref="PinnedMemory{T}"/> to cast.</param>
+        public static implicit operator ReadOnlyPinnedMemory<T>(PinnedMemory<T> memory) =>
+            new(memory.Ptr, memory.Count, memory.ReaderWriterLock);
     }
 }
