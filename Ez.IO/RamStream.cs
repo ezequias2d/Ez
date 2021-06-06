@@ -64,10 +64,10 @@ namespace Ez.IO
                 {
                     if(value > 0)
                     {
-                        MemoryBlock newMemoryBlock = MemoryBlockPool.Get((ulong)value);
+                        MemoryBlock newMemoryBlock = MemoryBlockPool.Get(value);
 
                         if(_length > 0)
-                            MemUtil.Copy(newMemoryBlock.BaseIntPtr, _memoryBlock.BaseIntPtr, (ulong)_length);
+                            MemUtil.Copy(newMemoryBlock.Ptr, _memoryBlock.Ptr, _length);
 
                         if(_memoryBlock != MemoryBlock.Empty)
                             MemoryBlockPool.Return(_memoryBlock);
@@ -76,7 +76,7 @@ namespace Ez.IO
                     else
                         _memoryBlock = MemoryBlock.Empty;
                     
-                    _capacity = (long)_memoryBlock.TotalSize;
+                    _capacity = _memoryBlock.TotalSize;
                 }
             }
         }
@@ -129,7 +129,7 @@ namespace Ez.IO
 
                 EnsureNotClosed();
 
-                if ((ulong)value > MemUtil.MaxAllocSize)
+                if (value > MemUtil.MaxAllocSize)
                     throw new ArgumentOutOfRangeException($"The {nameof(value)} exceeds the maximum allocation.");
 
                 _position = value;
@@ -200,7 +200,7 @@ namespace Ez.IO
                 return 0;
 
             
-            MemUtil.Copy<byte>(buffer, MemUtil.Add(_memoryBlock.BaseIntPtr, (ulong)_position));
+            MemUtil.Copy<byte>(buffer, MemUtil.Add(_memoryBlock.Ptr, _position));
 
             _position += toRead;
 
@@ -228,7 +228,7 @@ namespace Ez.IO
         {
             EnsureNotClosed();
 
-            if ((ulong)offset > MemUtil.MaxAllocSize)
+            if (offset > MemUtil.MaxAllocSize)
                 throw new ArgumentOutOfRangeException(nameof(offset));
 
             switch (origin)
@@ -271,14 +271,14 @@ namespace Ez.IO
         /// or is greater than <see cref="MemUtil.MaxAllocSize"/>.</exception>
         public override void SetLength(long value)
         {
-            if (value < 0 || value > (long)MemUtil.MaxAllocSize)
+            if (value < 0 || value > MemUtil.MaxAllocSize)
                 throw new ArgumentOutOfRangeException(nameof(value));
 
             EnsureNotClosed();
 
             bool allocatedNewArray = EnsureCapacity(value);
             if(!allocatedNewArray && value > _length)
-                MemUtil.Set(MemUtil.Add(_memoryBlock.BaseIntPtr, (ulong)_length), 0, (ulong)(value - _length));
+                MemUtil.Set(MemUtil.Add(_memoryBlock.Ptr, _length), 0, value - _length);
                 
 
             _length = value;
@@ -311,7 +311,7 @@ namespace Ez.IO
                 _length = size;
             }
 
-            MemUtil.Copy(MemUtil.Add(_memoryBlock.BaseIntPtr, (ulong)_position), new ReadOnlySpan<byte>(buffer, offset, count));
+            MemUtil.Copy(MemUtil.Add(_memoryBlock.Ptr, _position), new ReadOnlySpan<byte>(buffer, offset, count));
             
             _position = size;
         }
@@ -328,8 +328,8 @@ namespace Ez.IO
                 if (newCapacity < _capacity * 2)
                     newCapacity = _capacity * 2;
 
-                if (_capacity * 2 > (long)MemUtil.MaxAllocSize)
-                    newCapacity = Math.Max(value, (long)MemUtil.MaxAllocSize);
+                if (_capacity * 2 > MemUtil.MaxAllocSize)
+                    newCapacity = Math.Max(value, MemUtil.MaxAllocSize);
 
                 Capacity = newCapacity;
                 return true;

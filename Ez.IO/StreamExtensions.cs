@@ -97,10 +97,9 @@ namespace Ez.IO
         /// <param name="value">The T structure to written.</param>
         public static void WriteStructure<T>(this Stream stream, T value) where T : unmanaged
         {
-            byte[] buffer = new byte[MemUtil.SizeOf<T>()];
-
-            MemUtil.Set<byte, T>(buffer, value);
-
+            var buffer = new byte[MemUtil.SizeOf<T>()];
+            var span = MemUtil.Cast<byte, T>(buffer);
+            span[0] = value;
             stream.Write(buffer, 0, buffer.Length);
         }
 
@@ -114,7 +113,8 @@ namespace Ez.IO
         {
             byte[] buffer = new byte[MemUtil.SizeOf<T>()];
             stream.Read(buffer, 0, buffer.Length);
-            return MemUtil.Get<byte, T>(buffer);
+            var span = MemUtil.Cast<byte, T>(buffer);
+            return span[0];
         }
 
         /// <summary>
