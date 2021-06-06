@@ -14,6 +14,7 @@ namespace Ez.Threading
         private readonly ManualResetEventSlim _resetEvent;
         private Delegate _method;
         private object[] _args;
+        private bool _isDisposed;
 
         internal ThreadMethodEntry()
         {
@@ -53,11 +54,12 @@ namespace Ez.Threading
         public void Set()
         {
             _resetEvent.Reset();
+            _isDisposed = false;
         }
 
         public void Wait()
         {
-            if(!IsCompleted)
+            if (!IsCompleted)
                 _resetEvent.Wait();
         }
 
@@ -106,7 +108,7 @@ namespace Ez.Threading
                     else
                         eventHandler(_args[0], (EventArgs)_args[1]);
                 }
-                else if(_method is WaitCallback waitCallback)
+                else if (_method is WaitCallback waitCallback)
                 {
                     Debug.Assert(_args.Length == 1, "Number of argument is wrong for WaitCallback delegate.");
                     waitCallback(_args[0]);
@@ -139,6 +141,10 @@ namespace Ez.Threading
 
         private void Dispose(bool disposing)
         {
+            if (_isDisposed)
+                return;
+            _isDisposed = true;
+
             if (disposing)
                 ThreadMethodEntryPool.Return(this);
             else
