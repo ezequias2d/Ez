@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Ez.Memory
 {
@@ -30,27 +28,22 @@ namespace Ez.Memory
         /// <summary>
         /// Gets the total bytes not sub-allocated in <see cref="MemoryBlock"/>.
         /// </summary>
-        public ulong RemainingSize => _memoryBlock.RemainingSize;
+        public long RemainingSize => _memoryBlock.RemainingSize;
 
         /// <summary>
         /// Gets the size of <see cref="MemoryBlock"/> in bytes.
         /// </summary>
-        public ulong TotalSize => _memoryBlock.TotalSize;
+        public long TotalSize => _memoryBlock.TotalSize;
 
         /// <summary>
         /// Gets the total bytes sub-allocated in <see cref="MemoryBlock"/>.
         /// </summary>
-        public ulong TotalUsed => _memoryBlock.TotalUsed;
+        public long TotalUsed => _memoryBlock.TotalUsed;
 
         /// <summary>
         /// The base pointer to the memory allocated by <see cref="MemoryBlock"/>.
         /// </summary>
-        public IntPtr BaseIntPtr => _memoryBlock.BaseIntPtr;
-
-        /// <summary>
-        /// The base pointer to the memory allocated by <see cref="MemoryBlock"/>.
-        /// </summary>
-        public unsafe byte* BasePtr => _memoryBlock.BasePtr;
+        public IntPtr BaseIntPtr => _memoryBlock.Ptr;
 
         /// <summary>
         /// Sub-allocates a part of the <see cref="MemoryBlock"/>.
@@ -58,7 +51,7 @@ namespace Ez.Memory
         /// <param name="size">The size in bytes of the sub-allocation.</param>
         /// <param name="ptr">Contains the pointer to the sub-allocated area, if there is enough memory, otherwise null.</param>
         /// <returns></returns>
-        public unsafe bool Alloc(ulong size, out void* ptr) => _memoryBlock.Alloc(size, out ptr);
+        public unsafe bool TryAlloc(long size, out IntPtr ptr) => _memoryBlock.TryAlloc(size, out ptr);
 
         /// <summary>
         /// Resets the sub-allocated memory to the initial state, without sub-allocated memory.

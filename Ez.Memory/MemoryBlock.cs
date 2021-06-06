@@ -3,39 +3,36 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Text;
+using System.Threading;
 
 namespace Ez.Memory
 {
     /// <summary>
     /// Represents an unmanaged memory block.
     /// </summary>
-    public unsafe class MemoryBlock : IDisposable, IResettable
+    public class MemoryBlock : IMemoryBlock
     {
         /// <summary>
         /// returns an empty <see cref="MemoryBlock"/> object.
         /// </summary>
-        public static MemoryBlock Empty => new MemoryBlock();
+        public static MemoryBlock Empty => new();
 
         /// <summary>
         /// The default size of a <see cref="MemoryBlock"/>.
         /// </summary>
-        public const ulong DefaultStorageBlockSize = 65536;
+        public const long DefaultStorageBlockSize = 65536;
 
         // The end of suballocated memory.
-        private ulong _end;
+        private long _end;
         private bool _disposed;
 
         /// <summary>
         /// Initializes a new instance of <see cref="MemoryBlock"/> class.
         /// </summary>
         /// <param name="storageBlockSize">The size of memory in <see cref="MemoryBlock"/>. <seealso cref="MemUtil.MaxAllocSize"/></param>
-        public MemoryBlock(ulong storageBlockSize = DefaultStorageBlockSize)
+        public MemoryBlock(long storageBlockSize = DefaultStorageBlockSize)
         {
-            BasePtr = (byte*)MemUtil.Alloc(storageBlockSize);
+            Ptr = MemUtil.Alloc(storageBlockSize);
             TotalSize = storageBlockSize;
             _end = 0;
             _disposed = false;
@@ -46,7 +43,7 @@ namespace Ez.Memory
         /// </summary>
         internal MemoryBlock()
         {
-            BasePtr = null;
+            Ptr = IntPtr.Zero;
             TotalSize = 0;
             _end = 0;
             _disposed = true;
@@ -60,71 +57,100 @@ namespace Ez.Memory
         /// <summary>
         /// Gets the total bytes not sub-allocated in <see cref="MemoryBlock"/>.
         /// </summary>
-        public ulong RemainingSize => TotalSize - TotalUsed;
+        public long RemainingSize => TotalSize - TotalUsed;
 
         /// <summary>
         /// Gets the size of <see cref="MemoryBlock"/> in bytes.
         /// </summary>
-        public ulong TotalSize { get; }
+        public long TotalSize { get; }
 
         /// <summary>
         /// Gets the total bytes sub-allocated in <see cref="MemoryBlock"/>.
         /// </summary>
-        public ulong TotalUsed => _end;
+        public long TotalUsed => _end;
 
         /// <summary>
         /// The base pointer to the memory allocated by <see cref="MemoryBlock"/>.
         /// </summary>
-        public IntPtr BaseIntPtr => new IntPtr(BasePtr);
-
-        /// <summary>
-        /// The base pointer to the memory allocated by <see cref="MemoryBlock"/>.
-        /// </summary>
-        public byte* BasePtr { get; }
+        public IntPtr Ptr { get; }
 
         /// <summary>
         /// Releases all allocated memory.
         /// </summary>
         public void Dispose() => Dispose(true);
 
-        private void Dispose(bool _)
+        private unsafe void Dispose(bool _)
         {
             if (!_disposed)
             {
                 _disposed = true;
-                Marshal.FreeHGlobal((IntPtr)BasePtr);
+                MemUtil.Free(Ptr);
             }
         }
 
-        /// <summary>
-        /// Sub-allocates a part of the <see cref="MemoryBlock"/>.
-        /// </summary>
-        /// <param name="size">The size in bytes of the sub-allocation.</param>
-        /// <param name="ptr">Contains the pointer to the sub-allocated area, if there is enough memory, otherwise null.</param>
-        /// <returns></returns>
-        public bool Alloc(ulong size, out void* ptr)
+        /// <inheritdoc/>
+        public bool TryAlloc(long size, out IntPtr ptr)
         {
+            CheckSize(size);
+
             if (size <= RemainingSize)
             {
-                ptr = BasePtr + _end;
+                ptr = new IntPtr(Ptr.ToInt64() + _end);
                 _end += size;
                 return true;
             }
-            ptr = null;
+            ptr = IntPtr.Zero;
             return false;
         }
 
-        /// <summary>
-        /// Resets the sub-allocated memory to the initial state, without sub-allocated memory.
-        /// </summary>
+        /// <inheritdoc/>
+        public IntPtr AllocIntPtr(long size)
+        {
+            if (TryAlloc(size, out var ptr))
+                return ptr;
+            throw new ArgumentOutOfRangeException(nameof(size));
+        }
+
+        /// <inheritdoc/>
+        public PinnedMemory<T> AllocPinnedMemory<T>(int length) where T : unmanaged
+        {
+            if (TryAllocPinnedMemory<T>(length, out var memory))
+                return memory;
+            throw new ArgumentOutOfRangeException(nameof(length));
+        }
+
+        /// <inheritdoc/>
+        public bool TryAllocPinnedMemory<T>(int length, out PinnedMemory<T> memory) where T : unmanaged
+        {
+            CheckSize(length);
+
+            var size = MemUtil.SizeOf<T>() * length;
+
+            if (TryAlloc(size, out var ptr))
+            {
+                memory = new PinnedMemory<T>(ptr, length, new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion));
+                return true;
+            }
+            memory = default;
+            return false;
+        }
+
+        /// <inheritdoc/>
         public void Reset()
         {
             _end = 0;
-            MemUtil.Set(BasePtr, 0, TotalSize);
         }
-        void IResettable.Set()
+
+        /// <inheritdoc/>
+        public void Set()
         {
-            
+            MemUtil.Set(Ptr, 0, TotalSize);
+        }
+
+        private void CheckSize(long size)
+        {
+            if (size <= 0)
+                throw new ArgumentOutOfRangeException();
         }
     }
 }
