@@ -81,11 +81,30 @@ namespace Ez.Numerics
 
         #region static
         #region properties
-        public static Point3 One { get; } = new Point3(1);
-        public static Point3 Zero { get; } = new Point3(0);
-        public static Point3 UnitX { get; } = new Point3(1, 0, 0);
-        public static Point3 UnitY { get; } = new Point3(0, 1, 0);
-        public static Point3 UnitZ { get; } = new Point3(0, 0, 1);
+        /// <summary>
+        /// Gets a point whose 3 elements are equal to one.
+        /// </summary>
+        public static Point3 One => new(1);
+
+        /// <summary>
+        /// Gets a point whose 3 elements are equal to zero.
+        /// </summary>
+        public static Point3 Zero => new(0);
+
+        /// <summary>
+        /// Gets the point (1, 0, 0).
+        /// </summary>
+        public static Point3 UnitX => new(1, 0, 0);
+
+        /// <summary>
+        /// Gets the point (0, 1, 0).
+        /// </summary>
+        public static Point3 UnitY => new(0, 1, 0);
+
+        /// <summary>
+        /// Gets the point (0, 0, 1).
+        /// </summary>
+        public static Point3 UnitZ => new(0, 0, 1);
         #endregion
         #region methods
         /// <summary>
