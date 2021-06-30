@@ -368,11 +368,17 @@ namespace Ez.Windowing.GLFW.Native
         [DllImport(LibraryName, EntryPoint = "glfwGetX11Window")]
         public static extern uint GetX11Window(Window window);
 
+        [DllImport(LibraryName, EntryPoint = "glfwGetX11Display")]
+        public static extern IntPtr GetX11Display();
+
         [DllImport(LibraryName, EntryPoint = "glfwGetGLXWindow")]
         public static extern uint GetGLXWindow(Window window);
 
         [DllImport(LibraryName, EntryPoint = "glfwGetWaylandWindow")]
         public static extern IntPtr GetWaylandWindow(Window window);
+
+        [DllImport(LibraryName, EntryPoint = "glfwGetWaylandDisplay")]
+        public static extern IntPtr GetWaylandDisplay();
 
         [DllImport(LibraryName, EntryPoint = "glfwPollEvents")]
         public static extern void PollEvents();
