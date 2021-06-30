@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Numerics;
 using System.ComponentModel;
@@ -268,10 +268,16 @@ namespace Ez.Windowing
         OpenGLContext GetOpenGLContext();
 
         /// <summary>
-        /// Gets a <see cref="VulkanContext"/> needed to use Vulkan.
+        /// Gets a <see cref="VulkanRequiredExtensions"/> needed to use Vulkan.
         /// </summary>
-        /// <returns>A <see cref="VulkanContext"/> instance.</returns>
-        VulkanContext GetVulkanContext();
+        /// <returns>A <see cref="VulkanRequiredExtensions"/> instance.</returns>
+        VulkanRequiredExtensions GetVulkanRequiredExtensions();
+
+        /// <summary>
+        /// Gets the swapchain source for this window.
+        /// </summary>
+        /// <returns>The swapchain source for this window.</returns>
+        ISwapchainSource GetSwapchainSource();
         #endregion
     }
 }

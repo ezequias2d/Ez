@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Drawing;
 using System.Numerics;
 using System.Threading;
@@ -617,6 +617,37 @@ namespace Ez.Windowing.GLFW
             _closeEvent.WaitOne();
         }
 
+        public ISwapchainSource GetSwapchainSource()
+        {
+            if (OperatingSystem.IsWindows())
+            {
+                var hwnd = Glfw.GetWin32Window(Handle);
+                return new Win32SwapchainSource(hwnd, Handle);
+            }
+
+            if (OperatingSystem.IsMacOS())
+            {
+                var nswindow = Glfw.GetCocoaWindow(Handle);
+                return new NSWindowSwapchainSource(nswindow);
+            }
+            
+            if(Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                var window = (IntPtr)Glfw.GetX11Window(Handle);
+                var display = Glfw.GetX11Display();
+                if(Glfw.GetError().ErrorCode == ErrorCode.NoError)
+                    return new XlibSwapchainSource(display, window);
+                
+                var surface = Glfw.GetWaylandWindow(Handle);
+                display = Glfw.GetWaylandDisplay();
+
+                if (Glfw.GetError().ErrorCode == ErrorCode.NoError)
+                    return new WaylandSwapchainSource(display, surface);
+            }
+
+            throw new PlatformNotSupportedException();
+        }
+
         #endregion
 
         #region private methods
@@ -652,6 +683,22 @@ namespace Ez.Windowing.GLFW
             }), (result) => _glfwThread.EndInvoke(result));
         }
 
+        public OpenGLContext GetOpenGLContext() =>
+            new OpenGLContext(
+                handle:Handle,
+                getProcAddress: Glfw.GetProcAddress,
+                makeCurrent: Glfw.MakeContextCurrent,
+                getCurrentContext: Glfw.GetCurrentContext,
+                clearCurrentContext: ()=> Glfw.MakeContextCurrent(IntPtr.Zero),
+                swapBuffers: Glfw.SwapBuffers,
+                setSyncToVerticalBlank: (b) => Glfw.SwapInterval(b ? 1 : 0),
+                resizeSwapchain: (x, y) => Size = new Size((int)x, (int)y));
+
+        public VulkanRequiredExtensions GetVulkanRequiredExtensions() =>
+            new VulkanRequiredExtensions(Glfw.GetRequiredInstanceExtensions(), Enumerable.Empty<string>());
+        #endregion
+
+        #region private methods
         private bool PreProcessEvents()
         {
             if (IsExiting)
@@ -798,21 +845,6 @@ namespace Ez.Windowing.GLFW
                 if (Glfw.JoystickPresent(i))
                     window._joystickStates[i] = new GlfwJoystickState(i);
         }
-
-        public OpenGLContext GetOpenGLContext() =>
-            new OpenGLContext(
-                handle:Handle,
-                getProcAddress: Glfw.GetProcAddress,
-                makeCurrent: Glfw.MakeContextCurrent,
-                getCurrentContext: Glfw.GetCurrentContext,
-                clearCurrentContext: ()=> Glfw.MakeContextCurrent(IntPtr.Zero),
-                swapBuffers: Glfw.SwapBuffers,
-                setSyncToVerticalBlank: (b) => Glfw.SwapInterval(b ? 1 : 0),
-                resizeSwapchain: (x, y) => Size = new Size((int)x, (int)y));
-
-        public VulkanContext GetVulkanContext() =>
-            new VulkanContext(
-                    getInstanceProcAddress: (h, s) => Glfw.GetInstanceProcAddress((VkHandle)h, s));
 
         #endregion
     }
