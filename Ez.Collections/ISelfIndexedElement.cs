@@ -3,15 +3,13 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Ez.Collections
 {
     /// <summary>
     /// An element that can be auto indexing.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The type of key property.</typeparam>
     public interface ISelfIndexedElement<T>
     {
         /// <summary>
