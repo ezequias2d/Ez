@@ -59,16 +59,17 @@ namespace Ez.Collections
             Array.ConvertAll(us, (U u) => (T)u);
 
         /// <summary>
-        /// Resize <paramref name="array"/> to <paramref name="size"/>, or creates a new array, if <paramref name="array"/> is null.
+        /// Resize <paramref name="array"/> to <paramref name="size"/> if it is leass than <paramref name="size"/>, 
+        /// or creates a new array, if <paramref name="array"/> is null.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="array"></param>
-        /// <param name="size"></param>
+        /// <typeparam name="T">The type of elements in the <paramref name="array"/>.</typeparam>
+        /// <param name="array">The array that will be affected.</param>
+        /// <param name="size">The minimum size required.</param>
         public static void MinimumArray<T>(ref T[] array, int size)
         {
             if (array == null)
                 array = new T[size];
-            else
+            else if(array.Length < size)
                 Array.Resize(ref array, size);
         }
 
