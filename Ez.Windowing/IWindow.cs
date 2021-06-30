@@ -1,10 +1,9 @@
-using System;
+﻿using System;
 using System.Drawing;
-using System.Numerics;
 using System.ComponentModel;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ez.Graphics.Contexts;
+using Ez.Graphics.Context;
 
 namespace Ez.Windowing
 {
@@ -45,9 +44,14 @@ namespace Ez.Windowing
         int Height { get; set; }
 
         /// <summary>
-        /// Gets or sets the size of the <see cref="IWindow"/>.
+        /// Gets or sets the size of the <see cref="IWindow"/> in screen coordinates.
         /// </summary>
         Size Size { get; set; }
+
+        /// <summary>
+        /// Gets the size of the <see cref="IWindow"/> in pixels.
+        /// </summary>
+        Size FramebufferSize { get; }
 
         /// <summary>
         /// Gets the native <see cref="IWindow"/> pointer.

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.Numerics;
 using System.Threading;
@@ -10,6 +10,9 @@ using Ez.Windowing.GLFW.Native.Enums;
 using Monitor = Ez.Windowing.GLFW.Native.Monitor;
 using System.Threading.Tasks;
 using Ez.Graphics.Contexts;
+using System.Linq;
+using Ez.Graphics.Context;
+using Ez.Graphics.Context.SwapchainSources;
 
 namespace Ez.Windowing.GLFW
 {
@@ -27,7 +30,6 @@ namespace Ez.Windowing.GLFW
 
         #region callbacks
         private readonly GlfwCallbacks.WindowPosCallback _windowPosCallback;
-        private readonly GlfwCallbacks.WindowSizeCallback _windowSizeCallback;
         private readonly GlfwCallbacks.WindowIconifyCallback _windowIconifyCallback;
         private readonly GlfwCallbacks.WindowMaximizeCallback _windowMaximizeCallback;
         private readonly GlfwCallbacks.WindowFocusCallback _windowFocusCallback;
@@ -56,6 +58,7 @@ namespace Ez.Windowing.GLFW
         private ReaderWriterPropertyWrapper<bool> _isFocused;
         private ReaderWriterPropertyWrapper<bool> _isExiting;
         private ReaderWriterPropertyWrapper<bool> _exist;
+        private ReaderWriterPropertyWrapper<Size> _framebufferSize;
 
 
         // resolution and position of window before fullscreen window mode.
@@ -93,6 +96,7 @@ namespace Ez.Windowing.GLFW
             _isFocused = new(false);
             _isExiting = new(false);
             _exist = new(true);
+            _framebufferSize = new(createInfo.Size);
 
             API = createInfo.API;
             APIVersion = createInfo.APIVersion;
@@ -105,7 +109,6 @@ namespace Ez.Windowing.GLFW
 
             // These lambdas must be assigned to fields to prevent them from being garbage collected
             _windowPosCallback = (wh, x, y) => Moved?.Invoke(this, new Point(x, y));
-            _windowSizeCallback = (wh, w, h) => SizeChanged?.Invoke(this, new Size(w, h));
             _windowIconifyCallback = (wh, iconified) => WindowStadeChange?.Invoke(this, WindowState.Minimized);
             _windowMaximizeCallback = (wh, maximized) =>
             {
@@ -290,6 +293,9 @@ namespace Ez.Windowing.GLFW
                 Glfw.GetWindowPosition(handle, out var x, out var y);
                 _x.Value = x;
                 _y.Value = y;
+
+                Glfw.GetFramebufferSize(handle, out var width, out var height);
+                _framebufferSize.Value = new Size(width, height);
 
                 Glfw.SetInputMode(handle, LockKeyModAttribute.LockKeyMods, true);
 
@@ -577,6 +583,8 @@ namespace Ez.Windowing.GLFW
         }
         bool IWindow.IsExiting { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
+        public Size FramebufferSize => _framebufferSize;
+
         #endregion
 
         #region events
@@ -648,9 +656,6 @@ namespace Ez.Windowing.GLFW
             throw new PlatformNotSupportedException();
         }
 
-        #endregion
-
-        #region private methods
         public void ProcessEvents()
         {
             if (!PreProcessEvents())
@@ -818,10 +823,22 @@ namespace Ez.Windowing.GLFW
 
         }
 
+        private void ChangeWindowSize(Window window, int width, int height)
+        {
+            _width.Value = width;
+            _height.Value = height;
+            SizeChanged?.Invoke(this, new Size(width, height));
+        }
+
+        private void ChangeFramebufferSize(Window window, int width, int height)
+        {
+            _framebufferSize.Value = new Size(width, height);
+        }
+
         private static void RegisterWindowCallbacks(GlfwWindow window, Native.Window handle)
         {
             Glfw.SetWindowPosCallback(handle, window._windowPosCallback);
-            Glfw.SetWindowSizeCallback(handle, window._windowSizeCallback);
+            Glfw.SetWindowSizeCallback(handle, window.ChangeWindowSize);
             Glfw.SetWindowIconifyCallback(handle, window._windowIconifyCallback);
             Glfw.SetWindowMaximizeCallback(handle, window._windowMaximizeCallback);
             Glfw.SetWindowFocusCallback(handle, window._windowFocusCallback);
@@ -836,6 +853,8 @@ namespace Ez.Windowing.GLFW
             Glfw.SetCursorPosCallback(handle, window._cursorPosCallback);
             Glfw.SetDropCallback(handle, window._dropCallback);
             Glfw.SetJoystickCallback(window._joystickCallback);
+            
+            Glfw.SetFramebufferSizeCallback(handle, window.ChangeFramebufferSize);
         }
 
         private static void InitialiseJoystrickState(GlfwWindow window)
