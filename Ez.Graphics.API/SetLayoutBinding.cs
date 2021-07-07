@@ -4,7 +4,6 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using System;
 
-using Ez.Graphics.API.Enums;
 using Ez.Numerics;
 
 namespace Ez.Graphics.API
