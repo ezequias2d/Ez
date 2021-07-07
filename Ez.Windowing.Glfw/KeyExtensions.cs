@@ -1,4 +1,4 @@
-using Ez.Windowing.GLFW.Native.Enums;
+﻿using Ez.Windowing.GLFW.Native.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -254,7 +254,7 @@ namespace Ez.Windowing.GLFW.Native
                 case Keys.World2:
                     return Key.LastKey + 2;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(key));
+                    throw new ArgumentOutOfRangeException(nameof(key), $"{nameof(key)}: {key}");
             }
         }
 
@@ -294,7 +294,7 @@ namespace Ez.Windowing.GLFW.Native
                 case InputAction.Repeat:
                     return KeyEvent.Repeat;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(inputAction));
+                    throw new ArgumentOutOfRangeException(nameof(inputAction), $"{nameof(inputAction)}: {inputAction}");
             }
         }
 
@@ -334,7 +334,7 @@ namespace Ez.Windowing.GLFW.Native
                 case CursorModeValue.CursorNormal:
                     return CursorMode.Visible;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(value));
+                    throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(value)}: {value}");
             }
         }
     }
