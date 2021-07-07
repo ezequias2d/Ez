@@ -255,6 +255,16 @@ namespace Ez.Windowing.GLFW.Native.Enums
         GraveAccent = 96 /* ` */,
 
         /// <summary>
+        /// non-US #1
+        /// </summary>
+        World1 = 161,
+
+        /// <summary>
+        /// non-US #2
+        /// </summary>
+        World2 = 162,
+
+        /// <summary>
         /// The escape key.
         /// </summary>
         Escape = 256,
