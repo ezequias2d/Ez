@@ -13,7 +13,6 @@ namespace Ez.Graphics.API.CreateInfos
 {
     /// <summary>
     /// Describes a <see cref="IFramebuffer"/> object.
-    /// <seealso cref="IResourceFactory"/>.
     /// </summary>
     public struct FramebufferCreateInfo : IEquatable<FramebufferCreateInfo>
     {

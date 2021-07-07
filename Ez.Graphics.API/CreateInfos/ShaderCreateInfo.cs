@@ -13,7 +13,6 @@ namespace Ez.Graphics.API.CreateInfos
 {
     /// <summary>
     /// Describes a <see cref="IShader"/> object.
-    /// <seealso cref="IResourceFactory"/>.
     /// </summary>
     public struct ShaderCreateInfo : IEquatable<ShaderCreateInfo>
     {

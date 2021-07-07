@@ -13,8 +13,6 @@ namespace Ez.Graphics.API.CreateInfos
 {
     /// <summary>
     /// Describes a <see cref="ISwapchain"/> object.
-    /// 
-    /// <seealso cref="IResourceFactory"/>
     /// </summary>
     public struct SwapchainCreateInfo : IEquatable<SwapchainCreateInfo>
     {

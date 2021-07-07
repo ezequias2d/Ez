@@ -14,7 +14,6 @@ namespace Ez.Graphics.API.CreateInfos
 {
     /// <summary>
     /// Describes a <see cref="IPipeline"/> object.
-    /// <seealso cref="IResourceFactory"/>.
     /// </summary>
     public struct PipelineCreateInfo : IEquatable<PipelineCreateInfo>
     {

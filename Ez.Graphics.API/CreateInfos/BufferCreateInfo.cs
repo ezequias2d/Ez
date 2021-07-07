@@ -11,7 +11,6 @@ namespace Ez.Graphics.API.CreateInfos
 {
     /// <summary>
     /// Describes a <see cref="IBuffer"/> object.
-    /// <seealso cref="IResourceFactory"/>.
     /// </summary>
     public struct BufferCreateInfo : IEquatable<BufferCreateInfo>
     {
