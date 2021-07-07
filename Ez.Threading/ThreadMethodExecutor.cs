@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 namespace Ez.Threading
 {
@@ -245,7 +246,10 @@ namespace Ez.Threading
             Debug.Assert(entry.IsCompleted, "Oops, this should have been done.");
 
             if (entry.Exception != null)
-                throw entry.Exception;
+            {
+                ExceptionDispatchInfo.Capture(entry.Exception).Throw();
+                throw new Exception();
+            }
             return entry.ReturnValue;
         }
 
