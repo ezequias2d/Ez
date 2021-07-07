@@ -1,4 +1,4 @@
-﻿using Ez.Windowing.GLFW.Native.Enums;
+using Ez.Windowing.GLFW.Native.Enums;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -249,6 +249,10 @@ namespace Ez.Windowing.GLFW.Native
                     return Key.Y;
                 case Keys.Z:
                     return Key.Z;
+                case Keys.World1:
+                    return Key.LastKey + 1;
+                case Keys.World2:
+                    return Key.LastKey + 2;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(key));
             }
