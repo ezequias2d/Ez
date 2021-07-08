@@ -55,11 +55,5 @@ namespace Ez.Graphics.API
         /// <see cref="ICommandBuffer.DispatchIndirect(IBuffer, long)"/>.
         /// </summary>
         IndirectBuffer = 1 << 6,
-        /// <summary>
-        /// Indicates that a <see cref="IBuffer"/> is host visible.<br/>        
-        /// Host Buffers can use all <see cref="MapMode"/> values in
-        /// <see cref="IMappableResource.Map(MapMode, uint)"/>.
-        /// </summary>
-        HostBuffer = 1 << 7,
     }
 }

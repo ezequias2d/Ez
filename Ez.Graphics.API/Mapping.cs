@@ -25,18 +25,16 @@ namespace Ez.Graphics.API.Resources
         /// <paramref name="resource"/>.
         /// </summary>
         /// <param name="resource">The resource to map.</param>
-        /// <param name="mapMode">The map mode.</param>
         /// <param name="subresource">The subresource to map. For <see cref="ITexture"/> are 
         /// indexed first by mip slice, then by array layer.
         /// (see <see cref="GraphicsApiHelper.CalculateSubresource(ITexture, uint, uint)"/> and 
         /// <see cref="GraphicsApiHelper.GetSubresourceLevelAndLayer(ITexture, uint, out uint, out uint)"/>)</param>
-        public Mapping(IMappableResource resource, MapMode mapMode, uint subresource)
+        public Mapping(IMappableResource resource, uint subresource)
         {
             Resource = resource;
-            MapMode = mapMode;
             _subresource = subresource;
 #pragma warning disable CS0618
-            (Ptr, ByteLength) = resource.Map(mapMode, subresource);
+            (Ptr, ByteLength) = resource.Map(subresource);
 #pragma warning restore CS0618
 
             Length = ByteLength / TSize;
@@ -47,27 +45,23 @@ namespace Ez.Graphics.API.Resources
         /// Creates a new instance of <see cref="Mapping{T}"/> and map the <paramref name="texture"/>.
         /// </summary>
         /// <param name="texture">The texture to map.</param>
-        /// <param name="mapMode">The map mode.</param>
         /// <param name="mipmapLevel">The mipmap level of the map.</param>
         /// <param name="arrayLayer">The array layer of the map.</param>
-        public Mapping(ITexture texture, MapMode mapMode, uint mipmapLevel, uint arrayLayer)
-            : this(texture, mapMode, GraphicsApiHelper.CalculateSubresource(texture, mipmapLevel, arrayLayer)) { }
+        public Mapping(ITexture texture, uint mipmapLevel, uint arrayLayer)
+            : this(texture, GraphicsApiHelper.CalculateSubresource(texture, mipmapLevel, arrayLayer)) { }
 
         /// <summary>
         /// Creates a new instance of <see cref="Mapping{T}"/> and map the <paramref name="buffer"/>.
         /// </summary>
         /// <param name="buffer">The buffer to map.</param>
-        /// <param name="mapMode">The map mode.</param>
-        public Mapping(IBuffer buffer, MapMode mapMode) : this(buffer, mapMode, 0) { }
+        public Mapping(IBuffer buffer) : this(buffer, 0) { }
 
         /// <summary>
         /// Destroys a <see cref="Mapping{T}"/> instance.
         /// </summary>
         ~Mapping() => Dispose();
 
-        /// <summary>
-        /// Unmaps the mapped memory.
-        /// </summary>
+        /// <inheritdoc/>
         public void Dispose()
         {
             if (IsDisposed)
@@ -84,11 +78,6 @@ namespace Ez.Graphics.API.Resources
         /// Gets the mapped object.
         /// </summary>
         public IMappableResource Resource { get; }
-
-        /// <summary>
-        /// Gets the <see cref="MapMode"/> of the mapped memory.
-        /// </summary>
-        public MapMode MapMode { get; }
 
         /// <summary>
         /// Gets a value that indicate that the map is disposed.

@@ -16,7 +16,7 @@ namespace Ez.Graphics.API.CreateInfos
         /// <summary>
         /// The format of the element.
         /// </summary>
-        public VertexElementFormat Format;
+        public VertexElementType Format;
 
         /// <summary>
         /// The element location in Shader.

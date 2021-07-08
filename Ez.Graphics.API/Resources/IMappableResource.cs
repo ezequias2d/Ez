@@ -14,12 +14,11 @@ namespace Ez.Graphics.API.Resources
         /// <summary>
         /// Maps a resource to CPU accessible data region.
         /// </summary>
-        /// <param name="mode">The <see cref="MapMode"/> to use.</param>
         /// <param name="subresource">The subresource to map. (For <see cref="ITexture"/> are 
         /// indexed first by mip slice, then by array layer.)</param>
         /// <returns>A <see cref="IntPtr"/> of mapped memory and its length.</returns>
         [Obsolete("Prefer managed mapping.")]
-        (IntPtr Ptr, long Length) Map(MapMode mode, uint subresource);
+        (IntPtr Ptr, long Length) Map(uint subresource);
 
         /// <summary>
         /// Invalidates a data region previously mapped for the <see cref="IMappableResource"/>.
