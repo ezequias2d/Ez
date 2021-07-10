@@ -19,7 +19,7 @@ namespace Ez.Graphics.API.CreateInfos
         /// <summary>
         /// The depth attachment of the <see cref="IFramebuffer"/>.
         /// </summary>
-        public FramebufferAttachment? DepthOrStencilTarget { get; set; }
+        public FramebufferAttachment? DepthStencilTarget { get; set; }
 
         /// <summary>
         /// The array of color attachments of the <see cref="IFramebuffer"/>.
@@ -34,9 +34,9 @@ namespace Ez.Graphics.API.CreateInfos
         public FramebufferCreateInfo(ITexture depthTarget, params ITexture[] colorTargets)
         {
             if (depthTarget != null)
-                DepthOrStencilTarget = new FramebufferAttachment(depthTarget, 0);
+                DepthStencilTarget = new FramebufferAttachment(depthTarget, 0);
             else
-                DepthOrStencilTarget = null;
+                DepthStencilTarget = null;
 
             ColorTargets = new FramebufferAttachment[colorTargets.Length];
             for (int i = 0; i < colorTargets.Length; i++)
@@ -46,14 +46,14 @@ namespace Ez.Graphics.API.CreateInfos
         /// <inheritdoc/>
         public override int GetHashCode() =>
             HashHelper<FramebufferCreateInfo>.Combine(
-                DepthOrStencilTarget,
+                DepthStencilTarget,
                 HashHelper<FramebufferAttachment>.Combine(ColorTargets));
 
 
         /// <inheritdoc/>
         public bool Equals(FramebufferCreateInfo other) =>
-            ((!DepthOrStencilTarget.HasValue && !other.DepthOrStencilTarget.HasValue) ||
-                (DepthOrStencilTarget.HasValue && other.DepthOrStencilTarget.HasValue && DepthOrStencilTarget.Value.Equals(other.DepthOrStencilTarget.Value))) &&
+            ((!DepthStencilTarget.HasValue && !other.DepthStencilTarget.HasValue) ||
+                (DepthStencilTarget.HasValue && other.DepthStencilTarget.HasValue && DepthStencilTarget.Value.Equals(other.DepthStencilTarget.Value))) &&
             (ColorTargets == other.ColorTargets || 
                 (ColorTargets != null && other.ColorTargets != null && ColorTargets.SequenceEqual(other.ColorTargets)));
 
@@ -68,7 +68,7 @@ namespace Ez.Graphics.API.CreateInfos
             builder.Append('(');
 
             builder.Append("DepthOrStencilTarget: ");
-            builder.Append(DepthOrStencilTarget);
+            builder.Append(DepthStencilTarget);
 
             builder.Append("ColorTargets: ");
 
