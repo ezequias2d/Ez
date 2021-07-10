@@ -3,13 +3,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+using System;
+
 namespace Ez.Graphics.API.Resources
 {
     /// <summary>
     /// Represents a synchronization resource that allows the device to notify
     /// when a command buffer completes execution.
     /// </summary>
-    public interface IFence : IResource
+    public interface IFence : IResource, IEquatable<IFence>
     {
         /// <summary>
         /// Gets a value indicating whether the <see cref="IFence">fence</see> is currently
