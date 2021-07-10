@@ -25,20 +25,26 @@ namespace Ez.Graphics.API.CreateInfos
         public BufferUsage Usage { get; set; }
 
         /// <summary>
+        /// Indicates the memory usage of the buffer.
+        /// </summary>
+        public MemoryUsage MemoryUsage { get; }
+
+        /// <summary>
         /// Creates a new instance of <see cref="BufferCreateInfo"/> struct.
         /// </summary>
         /// <param name="size">The size in bytes of buffer.</param>
         /// <param name="usage">The usage flag of buffer.</param>
-        public BufferCreateInfo(long size, BufferUsage usage)
+        /// <param name="memoryMode">The memory usage of the buffer.</param>
+        public BufferCreateInfo(long size, BufferUsage usage, MemoryUsage memoryMode)
         {
             Size = size;
             Usage = usage;
+            MemoryUsage = memoryMode;
         }
 
         /// <inheritdoc/>
         public override int GetHashCode() =>
             HashHelper<BufferCreateInfo>.Combine(Usage, Size);
-
 
         /// <inheritdoc/>
         public bool Equals(BufferCreateInfo other) => Size == other.Size && Usage == other.Usage;
