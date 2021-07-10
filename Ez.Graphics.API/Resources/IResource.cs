@@ -24,6 +24,6 @@ namespace Ez.Graphics.API.Resources
         /// <summary>
         /// Gets a value that indicating whether this <see cref="IResource"/> has been disposed.
         /// </summary>
-        bool IsDispose { get; }
+        bool IsDisposed { get; }
     }
 }
