@@ -10,7 +10,7 @@ namespace Ez.Graphics.API
     /// <summary>
     /// Specifies the memory mode of a <see cref="IBuffer"/> or <see cref="ITexture"/>
     /// </summary>
-    public enum MemoryMode
+    public enum MemoryUsage
     {
         /// <summary>
         /// Specifies a buffer or texture memory backing 
