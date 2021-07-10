@@ -13,9 +13,9 @@ namespace Ez.Graphics.API
     {
         public static Size3 GetMipmapDimensions(ITexture texture, int level) => new()
         {
-            Width = GetMipmapDimension(texture.Width, level),
-            Height = GetMipmapDimension(texture.Height, level),
-            Depth = GetMipmapDimension(texture.Depth, level)
+            Width = GetMipmapDimension(texture.Size.Width, level),
+            Height = GetMipmapDimension(texture.Size.Height, level),
+            Depth = GetMipmapDimension(texture.Size.Depth, level)
         };
 
         public static uint GetMipmapDimension(uint originalDimension, int level) =>
