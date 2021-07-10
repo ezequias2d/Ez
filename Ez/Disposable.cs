@@ -18,7 +18,7 @@ namespace Ez
         /// <summary>
         /// Gets a value indicating whether the object has been disposed of.
         /// </summary>
-        public bool IsDisposed { get; private set; }
+        public bool IsDisposed { get; protected set; }
 
         /// <inheritdoc/>
         public void Dispose()
