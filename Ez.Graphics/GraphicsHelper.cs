@@ -1,7 +1,9 @@
-// Copyright (c) 2021 ezequias2d <ezequiasmoises@gmail.com> and the Ez contributors
+﻿// Copyright (c) 2021 ezequias2d <ezequiasmoises@gmail.com> and the Ez contributors
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+using System.Drawing;
 
 namespace Ez.Graphics
 {
@@ -135,11 +137,12 @@ namespace Ez.Graphics
         /// Gets block size, width and height of a compressed <see cref="PixelFormat"/>.
         /// </summary>
         /// <param name="format">The pixel format.</param>
-        /// <param name="blockSize">The size of <paramref name="format"/> block.</param>
-        /// <param name="blockWidth">The width of <paramref name="format"/>.</param>
-        /// <param name="blockHeight">The height of <paramref name="format"/>.</param>
-        public static void GetCompressedFormatInfo(in PixelFormat format, out uint blockSize, out uint blockWidth, out uint blockHeight)
+        public static (uint BlockSize, Size BlockDimension) GetCompressedFormatInfo(in PixelFormat format)
         {
+            uint blockSize;
+            int blockWidth;
+            int blockHeight;
+
             switch (format)
             {
                 case PixelFormat.BC1RgbaSrgb:
@@ -256,9 +259,12 @@ namespace Ez.Graphics
                     blockWidth = blockHeight = 12;
                     break;
                 default:
-                    blockSize = blockWidth = blockHeight = 0;
+                    blockSize = 0;
+                    blockWidth = blockHeight = 0;
                     break;
             }
+
+            return (blockSize, new Size(blockWidth, blockHeight));
         }
     }
 }
