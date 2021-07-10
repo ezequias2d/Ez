@@ -258,12 +258,20 @@ namespace Ez.Graphics.API.Resources
         void DispatchIndirect(IBuffer buffer, long offset);
 
         /// <summary>
-        /// Copy dataa between buffer regions.
+        /// Copy data between buffer regions.
         /// </summary>
         /// <param name="srcBuffer">The source buffer.</param>
         /// <param name="dstBuffer">The destination buffer.</param>
         /// <param name="regions">The regions to copy.</param>
         void CopyBuffer(IBuffer srcBuffer, IBuffer dstBuffer, ReadOnlySpan<BufferCopy> regions);
+
+        /// <summary>
+        /// Copy data from a buffer into an texture.
+        /// </summary>
+        /// <param name="srcBuffer">The source buffer.</param>
+        /// <param name="dstTexture">The destination texture.</param>
+        /// <param name="regions">The regions to copy.</param>
+        void CopyBufferToTexture(IBuffer srcBuffer, ITexture dstTexture, ReadOnlySpan<BufferTextureCopy> regions);
 
         /// <summary>
         /// Copy data between textures.
@@ -272,6 +280,14 @@ namespace Ez.Graphics.API.Resources
         /// <param name="dstTexture">The destination texture.</param>
         /// <param name="regions">The regions to copy.</param>
         void CopyTexture(ITexture srcTexture, ITexture dstTexture, ReadOnlySpan<TextureCopy> regions);
+
+        /// <summary>
+        /// Copy texture data into a buffer.
+        /// </summary>
+        /// <param name="srcTexture">The source texture.</param>
+        /// <param name="dstBuffer">The destination buffer.</param>
+        /// <param name="regions">The regions to copy.</param>
+        void CopyTextureToBuffer(ITexture srcTexture, IBuffer dstBuffer, ReadOnlySpan<BufferTextureCopy> regions);
 
         /// <summary>
         /// Updates a buffer's contents from host memory.
