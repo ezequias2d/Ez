@@ -77,7 +77,7 @@ namespace Ez.Graphics.API
         /// <see cref="ICommandBuffer.DebugMarkerBegin(string, ColorSingle)"/>, <see cref="ICommandBuffer.DebugMarkerEnd"/>, and
         /// <see cref="ICommandBuffer.DebugMessageInsert(string)"/> methods. If not, these methods will have no effect.
         /// </summary>
-        public bool DebugMarker { get; }
+        public bool DebugUtils { get; }
 
         /// <summary>
         /// Specifies whether 64-bit floats (doubles) are supported in shader code. If this feature is not enabled, 64-bit 
@@ -93,34 +93,34 @@ namespace Ez.Graphics.API
         /// <param name="geometryShader"></param>
         /// <param name="tessellationShaders"></param>
         /// <param name="multiViewport"></param>
-        /// <param name="drawIndirectBaseInstance"></param>
+        /// <param name="drawIndirectFirstInstance"></param>
         /// <param name="fillModeNoSolid"></param>
         /// <param name="samplerAnisotropy"></param>
         /// <param name="depthClamp"></param>
         /// <param name="independentBlend"></param>
-        /// <param name="debugMarker"></param>
+        /// <param name="debugUtils"></param>
         /// <param name="shaderFloat64"></param>
         public PhysicalDeviceFeatures(
             bool geometryShader,
             bool tessellationShaders,
             bool multiViewport,
-            bool drawIndirectBaseInstance,
+            bool drawIndirectFirstInstance,
             bool fillModeNoSolid,
             bool samplerAnisotropy,
             bool depthClamp,
             bool independentBlend,
-            bool debugMarker,
+            bool debugUtils,
             bool shaderFloat64)
         {
             GeometryShader = geometryShader;
             TessellationShader = tessellationShaders;
             MultiViewport = multiViewport;
-            DrawIndirectFirstInstance = drawIndirectBaseInstance;
+            DrawIndirectFirstInstance = drawIndirectFirstInstance;
             FillModeNonSolid = fillModeNoSolid;
             SamplerAnisotropy = samplerAnisotropy;
             DepthClamp = depthClamp;
             IndependentBlend = independentBlend;
-            DebugMarker = debugMarker;
+            DebugUtils = debugUtils;
             ShaderFloat64 = shaderFloat64;
         }
     }
