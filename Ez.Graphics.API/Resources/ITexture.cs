@@ -5,6 +5,7 @@
 using System;
 using System.Threading.Tasks;
 using Ez.Graphics.API.CreateInfos;
+using Ez.Numerics;
 
 namespace Ez.Graphics.API.Resources
 {
@@ -21,19 +22,9 @@ namespace Ez.Graphics.API.Resources
         PixelFormat Format { get; }
 
         /// <summary>
-        /// The depth in texels.
+        /// The dimensions of the texture in texels.
         /// </summary>
-        uint Depth { get; }
-
-        /// <summary>
-        /// The height of texture in texels.
-        /// </summary>
-        uint Height { get; }
-
-        /// <summary>
-        /// The width of texture in texels.
-        /// </summary>
-        uint Width { get; }
+        Size3 Size { get; }
 
         /// <summary>
         /// The total number of mipmap levels in this instance.
@@ -61,6 +52,11 @@ namespace Ez.Graphics.API.Resources
         /// then this instance is a multipsample texture.
         /// </summary>
         SampleCount SampleCount { get; }
+
+        /// <summary>
+        /// The tiling arrangement of the texel blocks in memory.
+        /// </summary>
+        TextureTiling Tiling { get; }
 
         /// <summary>
         /// Updates a portion of <see cref="ITexture"/> with new data contained in an array

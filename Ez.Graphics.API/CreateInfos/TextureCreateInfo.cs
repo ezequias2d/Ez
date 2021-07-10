@@ -40,24 +40,25 @@ namespace Ez.Graphics.API.CreateInfos
         public SampleCount Samples { get; set; }
 
         /// <summary>
+        /// The tiling arrangement of the texel blocks in memory.
+        /// </summary>
+        public TextureTiling Tiling { get; set; }
+
+        /// <summary>
         /// The texture usage of the <see cref="ITexture"/>.
         /// </summary>
         public TextureUsage Usage { get; set; }
 
         /// <summary>
-        /// The width of the <see cref="ITexture"/>.
+        /// The size of the <see cref="ITexture"/>.
         /// </summary>
-        public uint Width { get; set; }
+        public Size3 Size { get; set; }
 
         /// <summary>
-        /// The height of the <see cref="ITexture"/>.
+        /// Indicates the memory usage of the <see cref="ITexture">.
+        /// The memory mode of the <see cref="ITexture"/>.
         /// </summary>
-        public uint Height { get; set; }
-
-        /// <summary>
-        /// The depth of the <see cref="ITexture"/>.
-        /// </summary>
-        public uint Depth { get; set; }
+        public MemoryUsage MemoryMode { get; set; }
 
         /// <summary>
         /// Creates a <see cref="TextureCreateInfo"/> struct.
@@ -67,26 +68,26 @@ namespace Ez.Graphics.API.CreateInfos
         /// <param name="mipLevels">The mipmap levels of a <see cref="ITexture"/>.</param>
         /// <param name="arrayLayers">The array layers of a <see cref="ITexture"/>.</param>
         /// <param name="samples">The sample count of a <see cref="ITexture"/>.</param>
+        /// <param name="tiling">The tiling arrangement of the texel blocks in memory.</param>
         /// <param name="usage">The texture usage of a <see cref="ITexture"/>.</param>
-        /// <param name="width">The texture width of a <see cref="ITexture"/>.</param>
-        /// <param name="height">The texture height of a <see cref="ITexture"/>.</param>
-        /// <param name="depth">The texture depth of a <see cref="ITexture"/>.</param>
+        /// <param name="size">The texture size of a <see cref="ITexture"/>.</param>
+        /// <param name="memoryMode"></param>
         public TextureCreateInfo(
             TextureType type, 
             PixelFormat format, 
             uint mipLevels, 
             uint arrayLayers, 
-            SampleCount samples, 
+            SampleCount samples,
+            TextureTiling tiling,
             TextureUsage usage, 
-            uint width, 
-            uint height, 
-            uint depth) 
-            => (Type, Format, MipLevels, ArrayLayers, Samples, Usage, Width, Height, Depth) =
-                (type, format, mipLevels, arrayLayers, samples, usage, width, height, depth);
+            Size3 size,
+            MemoryUsage memoryMode) 
+            => (Type, Format, MipLevels, ArrayLayers, Samples, Usage, Size, Tiling, MemoryMode) =
+                (type, format, mipLevels, arrayLayers, samples, usage, size, tiling, memoryMode);
 
         /// <inheritdoc/>
         public override int GetHashCode() =>
-            HashHelper<TextureCreateInfo>.Combine(Type, Format, MipLevels, ArrayLayers, Samples, Usage, Width, Height, Depth);
+            HashHelper<TextureCreateInfo>.Combine(Type, Format, MipLevels, ArrayLayers, Samples, Usage, Size);
 
         /// <inheritdoc/>
         public bool Equals(TextureCreateInfo other) =>
@@ -96,9 +97,7 @@ namespace Ez.Graphics.API.CreateInfos
             ArrayLayers == other.ArrayLayers &&
             Samples == other.Samples &&
             Usage == other.Usage &&
-            Width == other.Width &&
-            Height == other.Height &&
-            Depth == other.Depth;
+            Size == other.Size;
 
         /// <inheritdoc/>
         public override bool Equals(object obj) => obj is TextureCreateInfo tci && Equals(tci);
@@ -108,8 +107,7 @@ namespace Ez.Graphics.API.CreateInfos
             $"(Type: {Type}, Format: {Format}, " +
             $"MipLevels: {MipLevels}, ArrayLayers: {ArrayLayers}, " +
             $"Samples: {Samples}, Usage: {Usage}, " +
-            $"Width: {Width}, Height: {Height}," +
-            $"Depth: {Depth})";
+            $"Size: {Size})";
 
         /// <summary>
         /// Compare two <see cref="TextureCreateInfo"/> structures.
@@ -119,7 +117,6 @@ namespace Ez.Graphics.API.CreateInfos
         /// <returns><see langword="true"/> if are equals, otherwise <see langword="false"/>.</returns>
         public static bool operator ==(TextureCreateInfo left, TextureCreateInfo right) =>
             left.Equals(right);
-
 
         /// <summary>
         /// Compare two <see cref="TextureCreateInfo"/> structures.

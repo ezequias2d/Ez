@@ -82,7 +82,7 @@ namespace Ez.Graphics.API
         /// <returns><see langword="true"/> if the given combination is supported, otherwise <see langword="false"/>. 
         /// If the combination is supported, then <paramref name="properties"/> contains the supported properties of the
         /// combination.</returns>
-        bool TryGetPixelFormatProperties(PixelFormat format, TextureType type, TextureUsage usage, out PixelFormatProperties properties);
+        bool TryGetPixelFormatProperties(PixelFormat format, TextureType type, TextureUsage usage, TextureTiling tiling, out PixelFormatProperties properties);
 
         /// <summary>
         /// Wait for one or more fences to become signaled.
