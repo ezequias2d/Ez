@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2021 ezequias2d <ezequiasmoises@gmail.com> and the Ez contributors
+// Copyright (c) 2021 ezequias2d <ezequiasmoises@gmail.com> and the Ez contributors
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -15,109 +15,24 @@ namespace Ez.Graphics
         /// </summary>
         /// <param name="format"></param>
         /// <returns></returns>
-        public static bool IsDepthFormat(in PixelFormat format)
-        {
-            switch (format)
-            {
-                case PixelFormat.D16UNorm:
-                case PixelFormat.D24UNormS8UInt:
-                case PixelFormat.D32SFloat:
-                case PixelFormat.D32SFloatS8UInt:
-                    return true;
-            }
-            return false;
-        }
+        public static bool IsDepthFormat(in PixelFormat format) =>
+            format.HasFlag(PixelFormat.Depth);
 
         /// <summary>
         /// Gets whether that indicates whether the pixel format is stencil. 
         /// </summary>
         /// <param name="format">The <see cref="PixelFormat"/> to determine if it is a stencil format.</param>
         /// <returns><see langword="true"/> if the <paramref name="format"/> is a stencil format; otherwise, <see langword="false"/>.</returns>
-        public static bool FormatHasStencil(in PixelFormat format)
-        {
-            switch (format)
-            {
-                case PixelFormat.S8UInt:
-                case PixelFormat.D24UNormS8UInt:
-                case PixelFormat.D32SFloatS8UInt:
-                    return true;
-            }
-            return false;
-        }
+        public static bool IsStencilFormat(in PixelFormat format) =>
+            format.HasFlag(PixelFormat.Stencil);
 
         /// <summary>
         /// Gets a value that indicates whether the <see cref="PixelFormat"/> is of the compressed type.
         /// </summary>
         /// <param name="format">The pixel format.</param>
         /// <returns><see langword="true"/>, if <paramref name="format"/> is compressed; otherwise, <see langword="false"/>.</returns>
-        public static bool IsCompressedFormat(in PixelFormat format)
-        {
-            switch (format)
-            {
-                #region BC
-                case PixelFormat.BC1RgbaSrgb:
-                case PixelFormat.BC1RgbaUNorm:
-                case PixelFormat.BC1RgbSrgb:
-                case PixelFormat.BC1RgbUNorm:
-                case PixelFormat.BC2Srgb:
-                case PixelFormat.BC2UNorm:
-                case PixelFormat.BC3Srgb:
-                case PixelFormat.BC3UNorm:
-                case PixelFormat.BC4SNorm:
-                case PixelFormat.BC4UNorm:
-                case PixelFormat.BC5SNorm:
-                case PixelFormat.BC5UNorm:
-                case PixelFormat.BC6HSFloat:
-                case PixelFormat.BC6HUFloat:
-                case PixelFormat.BC7Srgb:
-                case PixelFormat.BC7UNorm:
-                #endregion BC
-                #region ETC
-                case PixelFormat.EacR11SNorm:
-                case PixelFormat.EacR11UNorm:
-                case PixelFormat.EacR11G11SNorm:
-                case PixelFormat.EacR11G11UNorm:
-                case PixelFormat.Etc2R8G8B8Srgb:
-                case PixelFormat.Etc2R8G8B8UNorm:
-                case PixelFormat.Etc2R8G8B8A1Srgb:
-                case PixelFormat.Etc2R8G8B8A1UNorm:
-                case PixelFormat.Etc2R8G8B8A8Srgb:
-                case PixelFormat.Etc2R8G8B8A8UNorm:
-                #endregion ETC
-                #region ASTC
-                case PixelFormat.Astc10x10Srgb:
-                case PixelFormat.Astc10x10UNorm:
-                case PixelFormat.Astc10x5Srgb:
-                case PixelFormat.Astc10x5UNorm:
-                case PixelFormat.Astc10x6Srgb:
-                case PixelFormat.Astc10x6UNorm:
-                case PixelFormat.Astc10x8Srgb:
-                case PixelFormat.Astc10x8UNorm:
-                case PixelFormat.Astc12x10Srgb:
-                case PixelFormat.Astc12x10UNorm:
-                case PixelFormat.Astc12x12Srgb:
-                case PixelFormat.Astc12x12UNorm:
-                case PixelFormat.Astc4x4Srgb:
-                case PixelFormat.Astc4x4UNorm:
-                case PixelFormat.Astc5x4Srgb:
-                case PixelFormat.Astc5x4UNorm:
-                case PixelFormat.Astc5x5Srgb:
-                case PixelFormat.Astc5x5UNorm:
-                case PixelFormat.Astc6x5Srgb:
-                case PixelFormat.Astc6x5UNorm:
-                case PixelFormat.Astc6x6Srgb:
-                case PixelFormat.Astc6x6UNorm:
-                case PixelFormat.Astc8x5Srgb:
-                case PixelFormat.Astc8x5UNorm:
-                case PixelFormat.Astc8x6Srgb:
-                case PixelFormat.Astc8x6UNorm:
-                case PixelFormat.Astc8x8Srgb:
-                case PixelFormat.Astc8x8UNorm:
-                #endregion ASTC
-                    return true;
-            }
-            return false;
-        }
+        public static bool IsCompressedFormat(in PixelFormat format) =>
+            format.HasFlag(PixelFormat.Compressed);
 
         /// <summary>
         /// Gets the size of a pixel format.
