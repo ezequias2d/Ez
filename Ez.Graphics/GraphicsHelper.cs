@@ -75,12 +75,12 @@ namespace Ez.Graphics
                 case PixelFormat.R16SFloat:
                     return 2;
 
-                case PixelFormat.R11G11B10UFloat:
-                case PixelFormat.R9G9B9E5UFloat:
-                case PixelFormat.B10G10R10A2UNorm:
-                case PixelFormat.B10G10R10A2UInt:
-                case PixelFormat.R10G10B10A2UNorm:
-                case PixelFormat.R10G10B10A2UInt:
+                case PixelFormat.B10G11R11UFloat:
+                case PixelFormat.E5B9G9R9UFloat:
+                case PixelFormat.A2R10G10B10UNorm:
+                case PixelFormat.A2R10G10B10UInt:
+                case PixelFormat.A2B10G10R10UNorm:
+                case PixelFormat.A2B10G10R10UInt:
 
                 case PixelFormat.D24UNormS8UInt:
                 case PixelFormat.D32SFloat:

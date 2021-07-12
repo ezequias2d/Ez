@@ -11,7 +11,7 @@ namespace Ez.Graphics
     /// A pixel format enum.
     /// </summary>
     [Flags]
-    public enum PixelFormat : int
+    public enum PixelFormat : uint
     {
         /// <summary>
         /// Specifies that the format is not specified.
@@ -20,182 +20,274 @@ namespace Ez.Graphics
 
         #region components flags
         /// <summary>
+        /// The unit of counting for a component.
+        /// </summary>
+        Component = 1,
+        /// <summary>
+        /// The mask of component enum.
+        /// </summary>
+        ComponentMask = 0b111,
+
+        /// <summary>
+        /// The component indicates that it is not a color, so one or both 
+        /// of the <see cref="Depth"/> and <see cref="Stencil"/> flags must 
+        /// be enabled.
+        /// </summary>
+        NoColor = Component * 0,
+
+        /// <summary>
         /// Red component.
         /// </summary>
-        R = 1,
+        R = Component * 1,
         /// <summary>
         /// Red and Green components.
         /// </summary>
-        RG = 1 << 1,
+        RG = Component * 2,
         /// <summary>
         /// Red, Green and Blue components.
         /// </summary>
-        RGB = 1 << 2,
+        RGB = Component * 3,
+        /// <summary>
+        /// Blue, Green and Red components.
+        /// </summary>
+        BGR = Component * 4,
         /// <summary>
         /// Red, Green, Blue and Alpha components.
         /// </summary>
-        RGBA = 1 << 3,
+        RGBA = Component * 5,
+        /// <summary>
+        /// Alpha, Red, Green and Blue components.
+        /// </summary>
+        ARGB = Component * 6,
         /// <summary>
         /// Blue, Green, Red and Alpha components.
         /// </summary>
-        BGRA = 1 << 4,
+        BGRA = Component * 7,
         /// <summary>
         /// Depth component.
         /// </summary>
-        Depth = 1 << 5,
+        Depth = 1 << 3,
         /// <summary>
         /// Stencil component.
         /// </summary>
-        Stencil = 1 << 6,
+        Stencil = 1 << 4,
         #endregion
 
         #region size format
         /// <summary>
+        /// The unit of counting for a format.
+        /// </summary>
+        Format = 1 << 5,
+        /// <summary>
+        /// The mask of format enum.
+        /// </summary>
+        FormatMask = 0b1110_0000,
+
+        /// <summary>
         /// 8 bits format.
         /// </summary>
-        F8 = 1 << 7,
+        F8 = Format * 0,
         /// <summary>
         /// 8 bits and 1 bit formats.
         /// </summary>
-        F8F1 = 1 << 8,
+        F8F1 = Format * 1,
         /// <summary>
         /// 10 bits and 2 bits formats.
         /// </summary>
-        F10F10F10F2 = 1 << 9,
+        F2F10F10F10 = Format * 2,
         /// <summary>
         /// 11 bits format.
         /// </summary>
-        F11 = 1 << 10,
+        F11 = Format * 3,
         /// <summary>
         /// 16 bits format.
         /// </summary>
-        F16 = 1 << 11,
+        F16 = Format * 4,
         /// <summary>
         /// 32 bits format.
         /// </summary>
-        F32 = 1 << 12,
+        F32 = Format * 5,
         /// <summary>
         /// 24 bits and 8 bits formats.
         /// </summary>
-        F24F8 = 1 << 13,
+        F24F8 = Format * 6,
         /// <summary>
         /// 32 bits and 8 bits formats.
         /// </summary>
-        F32F8 = 1 << 14,
+        F32F8 = Format * 7,
         #endregion
 
         #region pixel value.
         /// <summary>
-        /// Pixel value format mask.
+        /// The unit of counting for a pixel value.
         /// </summary>
-        PixelValueMask = Unsigned | SNorm | SInt | Srgb | SFloat,
+        PixelValue =  1 << 8,
+        /// <summary>
+        /// The mask of pixel value enum.
+        /// </summary>
+        PixelValueMask = 0b0111_0000_0000,
 
         /// <summary>
         /// Unsigned.
         /// </summary>
-        Unsigned = 1 << 15,
+        Unsigned = PixelValue * 0,
         /// <summary>
         /// Signed normalized.
         /// </summary>
-        SNorm = 1 << 16,
+        SNorm = PixelValue * 1,
         /// <summary>
         /// Unsigned normalized.
         /// </summary>
-        UNorm = SNorm | Unsigned,
+        UNorm = PixelValue * 2,
         /// <summary>
         /// Signed integer.
         /// </summary>
-        SInt = 1 << 17,
+        SInt = PixelValue * 3,
         /// <summary>
         /// Unsigned integer.
         /// </summary>
-        UInt = SInt | Unsigned,
+        UInt = PixelValue * 4,
         /// <summary>
         /// Srgb.
         /// </summary>
-        Srgb = 1 << 18,
+        Srgb = PixelValue * 5,
         /// <summary>
         /// Signed float.
         /// </summary>
-        SFloat = 1 << 19,
+        SFloat = PixelValue * 6,
         /// <summary>
         /// Unsigned float.
         /// </summary>
-        UFloat = SFloat | Unsigned,
+        UFloat = PixelValue * 7,
         #endregion
+
+        /// <summary>
+        /// Specifies that there is a shared component for the exponent.
+        /// </summary>
+        SharedExponent = 1 << 11,
 
         #region compression flags
         /// <summary>
         /// Compressed.
         /// </summary>
-        Compressed = 1 << 20,
+        Compressed = 1 << 12,
 
         #region block compression type
         /// <summary>
+        /// The unit of counting for a BC.
+        /// </summary>
+        BC = 1 << 13,
+        /// <summary>
+        /// The mask of BC enum.
+        /// </summary>
+        BlockCompressionMask = 0b0111_0000_0000_0000,
+        /// <summary>
         /// Block compression 1.
         /// </summary>
-        BC1 = 1 << 21,
+        BC1 = BC * 1,
         /// <summary>
         /// Block compression 2.
         /// </summary>
-        BC2 = BC1 * 2,
+        BC2 = BC * 2,
         /// <summary>
         /// Block compression 3.
         /// </summary>
-        BC3 = BC1 * 3,
+        BC3 = BC * 3,
         /// <summary>
         /// Block compression 4.
         /// </summary>
-        BC4 = BC1 * 4,
+        BC4 = BC * 4,
         /// <summary>
         /// Block compression 5.
         /// </summary>
-        BC5 = BC1 * 5,
+        BC5 = BC * 5,
         /// <summary>
         /// Block compression 6.
         /// </summary>
-        BC6H = BC1 * 6,
+        BC6H = BC * 6,
         /// <summary>
         /// Block compression 7.
         /// </summary>
-        BC7 = BC1 * 7,
+        BC7 = BC * 7,
         #endregion
         
         /// <summary>
         /// Ericsson texture compression.
         /// </summary>
-        EacEtc2 = 1 << 24,
+        EacEtc2 = 1 << 16,
 
         #region Astc flags
         /// <summary>
+        /// The mask of Astc flags.
+        /// </summary>
+        AstcMask = 0b0111_1111_0000_0000_0000_0000,
+        /// <summary>
         /// Adaptive scalable texture compression.
         /// </summary>
-        Astc = 1 << 25,
+        Astc = 1 << 17,
         /// <summary>
         /// 10 pixels in dimension.
         /// </summary>
-        X10 = 1 << 26,
+        X10 = 1 << 18,
         /// <summary>
         /// 5 pixels in dimension.
         /// </summary>
-        X5 = 1 << 27,
+        X5 = 1 << 19,
         /// <summary>
         /// 6 pixels in dimension.
         /// </summary>
-        X6 = 1 << 28,
+        X6 = 1 << 20,
         /// <summary>
         /// 8 pixels in dimension.
         /// </summary>
-        X8 = 1 << 29,
+        X8 = 1 << 21,
         /// <summary>
         /// 12 pixels in dimension.
         /// </summary>
-        X12 = 1 << 30,
+        X12 = 1 << 22,
         /// <summary>
         /// 4 pixels in dimension.
         /// </summary>
-        X4 = 1 << 31,
+        X4 = 1u << 23,
         #endregion
+        #endregion
+        #region Pack
+        /// <summary>
+        /// The unit of counting for a packs.
+        /// </summary>
+        Pack = 1 << 24,
+        /// <summary>
+        /// The mask of Pack enum.
+        /// </summary>
+        PackMask = 0b0011_1000_1111_0000_0000_0000_0000,
+        /// <summary>
+        /// Specifies a package with four components with 4 bits each.
+        /// </summary>
+        P4P4P4P4 = Pack * 1,
+        /// <summary>
+        /// Specifies a package with three components with 5, 6 and 5 bits respectively.
+        /// </summary>
+        P5P6P5 = Pack * 2,
+        /// <summary>
+        /// Specifies a package with four components with 5, 6, 5 and 1 bits respectively.
+        /// </summary>
+        P5P5P5P1 = Pack * 3,
+        /// <summary>
+        /// Specifies a package with four components with 1, 5, 6 and 5 bits respectively.
+        /// </summary>
+        P1P5P5P5 = Pack * 4,
+        /// <summary>
+        /// Specifies a package with three components with 10, 11 and 11 bits respectively.
+        /// </summary>
+        P10P11P11 = Pack * 5,
+        /// <summary>
+        /// Specifies a package with four components with 9, 9, 9 and 5 bits respectively.
+        /// </summary>
+        P9P9P9P5 = Pack * 6,
+        /// <summary>
+        /// Specifies a package with four components with 5, 9, 9 and 9 bits respectively.
+        /// </summary>
+        P5P9P9P9 = Pack * 7,
         #endregion
 
         #region packed
@@ -205,59 +297,59 @@ namespace Ez.Graphics
         /// bits 8..11, a 4-bit B component in bits 4..7, and a 4-bit A component
         /// in bits 0..3.
         /// </summary>
-        R4G4B4A4UNorm,
+        R4G4B4A4UNorm = RGBA | P4P4P4P4 | UNorm,
         /// <summary>
         /// Specifies a four-component, 16-bit packed unsigned normalized format 
         /// that has a 4-bit B component in bits 12..15, a 4-bit G component in 
         /// bits 8..11, a 4-bit R component in bits 4..7, and a 4-bit A component 
         /// in bits 0..3.
         /// </summary>
-        B4G4R4A4UNorm,
+        B4G4R4A4UNorm = BGRA | P4P4P4P4 | UNorm,
         /// <summary>
         /// Specifies a three-component, 16-bit packed unsigned normalized format 
         /// that has a 5-bit R component in bits 11..15, a 6-bit G component in 
         /// bits 5..10, and a 5-bit B component in bits 0..4.
         /// </summary>
-        R5G6B5UNorm,
+        R5G6B5UNorm = RGB | P5P6P5 | UNorm,
         /// <summary>
         /// Specifies a three-component, 16-bit packed unsigned normalized format 
         /// that has a 5-bit B component in bits 11..15, a 6-bit G component in 
         /// bits 5..10, and a 5-bit R component in bits 0..4.
         /// </summary>
-        B5G6R5UNorm,
+        B5G6R5UNorm = BGR | P5P6P5 | UNorm,
         /// <summary>
         /// Specifies a four-component, 16-bit packed unsigned normalized format 
         /// that has a 5-bit R component in bits 11..15, a 5-bit G component in 
         /// bits 6..10, a 5-bit B component in bits 1..5, and a 1-bit A component
         /// in bit 0.
         /// </summary>
-        R5G5B5A1UNorm,
+        R5G5B5A1UNorm = RGBA | P5P5P5P1 | UNorm,
         /// <summary>
         /// Specifies a four-component, 16-bit packed unsigned normalized format 
         /// that has a 5-bit B component in bits 11..15, a 5-bit G component in 
         /// bits 6..10, a 5-bit R component in bits 1..5, and a 1-bit A component
         /// in bit 0.
         /// </summary>
-        B5G5R5A1UNorm,
+        B5G5R5A1UNorm = BGRA | P5P5P5P1 | UNorm,
         /// <summary>
         /// Specifies a four-component, 16-bit packed unsigned normalized format 
         /// that has a 1-bit A component in bit 15, a 5-bit R component in bits 
         /// 10..14, a 5-bit G component in bits 5..9, and a 5-bit B component in 
         /// bits 0..4.
         /// </summary>
-        A1R5G5B5UNorm,
+        A1R5G5B5UNorm = ARGB | P1P5P5P5 | UNorm,
         /// <summary>
         /// Specifies a three-component, 32-bit packed unsigned floating-point format that has a 10-bit B 
         /// component in bits 22..31, an 11-bit G component in bits 11..21, an 11-bit R component in bits 
         /// 0..10.
         /// </summary>
-        R11G11B10UFloat,
+        B10G11R11UFloat = BGR | P10P11P11 | UFloat,
         /// <summary>
         /// Specifies a three-component, 32-bit packed unsigned floating-point format that has a 5-bit 
         /// shared exponent in bits 27..31, a 9-bit B component mantissa in bits 18..26, a 9-bit G component 
         /// mantissa in bits 9..17, and a 9-bit R component mantissa in bits 0..8.
         /// </summary>
-        R9G9B9E5UFloat,
+        E5B9G9R9UFloat = BGR | SharedExponent | P5P9P9P9 | UFloat,
         #endregion
         #region R8
         /// <summary>
@@ -354,33 +446,33 @@ namespace Ez.Graphics
         B8G8R8A8Srgb = BGRA | F8 | SNorm,
         #endregion
 
-        #region B10G10R10A2
+        #region A2R10G10B10
         /// <summary>
         /// Specifies a four-component, 32-bit packed unsigned normalized format that
         /// has a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, 
         /// a 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
         /// </summary>
-        B10G10R10A2UNorm = BGRA | F10F10F10F2 | UNorm,
+        A2R10G10B10UNorm = BGRA | F2F10F10F10 | UNorm,
         /// <summary>
         /// Specifies a four-component, 32-bit packed unsigned integer format that has
         /// a 2-bit A component in bits 30..31, a 10-bit R component in bits 20..29, a 
         /// 10-bit G component in bits 10..19, and a 10-bit B component in bits 0..9.
         /// </summary>
-        B10G10R10A2UInt = BGRA | F10F10F10F2 | UInt,
+        A2R10G10B10UInt = BGRA | F2F10F10F10 | UInt,
         #endregion
-        #region R10G10B10A2
+        #region A2B10G10R10
         /// <summary>
         /// Specifies a four-component, 32-bit packed unsigned normalized format that 
         /// has a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, 
         /// a 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
         /// </summary>
-        R10G10B10A2UNorm = RGBA | F10F10F10F2 | UNorm,
+        A2B10G10R10UNorm = RGBA | F2F10F10F10 | UNorm,
         /// <summary>
         /// Specifies a four-component, 32-bit packed unsigned integer format that has
         /// a 2-bit A component in bits 30..31, a 10-bit B component in bits 20..29, a
         /// 10-bit G component in bits 10..19, and a 10-bit R component in bits 0..9.
         /// </summary>
-        R10G10B10A2UInt = RGBA | F10F10F10F2 | UInt,
+        A2B10G10R10UInt = RGBA | F2F10F10F10 | UInt,
         #endregion
 
         #region R16
