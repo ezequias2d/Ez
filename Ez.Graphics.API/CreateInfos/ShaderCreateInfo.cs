@@ -17,6 +17,11 @@ namespace Ez.Graphics.API.CreateInfos
     public struct ShaderCreateInfo : IEquatable<ShaderCreateInfo>
     {
         /// <summary>
+        /// The shader name for debugging.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
         /// The stages of the <see cref="IShader"/>.
         /// </summary>
         public ShaderStages Stages { get; set; }
@@ -39,20 +44,23 @@ namespace Ez.Graphics.API.CreateInfos
         /// <summary>
         /// Creates a new <see cref="ShaderCreateInfo"/> struct.
         /// </summary>
+        /// <param name="name">The shader name for debugging.</param>
         /// <param name="entryPoint">The shader entry-point.</param>
         /// <param name="stages">The stages of the shader.</param>
         /// <param name="format">The format of shader <paramref name="source"/>.</param>
         /// <param name="source">The source of the shader.</param>
-        public ShaderCreateInfo(string entryPoint, ShaderStages stages, ShaderFormat format, ReadOnlyMemory<byte> source) =>
-            (EntryPoint, Stages, Format, Source) = (entryPoint, stages, format, source.ToArray());
+        public ShaderCreateInfo(string name, string entryPoint, ShaderStages stages, ShaderFormat format, ReadOnlyMemory<byte> source) =>
+            (Name, EntryPoint, Stages, Format, Source) = (name, entryPoint, stages, format, source.ToArray());
 
         /// <summary>
         /// Creates a new <see cref="ShaderCreateInfo"/> struct from a GLSL string.
         /// </summary>
+        /// <param name="name">The shader name for debugging.</param>
         /// <param name="entryPoint">The shader entry-point.</param>
         /// <param name="stages">The stages of the shader.</param>
         /// <param name="source">The GLSL source of the shader.</param>
-        public ShaderCreateInfo(string entryPoint, ShaderStages stages, string source) : this(entryPoint, stages, ShaderFormat.Glsl, Encoding.ASCII.GetBytes(source)) { }
+        public ShaderCreateInfo(string name, string entryPoint, ShaderStages stages, string source) 
+            : this(name, entryPoint, stages, ShaderFormat.Glsl, Encoding.ASCII.GetBytes(source)) { }
 
         /// <inheritdoc/>
         public override int GetHashCode() =>
@@ -68,7 +76,7 @@ namespace Ez.Graphics.API.CreateInfos
         public override bool Equals(object obj) => obj is ShaderCreateInfo sci && Equals(sci);
 
         /// <inheritdoc/>
-        public override string ToString() => $"(Stages: {Stages}, Format: {Format}, Source(Hash): {HashHelper<byte>.Combine(Source)})";
+        public override string ToString() => $"(Name: {Name}, Stages: {Stages}, Format: {Format}, Source(Hash): {HashHelper<byte>.Combine(Source)})";
 
         /// <summary>
         /// Compare two <see cref="ShaderCreateInfo"/> structures.
