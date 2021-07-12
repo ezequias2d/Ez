@@ -17,45 +17,30 @@ namespace Ez.Graphics.API.CreateInfos
     public struct FramebufferCreateInfo : IEquatable<FramebufferCreateInfo>
     {
         /// <summary>
-        /// The depth attachment of the <see cref="IFramebuffer"/>.
+        /// The attachments of the <see cref="IFramebuffer"/>.
         /// </summary>
-        public FramebufferAttachment? DepthStencilTarget { get; set; }
-
-        /// <summary>
-        /// The array of color attachments of the <see cref="IFramebuffer"/>.
-        /// </summary>
-        public FramebufferAttachment[] ColorTargets { get; set; }
+        public FramebufferAttachment[] Attachments { get; set; }
 
         /// <summary>
         /// Creates a new <see cref="FramebufferAttachment"/> struct by textures.
         /// </summary>
-        /// <param name="depthTarget">The depth texture target.</param>
-        /// <param name="colorTargets">The array of color texture targets.</param>
-        public FramebufferCreateInfo(ITexture depthTarget, params ITexture[] colorTargets)
+        /// <param name="attachments">The array of texture attachments.</param>
+        public FramebufferCreateInfo(params ITexture[] attachments)
         {
-            if (depthTarget != null)
-                DepthStencilTarget = new FramebufferAttachment(depthTarget, 0);
-            else
-                DepthStencilTarget = null;
-
-            ColorTargets = new FramebufferAttachment[colorTargets.Length];
-            for (int i = 0; i < colorTargets.Length; i++)
-                ColorTargets[i] = new FramebufferAttachment(colorTargets[i], 0);
+            Attachments = new FramebufferAttachment[attachments.Length];
+            for (int i = 0; i < attachments.Length; i++)
+                Attachments[i] = new FramebufferAttachment(attachments[i], 0);
         }
 
         /// <inheritdoc/>
         public override int GetHashCode() =>
-            HashHelper<FramebufferCreateInfo>.Combine(
-                DepthStencilTarget,
-                HashHelper<FramebufferAttachment>.Combine(ColorTargets));
+            HashHelper<FramebufferCreateInfo>.Combine((ReadOnlySpan<FramebufferAttachment>)Attachments);
 
 
         /// <inheritdoc/>
         public bool Equals(FramebufferCreateInfo other) =>
-            ((!DepthStencilTarget.HasValue && !other.DepthStencilTarget.HasValue) ||
-                (DepthStencilTarget.HasValue && other.DepthStencilTarget.HasValue && DepthStencilTarget.Value.Equals(other.DepthStencilTarget.Value))) &&
-            (ColorTargets == other.ColorTargets || 
-                (ColorTargets != null && other.ColorTargets != null && ColorTargets.SequenceEqual(other.ColorTargets)));
+            (Attachments == other.Attachments || 
+                (Attachments != null && other.Attachments != null && Attachments.SequenceEqual(other.Attachments)));
 
         /// <inheritdoc/>
         public override bool Equals(object obj) => obj is BufferCreateInfo bci && Equals(bci);
@@ -68,19 +53,16 @@ namespace Ez.Graphics.API.CreateInfos
             builder.Append('(');
 
             builder.Append("DepthOrStencilTarget: ");
-            builder.Append(DepthStencilTarget);
+            builder.Append(Attachments);
 
-            builder.Append("ColorTargets: ");
+            builder.Append("Attachments: ");
 
-            if (ColorTargets == null)
-                builder.Append("null");
-            else
-                for(var i = 0; i < ColorTargets.Length; i++)
-                {
-                    builder.Append(ColorTargets[i]);
-                    if (i != ColorTargets.Length - 1)
-                        builder.Append('|');
-                }
+            for(var i = 0; i < Attachments.Length; i++)
+            {
+                builder.Append(Attachments[i]);
+                if (i != Attachments.Length - 1)
+                    builder.Append('|');
+            }
 
             builder.Append(')');
 

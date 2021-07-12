@@ -14,14 +14,9 @@ namespace Ez.Graphics.API.Resources
     public interface IFramebuffer : IResource
     {
         /// <summary>
-        /// Gets the depth attachment associated with this instance. May be null if no depth texture is used.
+        /// Gets the collection of attachments associated with this instance.
         /// </summary>
-        FramebufferAttachment? DepthStencilTarget { get; }
-
-        /// <summary>
-        /// Gets the collection of color attachments associated with this instance. May be empty.
-        /// </summary>
-        IReadOnlyList<FramebufferAttachment> ColorTargets { get; }
+        IReadOnlyList<FramebufferAttachment> Attachments { get; }
 
         /// <summary>
         /// Gets the size of the <see cref="IFramebuffer"/>.
