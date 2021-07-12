@@ -11,15 +11,15 @@ namespace Ez.Graphics.API
 {
     public static class GraphicsApiHelper
     {
-        public static Size3 GetMipmapDimensions(ITexture texture, int level) => new()
+        public static Size3 GetMipmapDimensions(ITexture texture, uint level) => new()
         {
             Width = GetMipmapDimension(texture.Size.Width, level),
             Height = GetMipmapDimension(texture.Size.Height, level),
             Depth = GetMipmapDimension(texture.Size.Depth, level)
         };
 
-        public static uint GetMipmapDimension(uint originalDimension, int level) =>
-            Math.Max(originalDimension >> level, 1u);
+        public static uint GetMipmapDimension(uint originalDimension, uint level) =>
+            Math.Max(originalDimension >> (int)level, 1u);
 
         public static uint CalculateSubresource(this ITexture texture, uint mipmapLevel, uint arrayLayer) =>
             arrayLayer * texture.MipmapLevels + mipmapLevel;
