@@ -14,7 +14,7 @@ namespace Ez.Graphics.API
         /// Gets or sets a value that specifying how the contents of components of the attachment are treated
         /// at the beginning of the subpass where it is first used.
         /// </summary>
-        public AttachmentLoadOperation LoadOperation {get; set;}
+        public AttachmentLoadOperation LoadOperation { get; set; }
 
         /// <summary>
         /// Gets or sets a value that specifying how the contents of components of the attachment are treated 
