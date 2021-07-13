@@ -118,6 +118,14 @@ namespace Ez.Graphics.API
         void Submit(SubmitInfo submitInfo, IFence fence);
 
         /// <summary>
+        /// Presents multiple swapchain to the screen.
+        /// </summary>
+        /// <param name="presentInfo">The presentation info.</param>
+        /// <param name="fences">The fences to signal when each swapchain is presented.
+        /// (PS.: can be empty or have elements with a null value)</param>
+        void Present(PresentInfo presentInfo, ReadOnlySpan<IFence> fences);
+
+        /// <summary>
         /// Waits all submitted <see cref="ICommandBuffer"/> objects have fully completed.
         /// </summary>
         void Wait();
