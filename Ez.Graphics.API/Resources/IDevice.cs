@@ -111,17 +111,11 @@ namespace Ez.Graphics.API
         bool WaitForFences(IEnumerable<IFence> fences, bool waitAll, TimeSpan timeout);
 
         /// <summary>
-        /// Submits a command buffer to execute.
+        /// Submits a command buffers to execute.
         /// </summary>
-        /// <param name="commandBuffer">A command buffer to submit.</param>
-        void Submit(ICommandBuffer commandBuffer);
-
-        /// <summary>
-        /// Submits a command buffer to execute with a fence.
-        /// </summary>
-        /// <param name="commandBuffer">A command buffer to submit.</param>
-        /// <param name="fence">The fence to submit with the command buffer.</param>
-        void Submit(ICommandBuffer commandBuffer, IFence fence);
+        /// <param name="submitInfo">A submit operation info.</param>
+        /// <param name="fence">The fence to submit with the command buffer. (PS.: can be null if not use)</param>
+        void Submit(SubmitInfo submitInfo, IFence fence);
 
         /// <summary>
         /// Waits all submitted <see cref="ICommandBuffer"/> objects have fully completed.
