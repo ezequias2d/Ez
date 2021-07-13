@@ -1,4 +1,4 @@
-// Copyright (c) 2021 ezequias2d <ezequiasmoises@gmail.com> and the Ez contributors
+﻿// Copyright (c) 2021 ezequias2d <ezequiasmoises@gmail.com> and the Ez contributors
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
@@ -37,6 +37,9 @@ namespace Ez.Graphics.API.Resources
         /// <summary>
         /// Presents the swapchain to the screen.
         /// </summary>
-        void Present();
+        /// <param name="waitSemaphore">The semaphores to wait before issuing this request. (PS.: can be null if not use)</param>
+        /// <param name="signalSemaphore">The semaphore to signal when the presentation ends. (PS.: can be null if not use)(</param>
+        /// <param name="fence">The fence to signal when the presentation ends.(PS.: can be null if not use)</param>
+        void Present(ISemaphore waitSemaphore, ISemaphore signalSemaphore, IFence fence);
     }
 }
