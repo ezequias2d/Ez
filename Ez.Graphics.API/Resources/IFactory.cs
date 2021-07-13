@@ -117,6 +117,12 @@ namespace Ez.Graphics.API.Resources
         /// Creates a new <see cref="IFence"/>.
         /// </summary>
         /// <returns>A new <see cref="IFence"/>.</returns>
-        IFence CreateFence();        
+        IFence CreateFence();
+
+        /// <summary>
+        /// Creates a new <see cref="ISemaphore"/>.
+        /// </summary>
+        /// <returns>A new <see cref="ISemaphore"/>.</returns>
+        ISemaphore CreateSemaphore();
     }
 }
