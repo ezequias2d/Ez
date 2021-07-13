@@ -1,7 +1,8 @@
-﻿// Copyright (c) 2021 ezequias2d <ezequiasmoises@gmail.com> and the Ez contributors
+// Copyright (c) 2021 ezequias2d <ezequiasmoises@gmail.com> and the Ez contributors
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace Ez.Graphics.API.Resources
@@ -14,7 +15,12 @@ namespace Ez.Graphics.API.Resources
         /// <summary>
         /// The framebuffer of the swapchain resource.
         /// </summary>
-        IFramebuffer Framebuffer { get; }
+        IReadOnlyList<IFramebuffer> Framebuffers { get; }
+
+        /// <summary>
+        /// Gets the current framebuffer of the swapchain.
+        /// </summary>
+        int CurrentIndex { get; }
 
         /// <summary>
         /// Indicates whether presentation of the <see cref="ISwapchain"/> will be synchronized to 
