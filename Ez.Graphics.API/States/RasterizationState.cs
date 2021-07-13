@@ -69,11 +69,13 @@ namespace Ez.Graphics.API
         /// </summary>
         public static readonly RasterizationState Default = new RasterizationState
         {
-            CullMode = CullMode.Back,
+            CullMode = CullMode.None,
             PolygonMode = PolygonMode.Fill,
             FrontFace = FrontFace.Clockwise,
-            DepthClampEnabled = true,
-            ScissorTestEnabled = false
+            DepthClampEnabled = false,
+            ScissorTestEnabled = false,
+            DepthBiasEnabled = false,
+            RasterizerDiscardEnabled = false,
         };
 
         /// <summary>
