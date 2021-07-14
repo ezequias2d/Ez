@@ -78,6 +78,7 @@ namespace Ez.Graphics.API
         /// <param name="format">The <see cref="PixelFormat"/> to query.</param>
         /// <param name="type">The <see cref="TextureType"/> to query.</param>
         /// <param name="usage">The <see cref="TextureUsage"/> to query.</param>
+        /// <param name="tiling">The <see cref="TextureTiling"/> to query.</param>
         /// <param name="properties">The limits of a Texture created using the given combination of attributes.</param>
         /// <returns><see langword="true"/> if the given combination is supported, otherwise <see langword="false"/>. 
         /// If the combination is supported, then <paramref name="properties"/> contains the supported properties of the

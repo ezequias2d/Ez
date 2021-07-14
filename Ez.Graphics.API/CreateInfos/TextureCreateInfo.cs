@@ -55,7 +55,7 @@ namespace Ez.Graphics.API.CreateInfos
         public Size3 Size { get; set; }
 
         /// <summary>
-        /// Indicates the memory usage of the <see cref="ITexture">.
+        /// Indicates the memory usage of the <see cref="ITexture"/>.
         /// The memory mode of the <see cref="ITexture"/>.
         /// </summary>
         public MemoryUsage MemoryMode { get; set; }

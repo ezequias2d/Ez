@@ -62,7 +62,6 @@ namespace Ez.Graphics.API.Resources
         /// <summary>
         /// Creates a new <see cref="IBuffer"/> instance from a <paramref name="bufferCreateInfo"/>.
         /// </summary>
-        /// <typeparam name="T">The type of data in buffer.</typeparam>
         /// <param name="bufferCreateInfo">A structure containing parameters to be 
         /// used to create the <see cref="IBuffer"/>.</param>
         /// <returns>A new <see cref="IBuffer"/> described by a <see cref="BufferCreateInfo"/>.</returns>
@@ -96,7 +95,7 @@ namespace Ez.Graphics.API.Resources
         /// Creates a new <see cref="ISwapchain"/> instance from the <see cref="SwapchainCreateInfo"/>.
         /// </summary>
         /// <param name="description">A structure containing parameters to be 
-        /// used to create the <see cref="ISw"/>.</param>
+        /// used to create the <see cref="ISwapchain"/>.</param>
         /// <returns>A <see cref="ISwapchain"/> described by a <see cref="SwapchainCreateInfo"/>.</returns>
         ISwapchain CreateSwapchain(in SwapchainCreateInfo description);
 
