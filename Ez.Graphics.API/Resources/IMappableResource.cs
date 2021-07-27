@@ -12,7 +12,16 @@ namespace Ez.Graphics.API.Resources
     public interface IMappableResource
     {
         /// <summary>
+        /// Indicates the memory usage of the resource.
+        /// </summary>
+        MemoryUsage MemoryUsage { get; }
+
+        /// <summary>
         /// Maps a resource to CPU accessible data region.
+        /// <para>
+        /// Only avaliable in a resource with <see cref="MemoryUsage.GpuToCpu"/>,
+        /// <see cref="MemoryUsage.CpuToGpu"/> or <see cref="MemoryUsage.CpuOnly"/> flag.
+        /// </para>
         /// </summary>
         /// <param name="subresource">The subresource to map. (For <see cref="ITexture"/> are 
         /// indexed first by mip slice, then by array layer.)</param>
@@ -21,9 +30,10 @@ namespace Ez.Graphics.API.Resources
         (IntPtr Ptr, long Length) Map(uint subresource);
 
         /// <summary>
-        /// Invalidates a data region previously mapped for the <see cref="IMappableResource"/>.
+        /// Invalidates a data region previously mapped with <see cref="Map(uint)"/>.
         /// </summary>
-        /// <param name="subresource">The subresource to unmap. (For <see cref="ITexture"/> are indexed first by mip slice, then by array layer.)</param>
+        /// <param name="subresource">The subresource to unmap. (For <see cref="ITexture"/> are 
+        /// indexed first by mip slice, then by array layer.)</param>
         [Obsolete("Prefer managed mapping.")]
         void Unmap(uint subresource);
     }
