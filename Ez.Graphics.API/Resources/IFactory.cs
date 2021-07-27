@@ -35,14 +35,6 @@ namespace Ez.Graphics.API.Resources
         /// <returns>True if found, otherwise false.</returns>
         bool TryGetResource<T>(string name, out T resource) where T : IResource;
 
-
-        /// <summary>
-        /// Creates a new <see cref="IPipeline"/> instance from <paramref name="shaders"/>.
-        /// </summary>
-        /// <param name="shaders">The shaders of the pipeline.</param>
-        /// <returns>A new graphics <see cref="IPipeline"/>.</returns>
-        IPipeline CreateGraphicsPipeline(params IShader[] shaders);
-
         /// <summary>
         /// Creates a new <see cref="IPipeline"/> instance from a <paramref name="createInfo"/>.
         /// </summary>
@@ -65,7 +57,7 @@ namespace Ez.Graphics.API.Resources
         /// <param name="bufferCreateInfo">A structure containing parameters to be 
         /// used to create the <see cref="IBuffer"/>.</param>
         /// <returns>A new <see cref="IBuffer"/> described by a <see cref="BufferCreateInfo"/>.</returns>
-        Task<IBuffer> CreateBuffer(BufferCreateInfo bufferCreateInfo);
+        IBuffer CreateBuffer(BufferCreateInfo bufferCreateInfo);
 
         /// <summary>
         /// Creates a new <see cref="ITexture"/> instance from a <see cref="TextureCreateInfo"/>.
