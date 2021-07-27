@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+
+using System;
 using System.Drawing;
 using System.Numerics;
 using System.Threading;
@@ -18,6 +20,7 @@ namespace Ez.Windowing.GLFW
 {
     public sealed class GlfwWindow : IWindow
     {
+        private readonly ILogger _logger;
         private readonly GlfwThread _glfwThread;
         private readonly Window _handle;
         private readonly bool _isEventDriven;
@@ -30,6 +33,8 @@ namespace Ez.Windowing.GLFW
 
         #region callbacks
         private readonly GlfwCallbacks.WindowPosCallback _windowPosCallback;
+        private readonly GlfwCallbacks.WindowSizeCallback _changeWindowSize;
+        private readonly GlfwCallbacks.FramebufferSizeCallback _framebuffeerSizeCallback;
         private readonly GlfwCallbacks.WindowIconifyCallback _windowIconifyCallback;
         private readonly GlfwCallbacks.WindowMaximizeCallback _windowMaximizeCallback;
         private readonly GlfwCallbacks.WindowFocusCallback _windowFocusCallback;
@@ -67,8 +72,14 @@ namespace Ez.Windowing.GLFW
         private int _xBackup;
         private int _yBackup;
 
-        public GlfwWindow(in WindowCreateInfo createInfo, in GlfwWindowCreateInfo glfwCreateInfo)
+        public GlfwWindow(ILogger logger, in WindowCreateInfo createInfo, in GlfwWindowCreateInfo glfwCreateInfo)
         {
+            _logger = logger;
+            Glfw.SetErrorCallback((error, description) => 
+            {
+                logger.LogError($"ErrorCode: {error}\n{description}");
+            });
+
             _glfwThread = GlfwThread.Instance;
 
             _mouseState = new GlfwMouseState();
@@ -212,6 +223,20 @@ namespace Ez.Windowing.GLFW
                         break;
                 }
             };
+
+            _changeWindowSize = (window, width, height) =>
+            {
+                _width.Value = width;
+                _height.Value = height;
+                SizeChanged?.Invoke(this, new Size(width, height));
+            };
+
+            _framebuffeerSizeCallback = (window, width, height) =>
+            {
+                _framebufferSize.Value = new Size(width, height);
+                FramebufferResize?.Invoke(this, new Size(width, height));
+            };
+
             #endregion
 
 
@@ -325,7 +350,6 @@ namespace Ez.Windowing.GLFW
             });
 
             Position = createInfo.Position;
-
             if (_handle.IsEmpty)
             {
                 Glfw.Terminate();
@@ -610,6 +634,7 @@ namespace Ez.Windowing.GLFW
         public event Action<IWindow, JoystickEventArgs> JoystickConnection;
         public event Action<IWindow, float> Update;
         public event Action<IWindow> Refresh;
+        public event Action<IWindow, Size> FramebufferResize;
         #endregion
 
         #region public methods
@@ -823,22 +848,10 @@ namespace Ez.Windowing.GLFW
 
         }
 
-        private void ChangeWindowSize(Window window, int width, int height)
-        {
-            _width.Value = width;
-            _height.Value = height;
-            SizeChanged?.Invoke(this, new Size(width, height));
-        }
-
-        private void ChangeFramebufferSize(Window window, int width, int height)
-        {
-            _framebufferSize.Value = new Size(width, height);
-        }
-
         private static void RegisterWindowCallbacks(GlfwWindow window, Native.Window handle)
         {
             Glfw.SetWindowPosCallback(handle, window._windowPosCallback);
-            Glfw.SetWindowSizeCallback(handle, window.ChangeWindowSize);
+            Glfw.SetWindowSizeCallback(handle, window._changeWindowSize);
             Glfw.SetWindowIconifyCallback(handle, window._windowIconifyCallback);
             Glfw.SetWindowMaximizeCallback(handle, window._windowMaximizeCallback);
             Glfw.SetWindowFocusCallback(handle, window._windowFocusCallback);
@@ -854,7 +867,7 @@ namespace Ez.Windowing.GLFW
             Glfw.SetDropCallback(handle, window._dropCallback);
             Glfw.SetJoystickCallback(window._joystickCallback);
             
-            Glfw.SetFramebufferSizeCallback(handle, window.ChangeFramebufferSize);
+            Glfw.SetFramebufferSizeCallback(handle, window._framebuffeerSizeCallback);
         }
 
         private static void InitialiseJoystrickState(GlfwWindow window)
