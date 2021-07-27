@@ -11,7 +11,7 @@ namespace GlfwExample
         static void Main(string[] args)
         {
             var windowCreateInfo = new WindowCreateInfo(new Point(100, 100), new Size(640, 480), WindowState.Normal, "Glfw Example", ContextAPI.OpenGL);
-            var window = new GlfwWindow(windowCreateInfo, new GlfwWindowCreateInfo(IntPtr.Zero, false));
+            var window = new GlfwWindow(null, windowCreateInfo, new GlfwWindowCreateInfo(IntPtr.Zero, false));
             window.TextInput += (w, args) =>
             {
                 Console.Write($"{(char)args.Unicode}");
