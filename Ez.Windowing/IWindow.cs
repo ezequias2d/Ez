@@ -142,6 +142,11 @@ namespace Ez.Windowing
         event Action<IWindow, Size> SizeChanged;
 
         /// <summary>
+        /// Occurs whenever the <see cref="IWindow"/> resizes the framebuffer.
+        /// </summary>
+        event Action<IWindow, Size> FramebufferResize;
+
+        /// <summary>
         /// Occurs when the <see cref="IWindow"/> is about to close.
         /// </summary>
         event Action<IWindow, CancelEventArgs> Closing;
