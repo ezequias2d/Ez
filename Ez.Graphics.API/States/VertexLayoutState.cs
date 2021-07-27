@@ -8,6 +8,7 @@ using System.Text;
 using Ez.Numerics;
 using Ez.Graphics.API.Resources;
 using Ez.Graphics.API.CreateInfos;
+using Ez.Memory;
 
 namespace Ez.Graphics.API
 {
@@ -30,7 +31,7 @@ namespace Ez.Graphics.API
         /// <summary>
         /// An array of VertexElementDescription objects, each describing a single element of vertex data.
         /// </summary>
-        public VertexElementDescription[] Elements;
+        public Memory<VertexElementDescription> Elements;
 
         /// <summary>
         /// Creates a new instance of <see cref="VertexLayoutState"/> structure.
@@ -72,7 +73,7 @@ namespace Ez.Graphics.API
             for (int i = 0; i < elements.Length; i++)
             {
                 uint elementSize = GraphicsApiHelper.GetSizeInBytes(elements[i].Format);
-                if (elements[i].Offset != 0)
+                if (elements[i].Offset != uint.MaxValue)
                     computedStride = elements[i].Offset + elementSize;
                 else
                     computedStride += elementSize;
@@ -86,7 +87,7 @@ namespace Ez.Graphics.API
         public bool Equals(VertexLayoutState other) =>
             Stride == other.Stride &&
             InputRate == other.InputRate &&
-            MemoryExtensions.SequenceEqual<VertexElementDescription>(Elements, other.Elements);
+            MemUtil.Equals<VertexElementDescription>(Elements.Span, other.Elements.Span);
 
         /// <inheritdoc/>
         public override int GetHashCode() => 
@@ -110,15 +111,13 @@ namespace Ez.Graphics.API
             builder.Append(',');
             builder.Append("Elements: ");
 
-            if (Elements == null)
-                builder.Append("null");
-            else
-                for(var i = 0; i < Elements.Length; i++)
-                {
-                    builder.Append(Elements[i]);
-                    if (i != Elements.Length - 1)
-                        builder.Append(',');
-                }
+            var elements = Elements.Span;
+            for (var i = 0; i < elements.Length; i++)
+            {
+                builder.Append(elements[i]);
+                if (i != elements.Length - 1)
+                    builder.Append(',');
+            }
 
             builder.Append(')');
 
