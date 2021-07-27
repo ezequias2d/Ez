@@ -5,6 +5,7 @@
 using System;
 
 using Ez.Graphics.API.Resources;
+using Ez.Memory;
 using Ez.Numerics;
 
 namespace Ez.Graphics.API
@@ -27,7 +28,7 @@ namespace Ez.Graphics.API
         /// <summary>
         /// Describe property of blend for earch color target.
         /// </summary>
-        public ColorBlendAttachmentState[] AttachmentStates { get; set; }
+        public Memory<ColorBlendAttachmentState> AttachmentStates { get; set; }
 
         /// <summary>
         /// Constructor of a <see cref="ColorBlendState"/>
@@ -52,8 +53,7 @@ namespace Ez.Graphics.API
         public bool Equals(ColorBlendState other) =>
             LogicOperationEnabled == other.LogicOperationEnabled &&
             LogicOperation == other.LogicOperation &&
-            MemoryExtensions.SequenceEqual<ColorBlendAttachmentState>(
-                AttachmentStates, other.AttachmentStates);
+            MemUtil.Equals<ColorBlendAttachmentState>(AttachmentStates.Span, other.AttachmentStates.Span);
 
         /// <inheritdoc/>
         public override bool Equals(object obj) =>
