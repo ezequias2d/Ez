@@ -82,7 +82,7 @@ namespace Ez.Graphics.API.Resources
         /// <param name="buffer">The buffer to bind.</param>
         /// <param name="offset">The offset from the start of the buffer, in bytes, from which data will
         /// start to be read.</param>
-        void BindVertexBuffer(uint index, IBuffer buffer, uint offset);
+        void BindVertexBuffer(uint index, IBuffer buffer, ulong offset);
 
         /// <summary>
         /// Binds <paramref name="buffer"/> as an active index buffer.
@@ -91,13 +91,14 @@ namespace Ez.Graphics.API.Resources
         /// <param name="format">The format of data in the <paramref name="buffer"/>.</param>
         /// <param name="offset">The offset from the start of the buffer, in bytes, from which data will
         /// start to be read.</param>
-        void BindIndexBuffer(IBuffer buffer, IndexType format, uint offset);
+        void BindIndexBuffer(IBuffer buffer, IndexType format, ulong offset);
 
         /// <summary>
         /// Sets the vertex layout state of the vertex buffer.
         /// </summary>
+        /// <param name="index">The vertex buffer index to set layout.</param>
         /// <param name="layout">The vertex layout.</param>
-        void SetVertexLayoutState(VertexLayoutState layout);
+        void SetVertexLayoutState(uint index, VertexLayoutState layout);
 
         /// <summary>
         /// Sets the count of viewports
@@ -230,7 +231,7 @@ namespace Ez.Graphics.API.Resources
         /// <param name="offset">The byte offset into buffer where parameters begin.</param>
         /// <param name="drawCount">The number of draws to execute, and can be zero.</param>
         /// <param name="stride">The byte stride between successive sets of draw parameters.</param>
-        void DrawIndirect(IBuffer buffer, uint offset, uint drawCount, uint stride);
+        void DrawIndirect(IBuffer buffer, ulong offset, uint drawCount, uint stride);
 
         /// <summary>
         /// Draw primitives with indirect parameters and indexed vertices.
@@ -240,7 +241,7 @@ namespace Ez.Graphics.API.Resources
         /// <param name="offset">The byte offset into buffer where parameters begin.</param>
         /// <param name="drawCount">The number of draws to execute, and can be zero.</param>
         /// <param name="stride">The byte stride between successive sets of draw parameters.</param>
-        void DrawIndexedIndirect(IBuffer indirectBuffer, uint offset, uint drawCount, uint stride);
+        void DrawIndexedIndirect(IBuffer indirectBuffer, ulong offset, uint drawCount, uint stride);
 
         /// <summary>
         /// Dispatch compute work items.
