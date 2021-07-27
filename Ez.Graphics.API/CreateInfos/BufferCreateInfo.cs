@@ -33,13 +33,13 @@ namespace Ez.Graphics.API.CreateInfos
         /// Creates a new instance of <see cref="BufferCreateInfo"/> struct.
         /// </summary>
         /// <param name="size">The size in bytes of buffer.</param>
-        /// <param name="usage">The usage flag of buffer.</param>
-        /// <param name="memoryMode">The memory usage of the buffer.</param>
-        public BufferCreateInfo(long size, BufferUsage usage, MemoryUsage memoryMode)
+        /// <param name="bufferUsage">The usage flag of buffer.</param>
+        /// <param name="memoryUsage">The memory usage of the buffer.</param>
+        public BufferCreateInfo(long size, BufferUsage bufferUsage, MemoryUsage memoryUsage)
         {
             Size = size;
-            Usage = usage;
-            MemoryUsage = memoryMode;
+            Usage = bufferUsage;
+            MemoryUsage = memoryUsage;
         }
 
         /// <inheritdoc/>
