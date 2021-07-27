@@ -28,6 +28,18 @@ namespace Ez.Graphics.API.CreateInfos
         /// </summary>
         public uint Offset;
 
+        /// <summary>
+        /// Creates a new instance of <see cref="VertexElementDescription"/> struct.
+        /// </summary>
+        /// <param name="format">The format of the element.</param>
+        /// <param name="location">The element location in shader.</param>
+        public VertexElementDescription(VertexElementType format, uint location)
+        {
+            Format = format;
+            Location = location;
+            Offset = uint.MaxValue;
+        }
+
         /// <inheritdoc/>
         public bool Equals(VertexElementDescription other) =>
             GetHashCode() == other.GetHashCode() &&
