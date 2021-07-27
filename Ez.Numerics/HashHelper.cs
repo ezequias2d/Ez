@@ -33,7 +33,7 @@ namespace Ez.Numerics
         private static int Combine(in int h1, in int h2) => HashCode.Combine(h1, h2);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static int GetHash<U>(in U u) => HashHelper<U>.Combine(BaseHash, u.GetHashCode());
+        private static int GetHash<U>(in U u) => HashHelper<U>.Combine(BaseHash, u?.GetHashCode() ?? 0);
 
         /// <summary>
         /// Combines one values into a hash code.
