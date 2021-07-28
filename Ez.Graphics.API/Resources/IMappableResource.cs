@@ -23,18 +23,14 @@ namespace Ez.Graphics.API.Resources
         /// <see cref="MemoryUsage.CpuToGpu"/> or <see cref="MemoryUsage.CpuOnly"/> flag.
         /// </para>
         /// </summary>
-        /// <param name="subresource">The subresource to map. (For <see cref="ITexture"/> are 
-        /// indexed first by mip slice, then by array layer.)</param>
         /// <returns>A <see cref="IntPtr"/> of mapped memory and its length.</returns>
         [Obsolete("Prefer managed mapping.")]
-        (IntPtr Ptr, long Length) Map(uint subresource);
+        (IntPtr Ptr, long Length) Map();
 
         /// <summary>
         /// Invalidates a data region previously mapped with <see cref="Map(uint)"/>.
         /// </summary>
-        /// <param name="subresource">The subresource to unmap. (For <see cref="ITexture"/> are 
-        /// indexed first by mip slice, then by array layer.)</param>
         [Obsolete("Prefer managed mapping.")]
-        void Unmap(uint subresource);
+        void Unmap();
     }
 }

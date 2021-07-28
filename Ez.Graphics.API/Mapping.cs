@@ -18,43 +18,22 @@ namespace Ez.Graphics.API.Resources
     public class Mapping<T> : IDisposable, IEnumerable<T> where T : unmanaged
     {
         private static readonly long TSize = MemUtil.SizeOf<T>();
-        private readonly uint _subresource;
 
         /// <summary>
         /// Creates a new instance of <see cref="Mapping{T}"/> and map the 
         /// <paramref name="resource"/>.
         /// </summary>
         /// <param name="resource">The resource to map.</param>
-        /// <param name="subresource">The subresource to map. For <see cref="ITexture"/> are 
-        /// indexed first by mip slice, then by array layer.
-        /// (see <see cref="GraphicsApiHelper.CalculateSubresource(ITexture, uint, uint)"/> and 
-        /// <see cref="GraphicsApiHelper.GetSubresourceLevelAndLayer(ITexture, uint, out uint, out uint)"/>)</param>
-        public Mapping(IMappableResource resource, uint subresource)
+        public Mapping(IMappableResource resource)
         {
             Resource = resource;
-            _subresource = subresource;
 #pragma warning disable CS0618
-            (Ptr, ByteLength) = resource.Map(subresource);
+            (Ptr, ByteLength) = resource.Map();
 #pragma warning restore CS0618
 
             Length = ByteLength / TSize;
             Memory = MemUtil.GetMemory<T>(Ptr, (int)Length);
         }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="Mapping{T}"/> and map the <paramref name="texture"/>.
-        /// </summary>
-        /// <param name="texture">The texture to map.</param>
-        /// <param name="mipmapLevel">The mipmap level of the map.</param>
-        /// <param name="arrayLayer">The array layer of the map.</param>
-        public Mapping(ITexture texture, uint mipmapLevel, uint arrayLayer)
-            : this(texture, GraphicsApiHelper.CalculateSubresource(texture, mipmapLevel, arrayLayer)) { }
-
-        /// <summary>
-        /// Creates a new instance of <see cref="Mapping{T}"/> and map the <paramref name="buffer"/>.
-        /// </summary>
-        /// <param name="buffer">The buffer to map.</param>
-        public Mapping(IBuffer buffer) : this(buffer, 0) { }
 
         /// <summary>
         /// Destroys a <see cref="Mapping{T}"/> instance.
@@ -70,7 +49,7 @@ namespace Ez.Graphics.API.Resources
             IsDisposed = true;
 
 #pragma warning disable CS0618
-            Resource.Unmap(_subresource);
+            Resource.Unmap();
 #pragma warning restore CS0618
         }
 

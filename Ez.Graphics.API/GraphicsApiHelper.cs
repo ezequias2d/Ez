@@ -21,16 +21,6 @@ namespace Ez.Graphics.API
         public static uint GetMipmapDimension(uint originalDimension, uint level) =>
             Math.Max(originalDimension >> (int)level, 1u);
 
-        public static uint CalculateSubresource(this ITexture texture, uint mipmapLevel, uint arrayLayer) =>
-            arrayLayer * texture.MipmapLevels + mipmapLevel;
-
-        public static (uint MipmapLevel, uint ArrayLayer) GetSubresourceLevelAndLayer(ITexture tex, uint subresource)
-        {
-            var arrayLayer = subresource / tex.MipmapLevels;
-            var mipmapLevel = subresource - (arrayLayer * tex.MipmapLevels);
-            return (mipmapLevel, arrayLayer);
-        }
-
         public static uint GetSizeInBytes(VertexElementType value)
         {
             switch (value)
