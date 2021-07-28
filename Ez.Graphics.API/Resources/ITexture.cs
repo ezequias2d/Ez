@@ -63,33 +63,29 @@ namespace Ez.Graphics.API.Resources
         /// </summary>
         /// <param name="source">An array containing the data to upload. This must contain tightly-packed pixel data for the
         /// region specified.</param>
+        /// <param name="mipmapLevel">The mipmap level to update. Must be less than the total number of mipmaps contained in the
+        /// <see cref="ITexture"/>.</param>
         /// <param name="x">The minimum X value of the updated region.</param>
         /// <param name="y">The minimum Y value of the updated region.</param>
         /// <param name="z">The minimum Z value of the updated region.</param>
         /// <param name="width">The width of the updated region, in texels.</param>
         /// <param name="height">The height of the updated region, in texels.</param>
         /// <param name="depth">The depth of the updated region, in texels.</param>
-        /// <param name="mipLevel">The mipmap level to update. Must be less than the total number of mipmaps contained in the
-        /// <see cref="ITexture"/>.</param>
-        /// <param name="arrayLayer">The array layer to update. Must be less than the total array layer count contained in the
-        /// <see cref="ITexture"/>.</param>
-        void SubData<T>(ReadOnlyMemory<T> source, int x, int y, int z, uint width, uint height, uint depth, int mipLevel, int arrayLayer) where T : unmanaged;
+        void SubData<T>(ReadOnlySpan<T> source, uint mipmapLevel, int x, int y, int z, uint width, uint height, uint depth) where T : unmanaged;
 
         /// <summary>
         /// Updates a portion of <see cref="ITexture"/> with new data contained in an array
         /// </summary>
         /// <param name="source">An array containing the data to upload. This must contain tightly-packed pixel data for the
         /// region specified.</param>
+        /// <param name="mipmapLevel">The mipmap level to update. Must be less than the total number of mipmaps contained in the
+        /// <see cref="ITexture"/>.</param>
         /// <param name="x">The minimum X value of the updated region.</param>
         /// <param name="y">The minimum Y value of the updated region.</param>
         /// <param name="z">The minimum Z value of the updated region.</param>
         /// <param name="width">The width of the updated region, in texels.</param>
         /// <param name="height">The height of the updated region, in texels.</param>
         /// <param name="depth">The depth of the updated region, in texels.</param>
-        /// <param name="mipLevel">The mipmap level to update. Must be less than the total number of mipmaps contained in the
-        /// <see cref="ITexture"/>.</param>
-        /// <param name="arrayLayer">The array layer to update. Must be less than the total array layer count contained in the
-        /// <see cref="ITexture"/>.</param>
-        Task SubDataAsync<T>(ReadOnlyMemory<T> source, int x, int y, int z, uint width, uint height, uint depth, int mipLevel, int arrayLayer) where T : unmanaged;
+        Task SubDataAsync<T>(ReadOnlySpan<T> source, uint mipmapLevel, int x, int y, int z, uint width, uint height, uint depth) where T : unmanaged;
     }
 }
