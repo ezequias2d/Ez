@@ -14,7 +14,7 @@ namespace Ez.Graphics.API
         /// <summary>
         /// Specifies the starting offset in bytes from the start of the source buffer.
         /// </summary>
-        public long BufferOffset { get; set; }
+        public long BufferOffset;
 
         /// <summary>
         /// Specifies in texels  a subregion of a larger two-dimensional
@@ -22,7 +22,7 @@ namespace Ez.Graphics.API
         /// If it is zero, that aspect of the buffer memory is considered to be 
         /// tightly packed according to the <see cref="TextureExtent"/>.
         /// </summary>
-        public uint BufferRowLength { get; set; }
+        public uint BufferRowLength;
 
         /// <summary>
         /// Specifies in texels  a subregion of a larger three-dimensional
@@ -30,29 +30,29 @@ namespace Ez.Graphics.API
         /// If it is zero, that aspect of the buffer memory is considered to be 
         /// tightly packed according to the <see cref="TextureExtent"/>.
         /// </summary>
-        public uint BufferTextureHeight { get; set; }
+        public uint BufferTextureHeight;
 
         /// <summary>
         /// Specifies the number of bytes to copy.
         /// </summary>
-        public long Size { get; set; }
+        public long Size;
 
         /// <summary>
         /// Specifies  the subresource of the texture used for the source or 
         /// destination image data.
         /// </summary>
-        public TextureSubresourceLayers TextureSubresource { get; set; }
+        public TextureSubresourceLayers TextureSubresource;
 
         /// <summary>
         /// Specifies the initial X, Y, and Z offsets in texels of the
         /// sub-region of the source or destination image data.
         /// </summary>
-        public Point3 TextureOffset { get; }
+        public Point3 TextureOffset;
 
         /// <summary>
         /// Specifies the size in texels of the texture to copy in width,
         /// height and depth.
         /// </summary>
-        public Size3 TextureExtent { get; set; }
+        public Size3 TextureExtent;
     }
 }

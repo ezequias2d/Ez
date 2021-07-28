@@ -15,11 +15,11 @@ namespace Ez.Graphics.API
         /// <summary>
         /// Selects the color attachment to be clear.
         /// </summary>
-        public uint ColorAttachment { get; set; }
+        public uint ColorAttachment;
 
         /// <summary>
         /// Gets or sets the color or depth/stencil value to clear the attachment.
         /// </summary>
-        public ClearValue ClearValue { get; set; }
+        public ClearValue ClearValue;
     }
 }

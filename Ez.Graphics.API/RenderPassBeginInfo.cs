@@ -18,18 +18,18 @@ namespace Ez.Graphics.API
         /// <summary>
         /// Gets or sets the target framebuffer.
         /// </summary>
-        public IFramebuffer Framebuffer { get; set; }
+        public IFramebuffer Framebuffer;
 
         /// <summary>
         /// Gets or sets an array of attachments which define load and store operations
         /// and clear values for color attachments and depth stencil attachment.
         /// </summary>
-        public ReadOnlyMemory<AttachmentInfo> Attachments { get; set; }
+        public ReadOnlyMemory<AttachmentInfo> Attachments;
 
         /// <summary>
         /// The index of depth stencil attachment in <see cref="Attachments"/>.
         /// </summary>
-        public int DepthStencilAttachmentIndex { get; set; }
+        public int DepthStencilAttachmentIndex;
 
         /// <inheritdoc/>
         public bool Equals(RenderPassBeginInfo other) =>

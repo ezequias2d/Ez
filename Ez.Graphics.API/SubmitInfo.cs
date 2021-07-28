@@ -20,18 +20,18 @@ namespace Ez.Graphics.API
         /// If semaphores to wait on are provided, they define a semaphore
         /// wait operation.
         /// </summary>
-        public ReadOnlySpan<ISemaphore> WaitSemaphores { get; set; }
+        public ReadOnlySpan<ISemaphore> WaitSemaphores;
 
         /// <summary>
         /// The command buffers to execute in the batch.
         /// </summary>
-        public ReadOnlySpan<ICommandBuffer> CommandBuffers { get; set; }
+        public ReadOnlySpan<ICommandBuffer> CommandBuffers;
 
         /// <summary>
         /// Semaphores which will be signaled when the command buffers for 
         /// this batch have completed execution. If semaphores to be signaled 
         /// are provided, they define a semaphore signal operation.
         /// </summary>
-        public ReadOnlySpan<ISemaphore> SignalSemaphores { get; set; }
+        public ReadOnlySpan<ISemaphore> SignalSemaphores;
     }
 }

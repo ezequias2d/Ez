@@ -14,6 +14,25 @@ namespace Ez.Graphics.API
     public struct TextureSubresourceRange : IEquatable<TextureSubresourceRange>
     {
         /// <summary>
+        /// The base mip level visible in the view. Must be less than <see cref="ITexture.MipmapLevels"/>.
+        /// </summary>
+        public uint BaseMipmapLevel;
+        /// <summary>
+        /// The number of mip levels visible in the view.
+        /// </summary>
+        public uint MipmapLevelCount;
+
+        /// <summary>
+        /// The base array layer visible in the view.
+        /// </summary>
+        public uint BaseArrayLayer;
+
+        /// <summary>
+        /// The number of array layers visible in the view.
+        /// </summary>
+        public uint ArrayLayerCount;
+
+        /// <summary>
         /// Creates a new <see cref="TextureSubresourceRange"/> instance by texture values.
         /// </summary>
         /// <param name="target">The texture to extract values.</param>
@@ -40,25 +59,6 @@ namespace Ez.Graphics.API
             BaseArrayLayer = baseArrayLayer;
             ArrayLayerCount = arrayLayers;
         }
-
-        /// <summary>
-        /// The base mip level visible in the view. Must be less than <see cref="ITexture.MipmapLevels"/>.
-        /// </summary>
-        public uint BaseMipmapLevel { get; set; }
-        /// <summary>
-        /// The number of mip levels visible in the view.
-        /// </summary>
-        public uint MipmapLevelCount { get; set; }
-
-        /// <summary>
-        /// The base array layer visible in the view.
-        /// </summary>
-        public uint BaseArrayLayer { get; set; }
-
-        /// <summary>
-        /// The number of array layers visible in the view.
-        /// </summary>
-        public uint ArrayLayerCount { get; set; }
 
         /// <inheritdoc/>
         public bool Equals(TextureSubresourceRange other) =>

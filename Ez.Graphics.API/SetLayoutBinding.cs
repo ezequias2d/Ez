@@ -17,18 +17,18 @@ namespace Ez.Graphics.API
         /// The binding number of this entry and corresponds to a resource of the
         /// same binding number in shader stages.
         /// </summary>
-        public uint Binding { get; set; }
+        public uint Binding;
 
         /// <summary>
         /// Specifying which type of the resource for this binding.
         /// </summary>
-        public SetType SetType { get; set; }
+        public SetType SetType;
 
         /// <summary>
         /// Specifying which pipeline shader stages can access a resource for this 
         /// binding.
         /// </summary>
-        public ShaderStages ShaderStages { get; set; }
+        public ShaderStages ShaderStages;
 
         /// <inheritdoc/>
         public bool Equals(SetLayoutBinding other) =>

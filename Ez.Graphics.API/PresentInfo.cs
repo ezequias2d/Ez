@@ -18,18 +18,18 @@ namespace Ez.Graphics.API
         /// The semaphores to wait before issuing the request.
         /// (PS.: can be empty)
         /// </summary>
-        public ReadOnlySpan<ISemaphore> WaitSemaphores { get; set; }
+        public ReadOnlySpan<ISemaphore> WaitSemaphores;
 
         /// <summary>
         /// The swapchains being presented.
         /// </summary>
-        public ReadOnlySpan<ISwapchain> Swapchains { get; set; }
+        public ReadOnlySpan<ISwapchain> Swapchains;
 
         /// <summary>
         /// The semaphores to signal when each swapchain is presented.
         /// (PS.: can be empty or have elements with a null value)
         /// </summary>
         /// <value></value>
-        public ReadOnlySpan<ISemaphore> SignalSemaphores { get; set; }
+        public ReadOnlySpan<ISemaphore> SignalSemaphores;
     }
 }

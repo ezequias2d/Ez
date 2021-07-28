@@ -9,22 +9,22 @@ namespace Ez.Graphics.API
     /// <summary>
     /// Represents a single output of a <see cref="IFramebuffer"/>. May be a color or depth attachment.
     /// </summary>
-    public struct FramebufferAttachment
+    public readonly struct FramebufferAttachment
     {
         /// <summary>
         /// The target <see cref="ITexture"/> which will be rendered to.
         /// </summary>
-        public ITexture Target { get; }
+        public readonly ITexture Target;
 
         /// <summary>
         /// The target array layer.
         /// </summary>
-        public uint ArrayLayer { get; }
+        public readonly uint ArrayLayer;
 
         /// <summary>
         /// The target mip level.
         /// </summary>
-        public uint MipLevel { get; }
+        public readonly uint  MipLevel;
 
         /// <summary>
         /// Creates a new instance of<see cref= "FramebufferAttachment" /> struct.

@@ -13,16 +13,16 @@ namespace Ez.Graphics.API
         /// <summary>
         /// Specifies the starting offset in bytes from the start of the source buffer.
         /// </summary>
-        public long SrcOffset { get; set; }
+        public long SrcOffset;
 
         /// <summary>
         /// Specifies the starting offset in bytes from the start of the destination buffer.
         /// </summary>
-        public long DstOffset { get; set; }
+        public long DstOffset;
 
         /// <summary>
         /// Specifies the number of bytes to copy.
         /// </summary>
-        public long Size { get; set; }
+        public long Size;
     }
 }

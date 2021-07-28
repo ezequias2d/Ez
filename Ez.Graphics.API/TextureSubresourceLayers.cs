@@ -13,16 +13,16 @@ namespace Ez.Graphics.API
         /// <summary>
         /// Gets or sets the mipmap level to copy.
         /// </summary>
-        public uint MipmapLevel { get; set; }
+        public uint MipmapLevel;
 
         /// <summary>
         /// Gets or sets the starting layer to copy.
         /// </summary>
-        public uint BaseArrayLayer { get; set; }
+        public uint BaseArrayLayer;
 
         /// <summary>
         /// Gets or sets the number of layers to copy.
         /// </summary>
-        public uint LayerCount { get; set; }
+        public uint LayerCount;
     }
 }

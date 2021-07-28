@@ -15,30 +15,30 @@ namespace Ez.Graphics.API
         /// Specifies  the subresource of the texture used for the source
         /// texture data.
         /// </summary>
-        public TextureSubresourceLayers SrcSubresource { get; set; }
+        public TextureSubresourceLayers SrcSubresource;
 
         /// <summary>
         /// Specifies the initial X, Y, and Z offsets in texels of the
         /// sub-region of the source texture data.
         /// </summary>
-        public Point3 SrcOffset { get; }
+        public Point3 SrcOffset;
 
         /// <summary>
         /// Specifies the subresource of the texture used for the destination
         /// texture data.
         /// </summary>
-        public TextureSubresourceLayers DstSubresource { get; set; }
+        public TextureSubresourceLayers DstSubresource;
 
         /// <summary>
         /// Specifies the initial X, Y, and Z offsets in texels of the
         /// sub-region of the destination texture data.
         /// </summary>
-        public Point3 DstOffset { get; set; }
+        public Point3 DstOffset;
 
         /// <summary>
         /// Specifies the size in texels of the texture to copy in width,
         /// height and depth.
         /// </summary>
-        public Size3 Extent { get; set; }
+        public Size3 Extent;
     }
 }

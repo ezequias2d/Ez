@@ -12,7 +12,7 @@ namespace Ez.Graphics.API
     /// Describes the properties that are supported for a particular combination of <see cref="PixelFormat"/>,
     /// <see cref="TextureType"/>, and <see cref="TextureUsage"/>.
     /// </summary>
-    public struct PixelFormatProperties : IEquatable<PixelFormatProperties>
+    public readonly struct PixelFormatProperties : IEquatable<PixelFormatProperties>
     {
         /// <summary>
         /// The maximum supported size.

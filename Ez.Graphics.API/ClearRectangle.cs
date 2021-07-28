@@ -14,16 +14,16 @@ namespace Ez.Graphics.API
         /// <summary>
         /// Gets or sets the region to be cleared.
         /// </summary>
-        public Rectangle Rectangle { get; set; }
+        public Rectangle Rectangle;
 
         /// <summary>
         /// Gets or sets the first layer to be cleared.
         /// </summary>
-        public uint BaseArrayLayer { get; set; }
+        public uint BaseArrayLayer;
 
         /// <summary>
         /// Gets or sets the number of layers to clear.
         /// </summary>
-        public uint ArrayLayerCount { get; set; }
+        public uint ArrayLayerCount;
     }
 }
