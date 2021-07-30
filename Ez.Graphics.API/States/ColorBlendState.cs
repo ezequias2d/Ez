@@ -47,7 +47,7 @@ namespace Ez.Graphics.API
             HashHelper<ColorBlendState>.Combine(
                 LogicOperationEnabled, 
                 LogicOperation, 
-                HashHelper<ColorBlendAttachmentState>.Combine(AttachmentStates));
+                HashHelper<ColorBlendAttachmentState>.Combine(AttachmentStates.Span));
 
         /// <inheritdoc/>
         public bool Equals(ColorBlendState other) =>
