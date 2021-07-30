@@ -136,6 +136,7 @@ namespace Ez.Memory
                 if (*(ulong*)aPos != *(ulong*)bPos)
                     return false;
                 aPos += 8;
+                bPos += 8;
                 i8++;
             }
 
@@ -144,6 +145,7 @@ namespace Ez.Memory
                 if (*(uint*)aPos != *(uint*)bPos)
                     return false;
                 aPos += 4;
+                bPos += 4;
                 i4++;
             }
 
@@ -152,6 +154,7 @@ namespace Ez.Memory
                 if (*(ushort*)aPos != *(ushort*)bPos)
                     return false;
                 aPos += 2;
+                bPos += 2;
                 i2++;
             }
 
@@ -160,6 +163,7 @@ namespace Ez.Memory
                 if (*aPos != *bPos)
                     return false;
                 aPos++;
+                bPos++;
                 i1++;
             }
 
