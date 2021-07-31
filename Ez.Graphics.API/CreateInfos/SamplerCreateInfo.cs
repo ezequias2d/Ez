@@ -63,11 +63,6 @@ namespace Ez.Graphics.API.CreateInfos
         public int LodBias { get; set; }
 
         /// <summary>
-        /// The value specifies the predefined border color to use.
-        /// </summary>
-        public ColorSingle BorderColor { get; set; }
-
-        /// <summary>
         /// Creates a new <see cref="SamplerCreateInfo"/> struct.
         /// </summary>
         /// <param name="edgeSampleU">The <see cref="EdgeSample"/> specifies the addressing mode for outside [0..1] range for U coordinate.</param>
@@ -81,7 +76,6 @@ namespace Ez.Graphics.API.CreateInfos
         /// <param name="minimumLod">The value is used to clamp the minimum of the computed LOD(level of detail) value.</param>
         /// <param name="maximumLod">The value is used to clamp the maximum of the computed LOD(level of detail) value.</param>
         /// <param name="lodBias">The value is the bias to be added to mipmap LOD(level of detail) calculation.</param>
-        /// <param name="borderColor">The value specifies the predefined border color to use.</param>
         public SamplerCreateInfo(
             in EdgeSample edgeSampleU,
             in EdgeSample edgeSampleV,
@@ -91,8 +85,7 @@ namespace Ez.Graphics.API.CreateInfos
             in uint maximumAnisotropy,
             in uint minimumLod,
             in uint maximumLod,
-            in int lodBias,
-            in ColorSingle borderColor)
+            in int lodBias)
         {
             EdgeSampleU = edgeSampleU;
             EdgeSampleV = edgeSampleV;
@@ -103,7 +96,6 @@ namespace Ez.Graphics.API.CreateInfos
             MinimumLod = minimumLod;
             MaximumLod = maximumLod;
             LodBias = lodBias;
-            BorderColor = borderColor;
         }
 
         /// <summary>
@@ -167,8 +159,7 @@ namespace Ez.Graphics.API.CreateInfos
                 && MaximumAnisotropy == other.MaximumAnisotropy
                 && MinimumLod == other.MinimumLod
                 && MaximumLod == other.MaximumLod
-                && LodBias == other.LodBias
-                && BorderColor == other.BorderColor;
+                && LodBias == other.LodBias;
 
 
         /// <summary>
@@ -185,8 +176,7 @@ namespace Ez.Graphics.API.CreateInfos
                 MaximumAnisotropy,
                 MinimumLod,
                 MaximumLod,
-                LodBias,
-                BorderColor);
+                LodBias);
 
         /// <inheritdoc/>
         public override bool Equals(object obj) => obj is SamplerCreateInfo sci && Equals(sci);
@@ -197,7 +187,7 @@ namespace Ez.Graphics.API.CreateInfos
             $"EdgeSampleW: {EdgeSampleW}, Filter: {Filter} " +
             $"ComparisonFunction: {CompareOperation}, MaximumAnisotropy: {MaximumAnisotropy}, " +
             $"MaximumAnisotropy: {MinimumLod}, MaximumAnisotropy: {MaximumLod}, " +
-            $"MaximumAnisotropy: {LodBias}, MaximumAnisotropy: {BorderColor})";
+            $"MaximumAnisotropy: {LodBias})";
 
         /// <summary>
         /// Compare two <see cref="SamplerCreateInfo"/> structures.

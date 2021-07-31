@@ -25,9 +25,5 @@ namespace Ez.Graphics.API
         /// The texture coordinate is clamped to the [0, 1] range.
         /// </summary>
         ClampToEdge,
-        /// <summary>
-        /// The texture coordinate is clamped to the [0, 1] range, but the edge texels are blended with a constant border color.
-        /// </summary>
-        ClampToBorder
     }
 }

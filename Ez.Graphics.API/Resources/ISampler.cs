@@ -58,10 +58,5 @@ namespace Ez.Graphics.API.Resources
         /// Gets the value that specifies the bias to add to mipmap LOD(level of detail) calculation.
         /// </summary>
         int LodBias { get; }
-
-        /// <summary>
-        /// Gets the value that specifies the predefined border color used.
-        /// </summary>
-        ColorSingle BorderColor { get; }
     }
 }
