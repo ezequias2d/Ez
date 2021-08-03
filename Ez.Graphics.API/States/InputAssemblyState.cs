@@ -24,7 +24,7 @@ namespace Ez.Graphics.API
         /// is treated as restarting the assembly of primitives. This enable only applies to indexed
         /// draws (vkCmdDrawIndexed and vkCmdDrawIndexedIndirect), and the special index value is 
         /// either 0xFFFFFFFF when the <see cref="IndexType"/> parameter of 
-        /// <see cref="ICommandBuffer.BindIndexBuffer(IBuffer, IndexType, uint)"/>
+        /// <see cref="ICommandBuffer.BindIndexBuffer(IBuffer, IndexType, ulong)"/>
         /// is equal to <see cref="IndexType.UInt"/>, or 0xFFFF when <see cref="IndexType"/> is equal
         /// to <see cref="IndexType.UShort"/>. Primitive restart is not allowed for “list” topologies.
         /// </summary>
