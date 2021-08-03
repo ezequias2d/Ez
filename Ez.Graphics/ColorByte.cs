@@ -7,12 +7,14 @@ using System;
 using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Ez.Graphics
 {
     /// <summary>
     /// A color struct in 8-bits unsigned integer values in RGBA format.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
     public readonly struct ColorByte : IColor<byte>, IEquatable<ColorByte>
     {
         /// <summary>

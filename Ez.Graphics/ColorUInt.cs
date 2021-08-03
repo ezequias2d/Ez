@@ -1,11 +1,12 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
+using System.Runtime.InteropServices;
 
 namespace Ez.Graphics
 {
     /// <summary>
     /// A color struct in 32-bits unsigned integer values in RGBA format.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
     public struct ColorUInt : IColor<uint>
     {
         /// <summary>

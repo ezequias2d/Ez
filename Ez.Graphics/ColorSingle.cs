@@ -7,12 +7,14 @@ using System;
 using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Ez.Graphics
 {
     /// <summary>
     /// A color struct in 32-bits floating-point values in RGBA format.
     /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
     public readonly partial struct ColorSingle : IColor<float>, IEquatable<ColorSingle>
     {
         private readonly Vector4 _literal;
