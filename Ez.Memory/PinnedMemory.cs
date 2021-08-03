@@ -78,6 +78,11 @@ namespace Ez.Memory
         /// <inheritdoc/>
         public int Count { get; }
 
+        /// <summary>
+        /// Gets the byte size of the pinned memory.
+        /// </summary>
+        public long ByteSize => Count * TSize;
+
         private IntPtr GetPtr(int index) => new IntPtr(Ptr.ToInt64() + index * TSize);
 
         private void CheckIndex(int index)
