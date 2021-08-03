@@ -3,7 +3,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using System;
-
+using Ez.Graphics.API.CreateInfos;
 using Ez.Graphics.API.Resources;
 
 namespace Ez.Graphics.API
@@ -34,6 +34,12 @@ namespace Ez.Graphics.API
         DepthStencilAttachment = 1 << 3,
         /// <summary>
         /// Specifies that the texture is a cubemap.
+        /// <para>
+        ///     <list type="bullet">
+        ///         <item>The <see cref="TextureCreateInfo.Type">TextureType</see> must be <see cref="TextureType.Texture2D">Texture2D</see>.</item>
+        ///         <item>The <see cref="TextureCreateInfo.Size">Width and Height</see> must be equal and <see cref="TextureCreateInfo.ArrayLayers"/> must be greater than or equal to 6.</item>
+        ///     </list>
+        /// </para>
         /// </summary>
         Cubemap = 1 << 4,
         /// <summary>

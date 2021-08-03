@@ -36,6 +36,14 @@ namespace Ez.Graphics.API.CreateInfos
 
         /// <summary>
         /// The sample count of the <see cref="ITexture"/>.
+        /// 
+        /// <para>
+        ///     <list type="bullet">
+        ///         <item>If is not <see cref="SampleCount.Count1"/>, then <see cref="Type"/> must be
+        ///         <see cref="TextureType.Texture2D"/> and <see cref="Usage"/> must not contain 
+        ///         <see cref="TextureUsage.Cubemap"/>.</item>
+        ///     </list>
+        /// </para>
         /// </summary>
         public SampleCount Samples { get; set; }
 
