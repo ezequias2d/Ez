@@ -83,6 +83,12 @@ namespace Ez.Memory
         /// </summary>
         public long ByteSize => Count * TSize;
 
+        /// <summary>
+        /// Tries to enter in write mode and return a disposable object to exit write mode.
+        /// </summary>
+        /// <returns>Returns an object that, when disposing, exits write mode.</returns>
+        public IDisposable EnterWriteLock() => new Locker(ReaderWriterLock);
+
         private IntPtr GetPtr(int index) => new IntPtr(Ptr.ToInt64() + index * TSize);
 
         private void CheckIndex(int index)
@@ -134,5 +140,39 @@ namespace Ez.Memory
         /// <param name="memory">The <see cref="PinnedMemory{T}"/> to cast.</param>
         public static implicit operator ReadOnlyPinnedMemory<T>(PinnedMemory<T> memory) =>
             new(memory.Ptr, memory.Count, memory.ReaderWriterLock);
+
+        private sealed class Locker : IDisposable
+        {
+            private readonly ReaderWriterLockSlim _locker;
+            private bool _locked;
+            public Locker(ReaderWriterLockSlim locker)
+            {
+                _locker = locker;
+                _locked = true;
+                try
+                {
+                    _locker.EnterWriteLock();
+                }
+                catch
+                {
+                    _locked = false;
+                }
+            }
+
+            ~Locker()
+            {
+                Dispose();
+            }
+
+            public void Dispose()
+            {
+                if (_locked)
+                {
+                    _locked = false;
+                    _locker.ExitWriteLock();
+                    GC.SuppressFinalize(this);
+                }
+            }
+        }
     }
 }
