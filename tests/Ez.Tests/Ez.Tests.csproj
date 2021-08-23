@@ -21,6 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Ez.Collections\Ez.Collections.csproj" />
+    <ProjectReference Include="..\..\Ez.IO\Ez.IO.csproj" />
     <ProjectReference Include="..\..\Ez\Ez.csproj" />
   </ItemGroup>
 
