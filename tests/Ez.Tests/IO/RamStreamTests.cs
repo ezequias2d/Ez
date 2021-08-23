@@ -1,11 +1,5 @@
 ﻿using Ez.IO;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Ez.Tests.IO
@@ -14,31 +8,32 @@ namespace Ez.Tests.IO
     {
 
         [Fact]
-        public static void RamStream_WriteToTests()
+        public void RamStreamWriteAndReadTest1()
         {
-            using (RamStream ms2 = new RamStream())
-            {
-                byte[] bytArrRet;
-                byte[] bytArr = new byte[256];
-                new Random(123).NextBytes(bytArr);
+            using var ms2 = new RamStream();
 
-                ms2.Write(bytArr, 0, bytArr.Length);
+            // load random data
+            var bytArr = new byte[256];
+            new Random(123).NextBytes(bytArr);
 
-                using (RamStream readonlyStream = new RamStream())
-                {
-                    ms2.Position = 0;
-                    ms2.CopyTo(readonlyStream);
+            // writes
+            ms2.Write(bytArr, 0, bytArr.Length);
 
-                    readonlyStream.Flush();
-                    readonlyStream.Position = 0;
-                    bytArrRet = new byte[(int)readonlyStream.Length];
-                    readonlyStream.Read(bytArrRet, 0, (int)readonlyStream.Length);
-                    for (int i = 0; i < bytArr.Length; i++)
-                    {
-                        Assert.Equal(bytArr[i], bytArrRet[i]);
-                    }
-                }
-            }
+            // copy to another stream
+            using var otherStream = new RamStream();
+            ms2.Position = 0;
+            ms2.CopyTo(otherStream);
+
+            otherStream.Flush();
+            otherStream.Position = 0;
+            var bytArrRet = new byte[(int)otherStream.Length];
+
+            // reads from stream
+            otherStream.Read(bytArrRet, 0, (int)otherStream.Length);
+
+            // compare with original stream
+            for (int i = 0; i < bytArr.Length; i++)
+                Assert.Equal(bytArr[i], bytArrRet[i]);
         }
     }
 }
