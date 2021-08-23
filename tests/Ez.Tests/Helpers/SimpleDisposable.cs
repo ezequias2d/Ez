@@ -4,10 +4,12 @@
     {
         protected override void ManagedDispose()
         {
+            // test implementation not required
         }
 
         protected override void UnmanagedDispose()
         {
+            // test implementation not required
         }
     }
 }
