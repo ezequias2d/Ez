@@ -1,17 +1,12 @@
 ﻿using Ez.IO;
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Ez.Tests.IO
 {
     public class PathHelperTests
     {
-        private string[] GetPaths() => new string[] { "home", "user", "folder", "file.txt" };
+        private static string[] GetPaths() => new [] { "home", "user", "folder", "file.txt" };
         
         [Fact]
         public void SeparatePathTest1()
