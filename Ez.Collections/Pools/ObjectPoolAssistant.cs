@@ -3,8 +3,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Ez.Collections.Pools
 {
@@ -51,46 +49,26 @@ namespace Ez.Collections.Pools
             _count = _clearCount;
         }
 
-        /// <summary>
-        /// Creates a new T item that <paramref name="specs"/> describes.
-        /// </summary>
-        /// <param name="specs">The specifications for creating.</param>
-        /// <returns>A new T item.</returns>
+        /// <inheritdoc/>
         public T Create(in TSpecs specs) => _create(specs);
 
-        /// <summary>
-        /// Evaluates whether an <paramref name="item"/> has <paramref name="specs"/> specifications.
-        /// </summary>
-        /// <param name="item">The item to evaluates.</param>
-        /// <param name="specs">The specifications used to evaluate.</param>
-        /// <param name="currentTolerance">Current tolerance, to avoid false negatives put 0.</param>
-        /// <returns><see langword="false"/>, if the item does not meet the specifications or is a false 
-        /// negative based on internal logic using the current tolerance as the main factor, otherwise <see langword="true"/>.</returns>
+        /// <inheritdoc/>
         public bool Evaluate(in T item, in TSpecs specs, int currentTolerance) =>
             _evaluate.Invoke(item, specs, currentTolerance);
 
-        /// <summary>
-        /// Checks if the pool is clean enough to remain uncleaned.
-        /// </summary>
-        /// <returns><see langword="true"/> if it is clean enough, otherwise <see langword="false"/>.</returns>
+        /// <inheritdoc/>
         public bool IsClear()
         {
             return _count >= _clearCount;
         }
 
-        /// <summary>
-        /// Registers an <paramref name="item"/> returning to the <see cref="ObjectPool{T, TSpecs}"/>.
-        /// </summary>
-        /// <param name="item">An item to register.</param>
+        /// <inheritdoc/>
         public void RegisterReturn(in T item)
         {
             _count++;
         }
 
-        /// <summary>
-        /// Registers an <paramref name="item"/> leaving the <see cref="ObjectPool{T, TSpecs}"/>.
-        /// </summary>
-        /// <param name="item">An item to register.</param>
+        /// <inheritdoc/>
         public void RegisterGet(in T item)
         {
             _count--;

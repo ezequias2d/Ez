@@ -2,12 +2,9 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 
 namespace Ez.Collections
 {
@@ -20,24 +17,15 @@ namespace Ez.Collections
         private readonly IList<T> _list;
 
         #region Constructors
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ConcurrentList{T}"/> class that wraps a <see cref="IList{T}"/> instance and define an instance to be used as synchronize.
-        /// </summary>
-        /// <param name="list">Wrapped instance.</param>
-        /// <param name="sync">Sync instance.</param>
-        public ConcurrentList(IList<T> list, object sync)
-        {
-            _list = list;
-            Sync = sync;
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConcurrentList{T}"/> class that wraps a <see cref="IList{T}"/> instance.
         /// </summary>
         /// <param name="list">Wrapped instance.</param>
-        public ConcurrentList(IList<T> list) : this(list, new object())
+        public ConcurrentList(IList<T> list) 
         {
-
+            _list = list;
+            Lock = new(LockRecursionPolicy.SupportsRecursion);
         }
 
         /// <summary>
@@ -60,176 +48,179 @@ namespace Ez.Collections
         #endregion Constructors
 
         #region Operators 
-        /// <summary>
-        /// Gets or sets the element at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to get or set.</param>
-        /// <returns>The element at the specified index.</returns>
+        /// <inheritdoc/>
         public T this[int index]
         {
             get
             {
-                lock (Sync)
+                Lock.EnterReadLock();
+                try
                 {
                     return _list[index];
+                }
+                finally
+                {
+                    Lock.ExitReadLock();
                 }
             }
             set
             {
-                lock (Sync)
+                Lock.EnterWriteLock();
+                try
                 {
                     _list[index] = value;
+                }
+                finally
+                {
+                    Lock.ExitWriteLock();
                 }
             }
         }
 
-        /// <summary>
-        /// Gets the number of elements contained in the <see cref="ConcurrentList{T}"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public int Count
         {
             get
             {
-                lock (Sync)
+                Lock.EnterReadLock();
+                try
                 {
                     return _list.Count;
+                }
+                finally
+                {
+                    Lock.ExitReadLock();
                 }
             }
         }
 
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="ConcurrentList{T}"/> is read-only.
-        /// </summary>
-        public bool IsReadOnly
-        {
-            get
-            {
-                return _list.IsReadOnly;
-            }
-        }
+        /// <inheritdoc/>
+        public bool IsReadOnly => _list.IsReadOnly;
 
-        /// <summary>
-        /// The sync object.
-        /// </summary>
-        public object Sync { get; }
+        /// <inheritdoc/>
+        public ReaderWriterLockSlim Lock { get; }
 
         #endregion Operators
 
         #region Methods
-        /// <summary>
-        /// Adds an item to the <see cref="ConcurrentList{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to add to the <see cref="ConcurrentList{T}"/>.</param>
+        /// <inheritdoc/>
         public void Add(T item)
         {
-            lock (Sync)
+            Lock.EnterWriteLock();
+            try
             {
                 _list.Add(item);
             }
+            finally
+            {
+                Lock.ExitWriteLock();
+            }
         }
 
-        /// <summary>
-        /// Removes all items from the <see cref="ConcurrentList{T}"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public void Clear()
         {
-            lock (Sync)
+            Lock.EnterWriteLock();
+            try
             {
                 _list.Clear();
             }
+            finally
+            {
+                Lock.ExitWriteLock();
+            }
         }
 
-        /// <summary>
-        /// Copies the elements of the <see cref="ConcurrentList{T}"/> to an <see cref="Array"/>,
-        /// starting at a particular index.
-        /// </summary>
-        /// <param name="array">The one-dimensional Array that is the destination of the elements copied
-        /// from <see cref="ConcurrentList{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
-        /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
-
+        /// <inheritdoc/>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            lock (Sync)
+            Lock.EnterReadLock();
+            try
             {
                 _list.CopyTo(array, arrayIndex);
             }
+            finally
+            {
+                Lock.ExitReadLock();
+            }
         }
 
-        /// <summary>
-        /// Inserts an item to the <see cref="ConcurrentList{T}"/> at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-        /// <param name="item">The object to insert into the <see cref="ConcurrentList{T}"/>.</param>
+        /// <inheritdoc/>
         public void Insert(int index, T item)
         {
-            lock (Sync)
+            Lock.EnterWriteLock();
+            try
             {
                 _list.Insert(index, item);
             }
-        }
-
-        /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="ConcurrentList{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to remove from the <see cref="ConcurrentList{T}"/>.</param>
-        /// <returns><see langword="true"/> if item was successfully removed from the 
-        /// <see cref="ConcurrentList{T}"/>; otherwise, <see langword="false"/>.</returns>
-        public bool Remove(T item)
-        {
-            lock (Sync)
+            finally
             {
-                return _list.Remove(item);
+                Lock.ExitWriteLock();
             }
         }
 
-        /// <summary>
-        /// Removes the <see cref="ConcurrentList{T}"/> item at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index of the item to remove.</param>
+        /// <inheritdoc/>
+        public bool Remove(T item)
+        {
+            Lock.EnterWriteLock();
+            try
+            {
+                return _list.Remove(item);
+            }
+            finally
+            {
+                Lock.ExitWriteLock();
+            }
+        }
+
+        /// <inheritdoc/>
         public void RemoveAt(int index)
         {
-            lock (Sync)
+            Lock.EnterWriteLock();
+            try
             {
                 _list.RemoveAt(index);
+            }
+            finally
+            {
+                Lock.ExitWriteLock();
             }
         }
         #endregion Methods
 
         #region Functions
-        /// <summary>
-        /// Determines whether the <see cref="ConcurrentList{T}"/> contains a specific value.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="ConcurrentList{T}"/>.</param>
-        /// <returns><see langword="true"/> if item is found in the <see cref="ConcurrentList{T}"/>; otherwise, 
-        /// <see langword="false"/>.</returns>
+        /// <inheritdoc/>
         public bool Contains(T item)
         {
-            lock (Sync)
+            Lock.EnterReadLock();
+            try
             {
                 return _list.Contains(item);
             }
-        }
-
-        /// <summary>
-        /// Determines the index of a specific item in the <see cref="ConcurrentList{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="ConcurrentList{T}"/>.</param>
-        /// <returns>The index of <paramref name="item"/> if found in the list; otherwise, -1.</returns>
-        public int IndexOf(T item)
-        {
-            lock (Sync)
+            finally
             {
-                return _list.IndexOf(item);
+                Lock.ExitReadLock();
             }
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="IEnumerator{T}"/> object that can be used to iterate through the collection.</returns>
+        /// <inheritdoc/>
+        public int IndexOf(T item)
+        {
+            Lock.EnterReadLock();
+            try
+            {
+                return _list.IndexOf(item);
+            }
+            finally
+            {
+                Lock.ExitReadLock();
+            }
+        }
+
+        /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator()
         {
-            return new SafeEnumerator<T>(_list.GetEnumerator(), Sync);
+            return new SafeEnumerator<T>(_list.GetEnumerator(), Lock);
         }
 
         /// <summary>
@@ -238,7 +229,7 @@ namespace Ez.Collections
         /// <returns>Instance of <see cref="ConcurrentOperationList{T}"/></returns>
         public ConcurrentOperationList<T> GetOperationList()
         {
-            return new ConcurrentOperationList<T>(_list, Sync);
+            return new ConcurrentOperationList<T>(_list, Lock);
         }
         #endregion Functions
 

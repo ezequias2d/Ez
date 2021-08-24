@@ -5,19 +5,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 
 namespace Ez.Collections
 {
     /// <summary>
-    /// A wrapper for the list that synchronizes using a "Sync" object until it is disposed.
+    /// A wrapper for the list that synchronizes using a "Sync" object until it is IsDisposed.
     /// </summary>
     /// <typeparam name="T">Type of elements using in <see cref="ISynchronizedList{T}"/> interface.</typeparam>
-    public class ConcurrentOperationList<T> : ISynchronizedList<T>, IDisposable
+    public class ConcurrentOperationList<T> : Disposable, ISynchronizedList<T>
     {
         private readonly IList<T> _list;
-        private bool disposed;
 
         #region Constructors/Destructors
         /// <summary>
@@ -25,220 +23,165 @@ namespace Ez.Collections
         /// </summary>
         /// <param name="list">Wrapped instance.</param>
         /// <param name="sync">Sync instance.</param>
-        public ConcurrentOperationList(IList<T> list, object sync)
+        public ConcurrentOperationList(IList<T> list, ReaderWriterLockSlim @lock)
         {
-            disposed = false;
             _list = list;
-            Sync = sync;
-            Monitor.Enter(Sync);
-        }
+            Lock = @lock;
 
-        /// <summary>
-        /// Destroys a instance of the <see cref="ConcurrentOperationList{T}"/> class.
-        /// </summary>
-        ~ConcurrentOperationList() => Dispose();
+            Lock.EnterWriteLock();
+        }
 
         #endregion Constructors/Destructors
 
         #region Operators
-        /// <summary>
-        /// Gets or sets the element at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index of the element to get or set.</param>
-        /// <returns>The element at the specified index.</returns>
+
+        /// <inheritdoc/>
         public T this[int index]
         {
             get
             {
-                if (!disposed)
-                {
-                    return _list[index];
-                }
-                throw new ObjectDisposedException(ToString());
+                if (IsDisposed)
+                    throw new ObjectDisposedException(ToString());
+
+                return _list[index];
             }
             set
             {
-                if (!disposed)
-                {
-                    _list[index] = value;
-                }
-                throw new ObjectDisposedException(ToString());
+                if (IsDisposed)
+                    throw new ObjectDisposedException(ToString());
+
+                _list[index] = value;
             }
         }
 
-        /// <summary>
-        /// Gets the number of elements contained in the <see cref="ConcurrentOperationList{T}"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public int Count
         {
             get
             {
-                if (!disposed)
-                {
-                    return _list.Count;
-                }
-                throw new ObjectDisposedException(ToString());
+                if (IsDisposed)
+                    throw new ObjectDisposedException(ToString());
+
+                return _list.Count;
             }
         }
 
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="ConcurrentOperationList{T}"/> is read-only.
-        /// </summary>
+        /// <inheritdoc/>
         public bool IsReadOnly
         {
             get
             {
-                if (!disposed)
-                {
-                    return _list.IsReadOnly;
-                }
-                throw new ObjectDisposedException(ToString());
+                if (IsDisposed)
+                    throw new ObjectDisposedException(ToString());
+                
+                return _list.IsReadOnly;
             }
         }
 
-        /// <summary>
-        /// The sync object.
-        /// </summary>
-        public object Sync { get; }
+        /// <inheritdoc/>
+        public ReaderWriterLockSlim Lock { get; }
 
         #endregion Operators
 
         #region Methods
-        /// <summary>
-        /// Adds an item to the <see cref="ConcurrentOperationList{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to add to the <see cref="ConcurrentOperationList{T}"/>.</param>
+        /// <inheritdoc/>
         public void Add(T item)
         {
-            if (!disposed)
-                _list.Add(item);
-            else
+            if (IsDisposed)
                 throw new ObjectDisposedException(ToString());
+
+            _list.Add(item);            
         }
 
-        /// <summary>
-        /// Removes all items from the <see cref="ConcurrentOperationList{T}"/>.
-        /// </summary>
+        /// <inheritdoc/>
         public void Clear()
         {
-            if (!disposed)
-                _list.Clear();
-            else
+            if (IsDisposed)
                 throw new ObjectDisposedException(ToString());
+
+            _list.Clear();
         }
 
-        /// <summary>
-        /// Copies the elements of the <see cref="ConcurrentOperationList{T}"/> to an <see cref="Array"/>,
-        /// starting at a particular index.
-        /// </summary>
-        /// <param name="array">The one-dimensional Array that is the destination of the elements copied
-        /// from <see cref="ConcurrentOperationList{T}"/>. The <see cref="Array"/> must have zero-based indexing.</param>
-        /// <param name="arrayIndex">The zero-based index in <paramref name="array"/> at which copying begins.</param>
+        /// <inheritdoc/>
         public void CopyTo(T[] array, int arrayIndex)
         {
-            if (!disposed)
-                _list.CopyTo(array, arrayIndex);
-            else
+            if (IsDisposed)
                 throw new ObjectDisposedException(ToString());
+            
+            _list.CopyTo(array, arrayIndex);
         }
 
-        /// <summary>
-        /// Inserts an item to the <see cref="ConcurrentOperationList{T}"/> at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-        /// <param name="item">The object to insert into the <see cref="ConcurrentOperationList{T}"/>.</param>
+        /// <inheritdoc/>
         public void Insert(int index, T item)
         {
-            if (!disposed)
-                _list.Insert(index, item);
-            else
+            if (IsDisposed)
                 throw new ObjectDisposedException(ToString());
+
+            _list.Insert(index, item);
         }
 
-        /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="ConcurrentOperationList{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to remove from the <see cref="ConcurrentOperationList{T}"/>.</param>
-        /// <returns><see langword="true"/> if item was successfully removed from the 
-        /// <see cref="ConcurrentOperationList{T}"/>; otherwise, <see langword="false"/>.</returns>
+        /// <inheritdoc/>
         public bool Remove(T item)
         {
-            if (!disposed)
-                return _list.Remove(item);
-            else
+            if (IsDisposed)
                 throw new ObjectDisposedException(ToString());
+
+            return _list.Remove(item);            
         }
 
-        /// <summary>
-        /// Removes the <see cref="ConcurrentOperationList{T}"/> item at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based index of the item to remove.</param>
+        /// <inheritdoc/>
         public void RemoveAt(int index)
         {
-            if (!disposed)
-                _list.RemoveAt(index);
-            else
+            if (IsDisposed)
                 throw new ObjectDisposedException(ToString());
-        }
 
-        /// <summary>
-        /// Releases the sync object.
-        /// </summary>
-        public void Dispose()
-        {
-            if (!disposed)
-                Monitor.Exit(Sync);
-            disposed = true;
+            _list.RemoveAt(index);
         }
         #endregion Methods
 
         #region Functions
 
-        /// <summary>
-        /// Determines whether the <see cref="ConcurrentOperationList{T}"/> contains a specific value.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="ConcurrentOperationList{T}"/>.</param>
-        /// <returns><see langword="true"/> if item is found in the <see cref="ConcurrentOperationList{T}"/>; otherwise, 
-        /// <see langword="false"/>.</returns>
+        /// <inheritdoc/>
         public bool Contains(T item)
         {
-            if(!disposed)
-                return _list.Contains(item);
-            else
+            if(IsDisposed)
                 throw new ObjectDisposedException(ToString());
+
+            return _list.Contains(item);
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>An <see cref="IEnumerator{T}"/> object that can be used to iterate through the collection.</returns>
+        /// <inheritdoc/>
         public IEnumerator<T> GetEnumerator()
         {
-            if(!disposed)
-                return _list.GetEnumerator();
-            else
+            if(IsDisposed)
                 throw new ObjectDisposedException(ToString());
+            return _list.GetEnumerator();
         }
 
-        /// <summary>
-        /// Determines the index of a specific item in the <see cref="ConcurrentOperationList{T}"/>.
-        /// </summary>
-        /// <param name="item">The object to locate in the <see cref="ConcurrentOperationList{T}"/>.</param>
-        /// <returns>The index of <paramref name="item"/> if found in the list; otherwise, -1.</returns>
+        /// <inheritdoc/>
         public int IndexOf(T item)
         {
-            if(!disposed)
-                return _list.IndexOf(item);
-            else
+            if(IsDisposed)
                 throw new ObjectDisposedException(ToString());
+            
+            return _list.IndexOf(item);
         }
 
         #endregion Functions
 
         #region Private Interface
-        IEnumerator IEnumerable.GetEnumerator()
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        /// <inheritdoc/>
+        protected override void UnmanagedDispose()
         {
-            return GetEnumerator();
+            Lock.ExitWriteLock();
+        }
+
+        /// <inheritdoc/>
+        protected override void ManagedDispose()
+        {
+            // not used
         }
 
         #endregion Private Interface

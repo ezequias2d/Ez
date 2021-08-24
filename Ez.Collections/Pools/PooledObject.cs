@@ -3,7 +3,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using System;
-using Ez;
 
 namespace Ez.Collections.Pools
 {
@@ -14,8 +13,6 @@ namespace Ez.Collections.Pools
     /// <typeparam name="TSpecs">Type of TSpec in <see cref="PooledObject{T, TSpecs}.Source"/>.</typeparam>
     internal sealed class PooledObject<T, TSpecs> : PooledObject<T>
     {
-        private bool _disposed;
-
         internal PooledObject(ObjectPool<T, TSpecs> objectPool) : base()
         {
             Source = objectPool;
@@ -27,26 +24,25 @@ namespace Ez.Collections.Pools
         /// </summary>
         public ObjectPool<T, TSpecs> Source { get; }
 
-        protected override void Dispose(bool disposing)
+        protected override void ManagedDispose()
         {
-            if (!_disposed)
-            {
-                T aux = _value;
+            Source.Return(this);
+        }
 
-                if (disposing)
-                    Source.Return(this);
+        protected override void UnmanagedDispose()
+        {
+            T aux = _value;
+            
+            if (IsTemporaryUse && !aux.Equals(default(T)))
+                Source.Return(aux);
 
-                if (IsTemporaryUse && !aux.Equals(default))
-                    Source.Return(aux);
-
-                _disposed = true;
-                _value = default;
-            }
+            _value = default;
         }
 
         internal override void Undispose()
         {
-            _disposed = false;
+            IsDisposed = false;
+            GC.ReRegisterForFinalize(this);
         }
     }
 
@@ -54,7 +50,7 @@ namespace Ez.Collections.Pools
     /// An object that contains a value and is saved in an object pool.
     /// </summary>
     /// <typeparam name="T">Value type</typeparam>
-    public abstract class PooledObject<T> : IDisposable, IResettable
+    public abstract class PooledObject<T> : Disposable, IResettable
     {
         private protected T _value;        
 
@@ -62,11 +58,6 @@ namespace Ez.Collections.Pools
         {
             IsTemporaryUse = true;
         }
-
-        /// <summary>
-        /// Destroys this instance of <see cref="PooledObject{T}"/>.
-        /// </summary>
-        ~PooledObject() => Dispose(false);
 
         /// <summary>
         /// Flag indicating whether the value should be returned to the pool(true) when discarded with Dispose or not(false).
@@ -96,21 +87,11 @@ namespace Ez.Collections.Pools
                 resettable.Set();
         }
 
-        /// <summary>
-        /// Releases
-        /// </summary>
-        public void Dispose() => Dispose(true);
-
         internal void UpdateValue(in T value)
         {
             _value = value;
         }
 
-        /// <summary>
-        /// Disposes the <see cref="PooledObject{T}"/>.
-        /// </summary>
-        /// <param name="disposing"></param>
-        protected abstract void Dispose(bool disposing);
         internal abstract void Undispose();
     }
 }

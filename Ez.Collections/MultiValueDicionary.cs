@@ -5,7 +5,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Ez.Collections
 {
@@ -58,12 +57,7 @@ namespace Ez.Collections
         #endregion Constructors
 
         #region Operators
-        /// <summary>
-        /// Gets the values associated with the specified key.
-        /// </summary>
-        /// <param name="key">The key of the values to get.</param>
-        /// <returns>The value associated with the specified key. If the specified key is not found, 
-        /// a get operation throws a <see cref="KeyNotFoundException"/>.</returns>
+        /// <inheritdoc/>
         public IReadOnlyCollection<TValue> this[TKey key]
         {
             get
@@ -80,14 +74,10 @@ namespace Ez.Collections
         #endregion
 
         #region Properties
-        /// <summary>
-        /// Gets an enumerable collection that contains the keys in the read-only dictionary.
-        /// </summary>
+        /// <inheritdoc/>
         public IEnumerable<TKey> Keys => _dicionary.Keys;
 
-        /// <summary>
-        /// Gets an enumerable collection that contains the values in the read-only multi-value dictionary.
-        /// </summary>
+        /// <inheritdoc/>
         public IEnumerable<IReadOnlyCollection<TValue>> Values
         {
             get
@@ -97,9 +87,7 @@ namespace Ez.Collections
             }
         }
 
-        /// <summary>
-        ///  Gets the number of elements in the collection.
-        /// </summary>
+        /// <inheritdoc/>
         public int Count { get; private set; }
 
         /// <summary>
@@ -242,12 +230,7 @@ namespace Ez.Collections
         #endregion
 
         #region Implementation of IReadOnlyDicionary 
-        /// <summary>
-        /// Determines whether the <see cref="MultiValueDicionary{TKey, TValue}"/> contains the specified key.
-        /// </summary>
-        /// <param name="key">The key to locate in the <see cref="MultiValueDicionary{TKey, TValue}"/>.</param>
-        /// <returns><see langword="true"/> if the <see cref="MultiValueDicionary{TKey, TValue}"/>
-        /// contains an element with the specified key; otherwise, <see langword="false"/>.</returns>
+        /// <inheritdoc/>
         public bool ContainsKey(TKey key) => _dicionary.ContainsKey(key);
 
         /// <summary>
@@ -265,20 +248,10 @@ namespace Ez.Collections
             return false;
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through the <see cref="MultiValueDicionary{TKey, TValue}"/>.
-        /// </summary>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public IEnumerator<KeyValuePair<TKey, IReadOnlyCollection<TValue>>> GetEnumerator() => new Enumerator(this);
 
-        /// <summary>
-        /// Gets values associated with the specified key.
-        /// </summary>
-        /// <param name="key">The key of the values to get.</param>
-        /// <param name="value">When this method returns, contains the value associated withthe specified key,
-        /// if the key is foumd; otherwise, null.</param>
-        /// <returns><see langword="true"/> if the <see cref="MultiValueDicionary{TKey, TValue}"/> contains an
-        /// element with the specified key; otherwise, <see langword="false"/>.</returns>
+        /// <inheritdoc/>
         public bool TryGetValue(TKey key, out IReadOnlyCollection<TValue> value)
         {
             if (key == null)
