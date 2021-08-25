@@ -8,4 +8,5 @@
     <ProjectReference Include="..\Ez.Memory\Ez.Memory.csproj" />
   </ItemGroup>
 
+  <Import Project="..\build\common.props.csproj" />
 </Project>

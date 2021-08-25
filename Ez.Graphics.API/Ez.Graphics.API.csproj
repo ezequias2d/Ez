@@ -4,18 +4,11 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>..\doc\Ez.Graphics.API.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>..\doc\Ez.Graphics.API.xml</DocumentationFile>
-  </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Ez.Graphics.Contexts\Ez.Graphics.Contexts.csproj" />
     <ProjectReference Include="..\Ez.Graphics\Ez.Graphics.csproj" />
     <ProjectReference Include="..\Ez.Numerics\Ez.Numerics.csproj" />
   </ItemGroup>
 
+  <Import Project="..\build\common.props.csproj" />
 </Project>

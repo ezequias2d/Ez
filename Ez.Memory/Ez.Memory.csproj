@@ -4,19 +4,10 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>..\doc\Ez.Memory.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>..\doc\Ez.Memory.xml</DocumentationFile>
-  </PropertyGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Ez\Ez.csproj" />
     <ProjectReference Include="..\Ez.Collections\Ez.Collections.csproj" />
   </ItemGroup>
 
+  <Import Project="..\build\common.props.csproj" />
 </Project>

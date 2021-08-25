@@ -4,21 +4,10 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>..\doc\Ez.Graphics.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>..\doc\Ez.Graphics.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Memory" Version="4.5.4" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Ez.Memory\Ez.Memory.csproj" />
     <ProjectReference Include="..\Ez.Numerics\Ez.Numerics.csproj" />
   </ItemGroup>
 
+  <Import Project="..\build\common.props.csproj" />
 </Project>

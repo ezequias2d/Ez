@@ -4,20 +4,9 @@
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>..\doc\Ez.Collections.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <DocumentationFile>..\doc\Ez.Collections.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="5.0.0" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Ez\Ez.csproj" />
   </ItemGroup>
 
+  <Import Project="..\build\common.props.csproj" />
 </Project>

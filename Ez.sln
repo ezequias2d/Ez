@@ -41,9 +41,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ez.Graphics.API", "Ez.Graph
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ez.Graphics.API.Vulkan", "Ez.Graphics.API.Vulkan\Ez.Graphics.API.Vulkan.csproj", "{BE3C3834-EA8E-4E05-BE9C-12B21CD9FEE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ez.Tests", "tests\Ez.Tests\Ez.Tests.csproj", "{62678868-9D39-43AA-9BFA-A4D3F3576592}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ez.Tests", "tests\Ez.Tests\Ez.Tests.csproj", "{62678868-9D39-43AA-9BFA-A4D3F3576592}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{FBE65D84-B4C5-42AE-8A94-8C75A1BFE495}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{657C7730-8B18-4E07-ABA6-63EB264CD917}"
+	ProjectSection(SolutionItems) = preProject
+		build\common.props.csproj = build\common.props.csproj
+		build\ez-gear2x.png = build\ez-gear2x.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
