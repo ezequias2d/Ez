@@ -79,7 +79,7 @@ namespace Ez.IO
             if (count == 0)
                 return Array.Empty<T>();
 
-            var array = ArrayPool<T>.GetT(count);
+            var array = MemUtil.Cast<byte, T>(ArrayPool<byte>.Shared.Rent((int)(count * MemUtil.SizeOf<T>()))).Slice(0, (int)count);
 
             byte[] buffer = new byte[count * MemUtil.SizeOf<T>()];
             stream.Read(buffer, 0, buffer.Length);
