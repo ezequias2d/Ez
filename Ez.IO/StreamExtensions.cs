@@ -63,9 +63,8 @@ namespace Ez.IO
             if (array == null || array.Length == 0)
                 return;
 
-            byte[] buffer = new byte[array.Length * MemUtil.SizeOf<T>()];
-            MemUtil.Copy<byte, T>(buffer, array);
-            stream.Write(buffer, 0, buffer.Length);
+            var source = MemUtil.Cast<T, byte>(array);
+            stream.Write(source);
         }
 
         /// <summary>
@@ -80,13 +79,13 @@ namespace Ez.IO
             if (count == 0)
                 return Array.Empty<T>();
 
-            T[] array = new T[count];
-            
-                byte[] buffer = new byte[count * MemUtil.SizeOf<T>()];
-                stream.Read(buffer, 0, buffer.Length);
+            var array = ArrayPool<T>.GetT(count);
+
+            byte[] buffer = new byte[count * MemUtil.SizeOf<T>()];
+            stream.Read(buffer, 0, buffer.Length);
 
             MemUtil.Copy<T, byte>(array, buffer);
-            
+
             return array;
         }
 

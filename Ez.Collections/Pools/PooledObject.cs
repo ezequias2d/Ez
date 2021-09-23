@@ -27,11 +27,6 @@ namespace Ez.Collections.Pools
         public ObjectPool<T> Source { get; }
 
         /// <summary>
-        /// Destroys this instance of <see cref="PooledObject{T}"/>.
-        /// </summary>
-        ~PooledObject() => Dispose(false);
-
-        /// <summary>
         /// Flag indicating whether the value should be returned to the pool(true) when discarded with Dispose or not(false).
         /// </summary>
         public bool IsTemporaryUse { get; set; }

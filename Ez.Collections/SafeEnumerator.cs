@@ -13,11 +13,9 @@ namespace Ez.Collections
     /// A wrapper that makes an enumerator secure using a synchronization object.
     /// </summary>
     /// <typeparam name="T">The type of objects to enumerate.</typeparam>
-    public sealed class SafeEnumerator<T> : IEnumerator<T>, IEnumerator, ISynchronizable, IDisposable
+    public sealed class SafeEnumerator<T> : Disposable, IEnumerator<T>, IEnumerator, ISynchronizable, IDisposable
     {
-        private readonly IEnumerator<T> inner;
-        private readonly object _sync;
-        private bool disposed;
+        private readonly IEnumerator<T> _inner;
 
         #region Constructors/Destructors
         /// <summary>
@@ -25,94 +23,69 @@ namespace Ez.Collections
         /// contains an <see cref="IEnumerator{T}"/> and a sync object.
         /// </summary>
         /// <param name="inner">Wrapped instance.</param>
-        /// <param name="sync">Sync instance.</param>
-        public SafeEnumerator(IEnumerator<T> inner, object sync)
+        /// <param name="lock">ReaderWriterLockSlim instance.</param>
+        public SafeEnumerator(IEnumerator<T> inner, ReaderWriterLockSlim @lock)
         {
-            this.inner = inner;
-            this._sync = sync;
-            this.disposed = false;
+            this._inner = inner;
+            Lock = @lock;
 
-            Monitor.Enter(sync);
-        }
-
-        /// <summary>
-        /// Destroys a instance of <see cref="SafeEnumerator{T}"/> class.
-        /// </summary>
-        ~SafeEnumerator()
-        {
-            Dispose(false);
+            Lock.EnterReadLock();
         }
 
         #endregion Constructors/Destructors
 
         #region Operators
-        /// <summary>
-        /// Gets the element in the collection at the current position of the enumerator.
-        /// </summary>
+
+        /// <inheritdoc/>
         public T Current 
         { 
             get 
             {
-                if (disposed)
-                    throw new ObjectDisposedException("SafeEnumerator");
-                return inner.Current; 
+                if (IsDisposed)
+                    throw GetObjectDisposedException();
+                return _inner.Current; 
             } 
         }
 
-        /// <summary>
-        /// Gets the sync object.
-        /// </summary>
-        public object Sync => _sync;
 
         object IEnumerator.Current => Current;
+
+        /// <inheritdoc/>
+        public ReaderWriterLockSlim Lock { get; }
 
         #endregion Operators
 
         #region Methods
-        private void Dispose(bool disposing)
-        {
-            if (!disposed)
-            {
-                if (disposing)
-                {
 
-                }
-                Monitor.Exit(_sync);
-                disposed = true;
-            }
-        }
-
-        /// <summary>
-        /// Dispose a instance of <see cref="SafeEnumerator{T}"/> class and release the <see cref="Sync"/> object.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-        }
-
-        /// <summary>
-        /// Advances the enumerator to the next element of the collection.
-        /// </summary>
-        /// <returns><see langword="true"/> if the enumerator was successfully advanced to 
-        /// the next element; <see langword="false"/> if the enumerator has passed the end 
-        /// of the collection.</returns>
+        /// <inheritdoc/>
         public bool MoveNext()
         {
-            if (disposed)
-                throw new ObjectDisposedException("SafeEnumerator");
-            return inner.MoveNext();
+            if (IsDisposed)
+                throw GetObjectDisposedException();
+            return _inner.MoveNext();
         }
 
-        /// <summary>
-        /// Sets the enumerator to its initial position, which is before the first element in the collection.
-        /// </summary>
+        /// <inheritdoc/>
         public void Reset()
         {
-            if (disposed)
-                throw new ObjectDisposedException("SafeEnumerator");
-            inner.Reset();
+            if (IsDisposed)
+                throw GetObjectDisposedException();
+            _inner.Reset();
         }
 
+        /// <inheritdoc/>
+        protected override void UnmanagedDispose()
+        {
+            Lock.ExitReadLock();
+        }
+
+        /// <inheritdoc/>
+        protected override void ManagedDispose()
+        {
+            // not used
+        }
+
+        private static ObjectDisposedException GetObjectDisposedException() => new("SafeEnumerator");
         #endregion Methods
     }
 }
