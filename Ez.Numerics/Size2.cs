@@ -7,29 +7,27 @@ using System.Text;
 namespace Ez.Numerics
 {
     /// <summary>
-    /// Stores an ordered triad of unsigned integers, which specify a
-    /// <see cref="Width"/>, <see cref="Height"/> and <see cref="Depth"/>.
+    /// Stores an ordered dyad of unsigned integers, which specify a
+    /// <see cref="Width"/> and <see cref="Height"/>.
     /// </summary>
-    public struct Size3 : IEquatable<Size3>, IFormattable
+    public struct Size2 : IEquatable<Size2>, IFormattable
     {
         /// <summary>
-        /// Creates a new <see cref="Size3"/> instance whose elements have the specified values.
+        /// Creates a new <see cref="Size2"/> instance whose elements have the specified values.
         /// </summary>
         /// <param name="width">The value to assign to the <see cref="Width"/> field.</param>
         /// <param name="height">The value to assign to the <see cref="Height"/> field.</param>
-        /// <param name="depth">The value to assign to the <see cref="Depth"/> field.</param>
-        public Size3(uint width, uint height, uint depth)
+        public Size2(uint width, uint height)
         {
             Width = width;
             Height = height;
-            Depth = depth;
         }
 
         /// <summary>
-        /// Creates a new <see cref="Size3"/> instance whose three elements have the same value.
+        /// Creates a new <see cref="Size2"/> instance whose three elements have the same value.
         /// </summary>
-        /// <param name="value">The value to assign to all three elements.</param>
-        public Size3(uint value) : this(value, value, value)
+        /// <param name="value">The value to assign to all two elements.</param>
+        public Size2(uint value) : this(value, value)
         {
 
         }
@@ -44,22 +42,17 @@ namespace Ez.Numerics
         /// </summary>
         public uint Height;
 
-        /// <summary>
-        /// The Depth component of the size.
-        /// </summary>
-        public uint Depth;
-
         /// <inheritdoc/>
-        public bool Equals(Size3 other) =>
-            Width == other.Width && Height == other.Height && Depth == other.Depth;
+        public bool Equals(Size2 other) =>
+            Width == other.Width && Height == other.Height;
 
         /// <inheritdoc/>
         public override bool Equals(object obj) =>
-            obj is Size3 p && Equals(p);
+            obj is Size2 p && Equals(p);
 
         /// <inheritdoc/>
         public override int GetHashCode() =>
-            HashHelper<Size3>.Combine(Width, Height, Depth);
+            HashHelper<Size2>.Combine(Width, Height);
 
         /// <inheritdoc/>
         public override string ToString() => ToString("G", CultureInfo.CurrentCulture);
@@ -74,9 +67,6 @@ namespace Ez.Numerics
             sb.Append(separator);
             sb.Append(' ');
             sb.Append(Height.ToString(format, formatProvider));
-            sb.Append(separator);
-            sb.Append(' ');
-            sb.Append(Depth.ToString(format, formatProvider));
             sb.Append('>');
             return sb.ToString();
         }
@@ -85,29 +75,24 @@ namespace Ez.Numerics
         #region properties
 
         /// <summary>
-        /// Gets a size whose 3 elements are equal to one.
+        /// Gets a size whose 2 elements are equal to one.
         /// </summary>
-        public static Size3 One { get; } = new Size3(1);
+        public static Size2 One { get; } = new Size2(1);
 
         /// <summary>
-        /// Gets a size whose 3 elements are equal to zero.
+        /// Gets a size whose 2 elements are equal to zero.
         /// </summary>
-        public static Size3 Zero { get; } = new Size3(0);
+        public static Size2 Zero { get; } = new Size2(0);
 
         /// <summary>
-        /// Gets the size (1, 0, 0).
+        /// Gets the size (1, 0).
         /// </summary>
-        public static Size3 UnitW { get; } = new Size3(1, 0, 0);
+        public static Size2 UnitW { get; } = new Size2(1, 0);
 
         /// <summary>
-        /// Gets the size (0, 1, 0).
+        /// Gets the size (0, 1).
         /// </summary>
-        public static Size3 UnitH { get; } = new Size3(0, 1, 0);
-
-        /// <summary>
-        /// Gets the size (0, 0, 1).
-        /// </summary>
-        public static Size3 UnitD { get; } = new Size3(0, 0, 1);
+        public static Size2 UnitH { get; } = new Size2(0, 1);
         #endregion
         #region methods
 
@@ -118,8 +103,8 @@ namespace Ez.Numerics
         /// <param name="right">The second size to add.</param>
         /// <returns>The summed size.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Size3 Add(Size3 left, Size3 right) =>
-            new(left.Width + right.Width, left.Height + right.Height, left.Depth + right.Depth);
+        public static Size2 Add(Size2 left, Size2 right) =>
+            new(left.Width + right.Width, left.Height + right.Height);
 
         /// <summary>
         /// Restricts a size between a minimum and maximum value.
@@ -129,12 +114,11 @@ namespace Ez.Numerics
         /// <param name="max">The maximum value.</param>
         /// <returns>The restricted vector.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Size3 Clamp(Size3 value, Size3 min, Size3 max)
+        public static Size2 Clamp(Size2 value, Size2 min, Size2 max)
         {
             var x = Clamp(value.Width, min.Width, max.Width);
             var y = Clamp(value.Height, min.Height, max.Height);
-            var z = Clamp(value.Depth, min.Depth, max.Depth);
-            return new Size3(x, y, z);
+            return new Size2(x, y);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -156,12 +140,11 @@ namespace Ez.Numerics
         /// <param name="divisor">The scalar value.</param>
         /// <returns>The size that results from the division.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Size3 Divide(in Size3 left, uint divisor)
+        public static Size2 Divide(in Size2 left, uint divisor)
         {
             var x = left.Width / divisor;
             var y = left.Height / divisor;
-            var z = left.Depth / divisor;
-            return new(x, y, z);
+            return new(x, y);
         }
 
         /// <summary>
@@ -171,12 +154,11 @@ namespace Ez.Numerics
         /// <param name="right">The second size.</param>
         /// <returns>The size resulting from the division.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Size3 Divide(in Size3 left, in Size3 right)
+        public static Size2 Divide(in Size2 left, in Size2 right)
         {
             var x = left.Width / right.Width;
             var y = left.Height / right.Height;
-            var z = left.Depth / right.Depth;
-            return new(x, y, z);
+            return new(x, y);
         }
 
         /// <summary>
@@ -187,12 +169,11 @@ namespace Ez.Numerics
         /// <param name="value2">The second size.</param>
         /// <returns>The maximized size.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Size3 Max(in Size3 value1, in Size3 value2)
+        public static Size2 Max(in Size2 value1, in Size2 value2)
         {
             var x = Max(value1.Width, value2.Width);
             var y = Max(value1.Height, value2.Height);
-            var z = Max(value1.Depth, value2.Depth);
-            return new(x, y, z);
+            return new(x, y);
         }
 
         /// <summary>
@@ -203,12 +184,11 @@ namespace Ez.Numerics
         /// <param name="value2">The second size.</param>
         /// <returns>The maximized size.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Size3 Min(in Size3 value1, in Size3 value2)
+        public static Size2 Min(in Size2 value1, in Size2 value2)
         {
             var x = Min(value1.Width, value2.Width);
             var y = Min(value1.Height, value2.Height);
-            var z = Min(value1.Depth, value2.Depth);
-            return new(x, y, z);
+            return new(x, y);
         }
 
         /// <summary>
@@ -218,12 +198,11 @@ namespace Ez.Numerics
         /// <param name="right">The size to multiply.</param>
         /// <returns>The scaled size.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Size3 Multiply(uint left, Size3 right)
+        public static Size2 Multiply(uint left, Size2 right)
         {
             var x = left * right.Width;
             var y = left * right.Height;
-            var z = left * right.Depth;
-            return new(x, y, z);
+            return new(x, y);
         }
 
         /// <summary>
@@ -233,12 +212,11 @@ namespace Ez.Numerics
         /// <param name="right">The scalar value.</param>
         /// <returns>The scaled size.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Size3 Multiply(Size3 left, uint right)
+        public static Size2 Multiply(Size2 left, uint right)
         {
             var x = left.Width * right;
             var y = left.Height * right;
-            var z = left.Depth * right;
-            return new(x, y, z);
+            return new(x, y);
         }
 
         /// <summary>
@@ -248,12 +226,11 @@ namespace Ez.Numerics
         /// <param name="right">The second size.</param>
         /// <returns>The size resulting from the multiplication.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Size3 Multiply(Size3 left, Size3 right)
+        public static Size2 Multiply(Size2 left, Size2 right)
         {
             var x = left.Width * right.Width;
             var y = left.Height * right.Height;
-            var z = left.Depth * right.Depth;
-            return new(x, y, z);
+            return new(x, y);
         }
 
         /// <summary>
@@ -263,8 +240,8 @@ namespace Ez.Numerics
         /// <param name="right">The second size.</param>
         /// <returns>The difference size.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static Size3 Subtract(in Size3 left, in Size3 right) =>
-            new(left.Width - right.Width, left.Height - right.Height, left.Depth - right.Depth);
+        public static Size2 Subtract(in Size2 left, in Size2 right) =>
+            new(left.Width - right.Width, left.Height - right.Height);
 
         #endregion
         #region operators
@@ -274,7 +251,7 @@ namespace Ez.Numerics
         /// <param name="left">The first size to add.</param>
         /// <param name="right">The second size to add.</param>
         /// <returns>The summed size.</returns>
-        public static Size3 operator +(in Size3 left, in Size3 right) =>
+        public static Size2 operator +(in Size2 left, in Size2 right) =>
             Add(left, right);
 
         /// <summary>
@@ -284,7 +261,7 @@ namespace Ez.Numerics
         /// <param name="right">The second size.</param>
         /// <returns>The size that results from dividing <paramref name="left"/> 
         /// by <paramref name="right"/>.</returns>
-        public static Size3 operator /(in Size3 left, in Size3 right) =>
+        public static Size2 operator /(in Size2 left, in Size2 right) =>
             Divide(left, right);
 
         /// <summary>
@@ -293,7 +270,7 @@ namespace Ez.Numerics
         /// <param name="left">The size.</param>
         /// <param name="divisor">The scalar value.</param>
         /// <returns>The size that results from the division.</returns>
-        public static Size3 operator /(in Size3 left, uint divisor) =>
+        public static Size2 operator /(in Size2 left, uint divisor) =>
             Divide(left, divisor);
 
         /// <summary>
@@ -305,7 +282,7 @@ namespace Ez.Numerics
         /// <returns><see langword="true"/> if <paramref name="left"/> and 
         /// <paramref name="right"/> are qual; otherwise, <see langword="false"/>.
         /// </returns>
-        public static bool operator ==(in Size3 left, in Size3 right) =>
+        public static bool operator ==(in Size2 left, in Size2 right) =>
             left.Equals(right);
 
         /// <summary>
@@ -317,7 +294,7 @@ namespace Ez.Numerics
         /// <returns><see langword="true"/> if <paramref name="left"/> and 
         /// <paramref name="right"/> are not equal; otherwise, <see langword="false"/>.
         /// </returns>
-        public static bool operator !=(in Size3 left, in Size3 right) =>
+        public static bool operator !=(in Size2 left, in Size2 right) =>
             !(left == right);
 
 
@@ -327,7 +304,7 @@ namespace Ez.Numerics
         /// <param name="left">The first size.</param>
         /// <param name="right">The second size.</param>
         /// <returns>The size resulting from the multiplication.</returns>
-        public static Size3 operator *(in Size3 left, in Size3 right) =>
+        public static Size2 operator *(in Size2 left, in Size2 right) =>
             Multiply(left, right);
 
         /// <summary>
@@ -336,7 +313,7 @@ namespace Ez.Numerics
         /// <param name="left">The size to multiply.</param>
         /// <param name="right">The scalar value.</param>
         /// <returns>The scaled size.</returns>
-        public static Size3 operator *(in Size3 left, uint right) =>
+        public static Size2 operator *(in Size2 left, uint right) =>
             Multiply(left, right);
 
         /// <summary>
@@ -345,7 +322,7 @@ namespace Ez.Numerics
         /// <param name="left">The scalar value.</param>
         /// <param name="right">The size to multiply.</param>
         /// <returns>The scaled size.</returns>
-        public static Size3 operator *(uint left, in Size3 right) =>
+        public static Size2 operator *(uint left, in Size2 right) =>
             Multiply(left, right);
 
         /// <summary>
@@ -354,23 +331,21 @@ namespace Ez.Numerics
         /// <param name="left">The first size.</param>
         /// <param name="right">The second size.</param>
         /// <returns>The difference size.</returns>
-        public static Size3 operator -(in Size3 left, in Size3 right) =>
+        public static Size2 operator -(in Size2 left, in Size2 right) =>
             Subtract(left, right);
 
+        /// <summary>
+        /// Casts <see cref="Size2"/> to <see cref="Size3"/> with depth 0.
+        /// </summary>
+        /// <param name="size">The value to cast.</param>
+        public static implicit operator Size3(Size2 size) => new(size.Width, size.Height, 0);
+
+        /// <summary>
+        /// Casts <see cref="Size2"/> to <see cref="Size"/>
+        /// </summary>
+        /// <param name="size">The value to cast.</param>
+        public static implicit operator Size(Size2 size) => new((int)size.Width, (int)size.Height);
         #endregion
-
-        /// <summary>
-        /// Casts <see cref="Size3"/> to <see cref="Size2"/> losing depth value.
-        /// </summary>
-        /// <param name="size">The value to cast.</param>
-        public static implicit operator Size2(Size3 size) => new(size.Width, size.Height);
-
-        /// <summary>
-        /// Casts <see cref="Size3"/> to <see cref="Size"/> losing depth value.
-        /// </summary>
-        /// <param name="size">The value to cast.</param>
-        public static implicit operator Size(Size3 size) => new((int)size.Width, (int)size.Height);
-
         #endregion
     }
 }
