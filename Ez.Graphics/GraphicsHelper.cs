@@ -3,6 +3,8 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+using Ez.Numerics;
+using System;
 using System.Drawing;
 
 namespace Ez.Graphics
@@ -266,5 +268,308 @@ namespace Ez.Graphics
 
             return (blockSize, new Size(blockWidth, blockHeight));
         }
+
+        /// <summary>
+        /// Gets compressed block size of a compressed <see cref="PixelFormat"/>.
+        /// </summary>
+        /// <param name="format">The compressed pixel format to get the block size in bytes.</param>
+        /// <returns>The size of a block of the compressed <paramref name="format"/>.</returns>
+        public static uint GetCompressedBlockSize(in PixelFormat format) => format switch
+        {
+            PixelFormat.BC1RgbaSrgb or
+                PixelFormat.BC1RgbaUNorm or
+                PixelFormat.BC1RgbSrgb or
+                PixelFormat.BC1RgbUNorm or
+                PixelFormat.EacR11SNorm or
+                PixelFormat.EacR11UNorm or
+                PixelFormat.Etc2R8G8B8Srgb or
+                PixelFormat.Etc2R8G8B8UNorm or
+                PixelFormat.Etc2R8G8B8A1Srgb or
+                PixelFormat.Etc2R8G8B8A1UNorm => 8,
+
+            PixelFormat.BC2Srgb or
+                PixelFormat.BC2UNorm or
+                PixelFormat.BC3Srgb or
+                PixelFormat.BC3UNorm or
+                PixelFormat.BC4SNorm or
+                PixelFormat.BC4UNorm or
+                PixelFormat.BC5SNorm or
+                PixelFormat.BC5UNorm or
+                PixelFormat.BC6HSFloat or
+                PixelFormat.BC6HUFloat or
+                PixelFormat.BC7Srgb or
+                PixelFormat.BC7UNorm or
+                PixelFormat.EacR11G11SNorm or
+                PixelFormat.EacR11G11UNorm or
+                PixelFormat.Etc2R8G8B8A8Srgb or
+                PixelFormat.Etc2R8G8B8A8UNorm or
+                PixelFormat.Astc4x4Srgb or
+                PixelFormat.Astc4x4UNorm or
+                PixelFormat.Astc5x4Srgb or
+                PixelFormat.Astc5x4UNorm or
+                PixelFormat.Astc5x5Srgb or
+                PixelFormat.Astc5x5UNorm or
+                PixelFormat.Astc6x5Srgb or
+                PixelFormat.Astc6x5UNorm or
+                PixelFormat.Astc6x6Srgb or
+                PixelFormat.Astc6x6UNorm or
+                PixelFormat.Astc8x5Srgb or
+                PixelFormat.Astc8x5UNorm or
+                PixelFormat.Astc8x6Srgb or
+                PixelFormat.Astc8x6UNorm or
+                PixelFormat.Astc8x8Srgb or
+                PixelFormat.Astc8x8UNorm or
+                PixelFormat.Astc10x5Srgb or
+                PixelFormat.Astc10x5UNorm or
+                PixelFormat.Astc10x6Srgb or
+                PixelFormat.Astc10x6UNorm or
+                PixelFormat.Astc10x8Srgb or
+                PixelFormat.Astc10x8UNorm or
+                PixelFormat.Astc10x10Srgb or
+                PixelFormat.Astc10x10UNorm or
+                PixelFormat.Astc12x10Srgb or
+                PixelFormat.Astc12x10UNorm or
+                PixelFormat.Astc12x12Srgb or
+                PixelFormat.Astc12x12UNorm => 16,
+            _ => 0,
+        };
+
+        /// <summary>
+        /// Gets compressed block dimensions of a compressed <see cref="PixelFormat"/>.
+        /// </summary>
+        /// <param name="format">The compressed pixel format to get the block</param>
+        /// <returns>The block dimensions of a compressed <paramref name="format"/>.</returns>
+        public static Size GetCompressedBlockDimension(in PixelFormat format) => format switch
+        {
+            PixelFormat.BC1RgbaSrgb or
+                PixelFormat.BC1RgbaUNorm or
+                PixelFormat.BC1RgbSrgb or
+                PixelFormat.BC1RgbUNorm or
+                PixelFormat.BC2Srgb or
+                PixelFormat.BC2UNorm or
+                PixelFormat.BC3Srgb or
+                PixelFormat.BC3UNorm or
+                PixelFormat.BC4SNorm or
+                PixelFormat.BC4UNorm or
+                PixelFormat.BC5SNorm or
+                PixelFormat.BC5UNorm or
+                PixelFormat.BC6HSFloat or
+                PixelFormat.BC6HUFloat or
+                PixelFormat.BC7Srgb or
+                PixelFormat.BC7UNorm or
+                PixelFormat.EacR11SNorm or
+                PixelFormat.EacR11UNorm or
+                PixelFormat.Etc2R8G8B8Srgb or
+                PixelFormat.Etc2R8G8B8UNorm or
+                PixelFormat.Etc2R8G8B8A1Srgb or
+                PixelFormat.Etc2R8G8B8A1UNorm or
+                PixelFormat.EacR11G11SNorm or
+                PixelFormat.EacR11G11UNorm or
+                PixelFormat.Etc2R8G8B8A8Srgb or
+                PixelFormat.Etc2R8G8B8A8UNorm or
+                PixelFormat.Astc4x4Srgb or
+                PixelFormat.Astc4x4UNorm => new(4, 4),
+
+            PixelFormat.Astc5x4Srgb or PixelFormat.Astc5x4UNorm => new(5, 4),
+            PixelFormat.Astc5x5Srgb or PixelFormat.Astc5x5UNorm => new(5, 5),
+            PixelFormat.Astc6x5Srgb or PixelFormat.Astc6x5UNorm => new(6, 5),
+            PixelFormat.Astc6x6Srgb or PixelFormat.Astc6x6UNorm => new(6, 6),
+            PixelFormat.Astc8x5Srgb or PixelFormat.Astc8x5UNorm => new(8, 5),
+            PixelFormat.Astc8x6Srgb or PixelFormat.Astc8x6UNorm => new(8, 6),
+            PixelFormat.Astc8x8Srgb or PixelFormat.Astc8x8UNorm => new(8, 8),
+            PixelFormat.Astc10x5Srgb or PixelFormat.Astc10x5UNorm => new(10, 5),
+            PixelFormat.Astc10x6Srgb or PixelFormat.Astc10x6UNorm => new(10, 6),
+            PixelFormat.Astc10x8Srgb or PixelFormat.Astc10x8UNorm => new(10, 8),
+            PixelFormat.Astc10x10Srgb or PixelFormat.Astc10x10UNorm => new(10, 10),
+            PixelFormat.Astc12x10Srgb or PixelFormat.Astc12x10UNorm => new(12, 10),
+            PixelFormat.Astc12x12Srgb or PixelFormat.Astc12x12UNorm => new(12, 12),
+            _ => new(),
+        };
+
+        /// <summary>
+        /// Gets <paramref name="dimension"/> in blocks of a compressed <paramref name="format"/>.
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="dimension"></param>
+        /// <returns></returns>
+        public static Size3 DimensionInBlocks(this PixelFormat format, Size3 dimension)
+        {
+            if (!format.HasFlag(PixelFormat.Compressed))
+                return dimension;
+
+            var adjustedExtent = dimension;
+            var block = GetCompressedBlockDimension(format);
+
+            adjustedExtent.Width = (uint)((adjustedExtent.Width + block.Width - 1) / block.Width);
+            adjustedExtent.Height = (uint)((adjustedExtent.Height + block.Height - 1) / block.Height);
+
+            return dimension;
+        }
+
+        /// <summary>
+        /// Gets the <paramref name="width"/> dimension in blocks of a compressed <paramref name="format"/>.
+        /// </summary>
+        /// <param name="format">The compressed pixel format to get the block width dimension.</param>
+        /// <param name="width">The original width to get block width dimension.</param>
+        /// <returns>The block dimension size of width dimension.</returns>
+        public static uint WidthInBlocks(this PixelFormat format, uint width)
+        {
+            if (!format.HasFlag(PixelFormat.Compressed))
+                return width;
+
+            var adjustedExtent = width;
+            var block = GetCompressedBlockDimension(format);
+
+            return (uint)((width + block.Width - 1) / block.Width);
+        }
+
+        /// <summary>
+        /// Gets the <paramref name="height"/> dimension in blocks of a compressed <paramref name="format"/>.
+        /// </summary>
+        /// <param name="format">The compressed pixel format to get the block width dimension.</param>
+        /// <param name="height">The original height to get block width dimension.</param>
+        /// <returns>The block dimension size of width dimension.</returns>
+        public static uint HeightInBlocks(this PixelFormat format, uint height)
+        {
+            if (!format.HasFlag(PixelFormat.Compressed))
+                return height;
+
+            var adjustedExtent = height;
+            var block = GetCompressedBlockDimension(format);
+
+            return (uint)((height + block.Height - 1) / block.Height);
+        }
+
+        /// <summary>
+        /// Gets the row pitch of a image with <paramref name="format"/> and <paramref name="width"/>.
+        /// </summary>
+        /// <param name="format">The pixel format to get the row pitch.</param>
+        /// <param name="width">The width of image to get the row pitch.</param>
+        /// <returns>The row pitch value of a image with <paramref name="format"/> and <paramref name="width"/>.</returns>
+        public static uint GetRowPitch(this PixelFormat format, uint width)
+        {
+            if (format.HasFlag(PixelFormat.Compressed))
+            {
+                var widthInBlocks = format.WidthInBlocks(width);
+                return widthInBlocks * GetCompressedBlockSize(format);
+            }
+            return GetUncompressedFormatSize(format) * width;
+        }
+
+        /// <summary>
+        /// Gets the depth pitch of a image with <paramref name="format"/> and <paramref name="size"/>.
+        /// </summary>
+        /// <param name="format">The pixel format to get the row pitch.</param>
+        /// <param name="size">The size of image to get the row pitch.</param>
+        /// <returns>The depth pitch value of a image with <paramref name="format"/> and <paramref name="size"/>.</returns>
+        public static uint GetDepthPitch(this PixelFormat format, Size2 size)
+        {
+            if (format.HasFlag(PixelFormat.Compressed))
+            {
+                var widthInBlocks = format.WidthInBlocks(size.Width);
+                var heightInBlocks = format.HeightInBlocks(size.Height);
+                return GetCompressedBlockSize(format) * widthInBlocks * heightInBlocks;
+            }
+            return GetUncompressedFormatSize(format) * size.Width * size.Height;
+        }
+
+        /// <summary>
+        /// Gets the memory offset in bytes of a mipmap level in a image with a <paramref name="format"/>.
+        /// </summary>
+        /// <param name="format">The pixel format of image.</param>
+        /// <param name="size">The size of image.</param>
+        /// <param name="samples">The number of samples of image.</param>
+        /// <param name="mipLevel">The mipmap level.</param>
+        /// <returns>The memory offset to a given mipmap level.</returns>
+        public static uint GetMemoryOffset(this PixelFormat format, Size3 size, uint samples, uint mipLevel)
+        {
+            var offset = 0u;
+            for (var i = 0u; i < mipLevel; ++i)
+            {
+                offset += format.GetMultiSampledLevelSize(size, samples, i);
+            }
+            return offset;
+        }
+
+        /// <summary>
+        /// Gets the memory offset in bytes of a mipmap level and a array layer in a image with a <paramref name="format"/>.
+        /// </summary>
+        /// <param name="format"></param>
+        /// <param name="size"></param>
+        /// <param name="samples"></param>
+        /// <param name="mipLevels"></param>
+        /// <param name="mipLevel"></param>
+        /// <param name="layer"></param>
+        /// <returns></returns>
+        public static uint GetMemoryOffset(this PixelFormat format, Size3 size, uint samples, uint mipLevels, uint mipLevel, uint layer)
+        {
+            return layer * format.GetLayerSize(size, samples, mipLevels) + format.GetMemoryOffset(size, samples, mipLevel);
+        }
+
+        /// <summary>
+        /// Gets the mipmap level byte size of a image.
+        /// </summary>
+        /// <param name="format">The image pixel format.</param>
+        /// <param name="size">The image size.</param>
+        /// <param name="mipLevel">The mipmap level.</param>
+        /// <returns>The byte size of a mipmap level.</returns>
+        public static uint GetMipLevelSize(this PixelFormat format, Size3 size, uint mipLevel)
+        {
+            var mipDimensions = size.GetMipmapDimensions(mipLevel);
+            return mipDimensions.Depth * format.GetDepthPitch(mipDimensions);
+        }
+
+        /// <summary>
+        /// Gets the mipmap level byte size of a multi-sampled image.
+        /// </summary>
+        /// <param name="format">The image pixel format.</param>
+        /// <param name="size">The image size.</param>
+        /// <param name="samples">The number of image samples.</param>
+        /// <param name="mipLevel">The mipmap level.</param>
+        /// <returns>The byte size of a mipmap level of a multi-sampled image.</returns>
+        public static uint GetMultiSampledLevelSize(this PixelFormat format, Size3 size, uint samples, uint mipLevel) =>
+            format.GetMipLevelSize(size, mipLevel) * samples;
+
+        /// <summary>
+        /// Gets the size of a layer of a image.
+        /// </summary>
+        /// <param name="format">The image pixel format.</param>
+        /// <param name="size">The image size.</param>
+        /// <param name="samples">The number of image samples.</param>
+        /// <param name="mipLevels">The image mipmap levels.</param>
+        /// <returns>The size of a layer of a image.</returns>
+        public static uint GetLayerSize(this PixelFormat format, Size3 size, uint samples, uint mipLevels)
+        {
+            var layerSize = 0u;
+
+            for (var mipLevel = 0u; mipLevel < mipLevels; ++mipLevel)
+            {
+                layerSize += format.GetMultiSampledLevelSize(size, samples, mipLevel);
+            }
+
+            return layerSize;
+        }
+
+        /// <summary>
+        /// Gets dimensions of a mipmap level.
+        /// </summary>
+        /// <param name="size">The original size.</param>
+        /// <param name="level">The mipmap level.</param>
+        /// <returns>The dimensions of the mipmap <paramref name="level"/>.</returns>
+        public static Size3 GetMipmapDimensions(this Size3 size, uint level) => new()
+        {
+            Width = GetMipmapDimension(size.Width, level),
+            Height = GetMipmapDimension(size.Height, level),
+            Depth = GetMipmapDimension(size.Depth, level)
+        };
+
+        /// <summary>
+        /// Gets dimension of a mipmap level.
+        /// </summary>
+        /// <param name="originalDimension">The original dimension.</param>
+        /// <param name="level">The mipmap level.</param>
+        /// <returns>The dimension of the mipmap <paramref name="level"/>.</returns>
+        public static uint GetMipmapDimension(uint originalDimension, uint level) =>
+            Math.Max(originalDimension >> (int)level, 1u);
     }
 }
