@@ -3,6 +3,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using Ez.Collections.Pools;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Ez.Memory
 {
@@ -11,11 +14,11 @@ namespace Ez.Memory
     /// </summary>
     public static class MemoryBlockPool
     {
-        private static readonly ObjectPool<MemoryBlock, MemoryBlockSpecs> _objectPool;
+        private static readonly ObjectPool<MemoryBlock> _objectPool;
         private const long Tolerance = 268435456; // 256 MB
         static MemoryBlockPool()
         {
-            _objectPool = new ObjectPool<MemoryBlock, MemoryBlockSpecs>(new MemoryBlockPoolAssistant(Tolerance));
+            _objectPool = new ObjectPool<MemoryBlock>(new MemoryBlockPoolAssistant(Tolerance));
         }
 
         /// <summary>
@@ -44,10 +47,11 @@ namespace Ez.Memory
             public bool AnyWithSize;
         }
 
-        internal class MemoryBlockPoolAssistant : IObjectPoolAssistant<MemoryBlock, MemoryBlockSpecs>
+        internal class MemoryBlockPoolAssistant : IObjectPoolAssistant<MemoryBlock>
         {
             private readonly long _tolerance;
-            private long _totalUsed;
+            private readonly IDictionary<MemoryBlock, long> _cache;
+            private long _current;
             public MemoryBlockPoolAssistant(long tolerance)
             {
                 _tolerance = tolerance;
@@ -55,25 +59,49 @@ namespace Ez.Memory
 
             public bool IsClear()
             {
-                if (_totalUsed > _tolerance)
+                if (_current > _tolerance)
                 {
-                    _totalUsed = 0;
+                    _current = 0;
                     return false;
                 }
                 return true;
             }
 
-            public bool Evaluate(in MemoryBlock item, in MemoryBlockSpecs specs, int currentTolerance) =>
-                specs.Size <= item.TotalSize &&
-                    (specs.AnyWithSize || currentTolerance == 0 || (item.TotalSize / specs.Size) <= 4);
+            public bool Evaluate(in MemoryBlock item, params object[] args)
+            {
+                var specs = (MemoryBlockSpecs)args.First(obj => obj is MemoryBlockSpecs);
 
-            public MemoryBlock Create(in MemoryBlockSpecs specs) => new MemoryBlock(specs.Size);
+                var result = specs.Size <= item.TotalSize && (specs.AnyWithSize || (item.TotalSize / specs.Size) <= 4);
+                if(result == false)
+                {
+                    if (_cache.ContainsKey(item))
+                        _cache[item] += item.TotalSize;
+                    else
+                        _cache[item] = item.TotalSize;
+                    _current += item.TotalSize;
+                }
+
+                return result;
+            }
+
+            public MemoryBlock Create(params object[] args) 
+            {
+                var specs = (MemoryBlockSpecs)args.First(obj => obj is MemoryBlockSpecs);
+                return new MemoryBlock(specs.Size); 
+            }
 
             public void RegisterReturn(in MemoryBlock item) =>            
-                _totalUsed += item.TotalSize;
+                _current += item.TotalSize;
 
-            public void RegisterGet(in MemoryBlock item) =>
-                _totalUsed -= item.TotalSize;
+            public void RegisterGet(in MemoryBlock item)
+            {
+                _current -= item.TotalSize;
+                if (_cache.ContainsKey(item))
+                {
+                    _current -= _cache[item];
+                    _cache[item] = 0;
+                }
+            }
         }
     }
 }

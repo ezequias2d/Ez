@@ -4,6 +4,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using Ez.Memory;
 using System;
+using System.Buffers;
 using System.IO;
 using System.Text;
 
@@ -140,7 +141,7 @@ namespace Ez.IO
             if (!destination.CanWrite)
                 throw new NotSupportedException("The destination does not support writing.");
 
-            byte[] buffer = ArrayPool<byte>.GetT(bufferSize);
+            byte[] buffer = ArrayPool<byte>.Shared.Rent(bufferSize);
             long copied = 0;
             int readed;
             bufferSize = (int)Math.Min(buffer.Length, count);
@@ -149,6 +150,8 @@ namespace Ez.IO
                 copied += readed;
                 destination.Write(buffer, 0, readed);
             }
+            ArrayPool<byte>.Shared.Return(buffer);
+
             return copied;
         }
     }

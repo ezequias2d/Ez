@@ -5,10 +5,11 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Ez.Threading
 {
-    internal class ThreadMethodEntry : IAsyncResult, IResettable, IDisposable
+    internal class ThreadMethodEntry : IAsyncResultDisposable, IResettable
     {
         private readonly object _invokeSyncObject;
         private readonly ManualResetEventSlim _resetEvent;
@@ -16,10 +17,11 @@ namespace Ez.Threading
         private object[] _args;
         private bool _isDisposed;
 
-        internal ThreadMethodEntry()
+        internal ThreadMethodEntry(ThreadMethodExecutor executor)
         {
             _invokeSyncObject = new object();
             _resetEvent = new ManualResetEventSlim();
+            Executor = executor;
         }
 
         /// <summary>
@@ -37,7 +39,7 @@ namespace Ez.Threading
 
         public Exception Exception { get; private set; }
 
-        public int CallerThreadID { get; private set; }
+        public ThreadMethodExecutor Executor { get; private set; }
 
         public void Reset()
         {
@@ -48,7 +50,6 @@ namespace Ez.Threading
             ReturnValue = null;
             IsCompleted = false;
             Exception = null;
-            CallerThreadID = Thread.CurrentThread.ManagedThreadId;
         }
 
         public void Set()
@@ -146,9 +147,12 @@ namespace Ez.Threading
             _isDisposed = true;
 
             if (disposing)
-                ThreadMethodEntryPool.Return(this);
+                Executor.Pool.Return(this);
             else
+            {
                 _resetEvent.Dispose();
+                GC.SuppressFinalize(this);
+            }
         }
 
         public void Dispose()
