@@ -14,7 +14,7 @@ namespace Ez.Graphics.API
     ///     <see cref="ICommandBuffer.ResolveTexture(ITexture, ITexture, ReadOnlySpan{TextureResolve})"/>.
     /// </para>
     /// </summary>
-    public struct TextureResolve
+    public struct TextureResolve : IEquatable<TextureResolve>
     {
         /// <summary>
         /// Gets or sets the source texture subresource for the texture data.
@@ -44,5 +44,40 @@ namespace Ez.Graphics.API
         /// and depth.
         /// </summary>
         public Size3 Extent;
+
+        /// <inheritdoc/>
+        public bool Equals(TextureResolve other) =>
+            SourceSubresource == other.SourceSubresource &&
+            SourceOffset == other.SourceOffset &&
+            DestinationSubresource == other.DestinationSubresource &&
+            DestinationOffset == other.DestinationOffset &&
+            Extent == other.Extent;
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj) => obj is TextureResolve tr && Equals(tr);
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => HashHelper<TextureResolve>.Combine(
+            SourceSubresource,
+            SourceOffset,
+            DestinationSubresource,
+            DestinationOffset,
+            Extent);
+
+        /// <summary>
+        /// Compare two <see cref="TextureResolve"/> structures.
+        /// </summary>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns><see langword="true"/> if are equals, otherwise <see langword="false"/>.</returns>
+        public static bool operator ==(TextureResolve left, TextureResolve right) => left.Equals(right);
+
+        /// <summary>
+        /// Compare two <see cref="TextureResolve"/> structures.
+        /// </summary>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns><see langword="true"/> if are not equals, otherwise <see langword="false"/>.</returns>
+        public static bool operator !=(TextureResolve left, TextureResolve right) => !(left == right);
     }
 }

@@ -3,12 +3,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+using Ez.Numerics;
+using System;
+
 namespace Ez.Graphics.API
 {
     /// <summary>
     /// Structure specifying attachment informations.
     /// </summary>
-    public struct AttachmentInfo
+    public struct AttachmentInfo : IEquatable<AttachmentInfo>
     {
         /// <summary>
         /// Gets or sets a value that specifying how the contents of components of the attachment are treated
@@ -27,5 +30,34 @@ namespace Ez.Graphics.API
         /// <see cref="AttachmentLoadOperation.Clear"/>.
         /// </summary>
         public ClearValue ClearValue { get; set; }
+
+        /// <inheritdoc/>
+        public bool Equals(AttachmentInfo other) =>
+            LoadOperation == other.LoadOperation &&
+            StoreOperation == other.StoreOperation &&
+            ClearValue.Equals(other.ClearValue);
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => HashHelper<AttachmentInfo>.Combine(LoadOperation, StoreOperation, ClearValue);
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj) =>
+            obj is AttachmentInfo ai && Equals(ai);
+
+        /// <summary>
+        /// Compare two <see cref="AttachmentInfo"/> structures.
+        /// </summary>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns><see langword="true"/> if are equals, otherwise <see langword="false"/>.</returns>
+        public static bool operator ==(AttachmentInfo left, AttachmentInfo right) => left.Equals(right);
+
+        /// <summary>
+        /// Compare two <see cref="AttachmentInfo"/> structures.
+        /// </summary>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns><see langword="true"/> if are not equals, otherwise <see langword="false"/>.</returns>
+        public static bool operator !=(AttachmentInfo left, AttachmentInfo right) => !(left == right);
     }
 }
