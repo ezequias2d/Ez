@@ -8,7 +8,7 @@ using Ez.Numerics;
 using Silk.NET.Vulkan;
 using System;
 
-namespace Ez.Graphics.API.Vulkan.Core
+namespace Ez.Graphics.API.Vulkan.Core.Textures
 {
     internal class TextureView : BaseTexture, ITextureView
     {
@@ -64,7 +64,8 @@ namespace Ez.Graphics.API.Vulkan.Core
                 ImageView = pView;
             }
 
-            Size = GraphicsApiHelper.GetMipmapDimensions(Texture, ci.SubresourceRange.BaseMipmapLevel);
+            Size = Texture.Size.GetMipmapDimensions(ci.SubresourceRange.BaseMipmapLevel);
+            var baseTexture = Texture as BaseTexture;
         }
 
         public ImageView ImageView { get; }

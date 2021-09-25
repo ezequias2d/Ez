@@ -2,11 +2,14 @@
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
+using Ez.Graphics.API.Vulkan.Core.Textures;
 using Ez.Numerics;
 using Silk.NET.Vulkan;
+using System;
 using System.Drawing;
 using System.Runtime.CompilerServices;
 using VkBlendFactor = Silk.NET.Vulkan.BlendFactor;
+
 namespace Ez.Graphics.API.Vulkan.Core
 {
     internal static class VkHelper
@@ -700,5 +703,112 @@ namespace Ez.Graphics.API.Vulkan.Core
             LayerCount = rect.ArrayLayerCount,
             Rect = rect.Rectangle.ToVk(),
         };
+
+        public static AccessFlags GetSrcAccessMask(this ImageLayout older, ImageLayout newer) => older switch
+        {
+            ImageLayout.Undefined or ImageLayout.Preinitialized => AccessFlags.AccessNoneKhr,
+
+            ImageLayout.ShaderReadOnlyOptimal => AccessFlags.AccessShaderReadBit,
+
+            ImageLayout.General => newer switch
+            {
+                ImageLayout.ShaderReadOnlyOptimal => AccessFlags.AccessTransferReadBit,
+                ImageLayout.TransferSrcOptimal => AccessFlags.AccessShaderWriteBit,
+                _ => throw new NotImplementedException()
+            },
+
+            ImageLayout.TransferSrcOptimal => AccessFlags.AccessTransferReadBit,
+            ImageLayout.TransferDstOptimal => AccessFlags.AccessTransferWriteBit,
+            ImageLayout.ColorAttachmentOptimal => AccessFlags.AccessColorAttachmentWriteBit,
+            ImageLayout.DepthStencilAttachmentOptimal => AccessFlags.AccessDepthStencilAttachmentWriteBit,
+            _ => throw new NotImplementedException(),
+        };
+
+        public static AccessFlags GetDstAccessMask(this ImageLayout newer) => newer switch
+        {
+            ImageLayout.TransferDstOptimal => AccessFlags.AccessTransferWriteBit,
+            ImageLayout.TransferSrcOptimal => AccessFlags.AccessTransferReadBit,
+            ImageLayout.General => AccessFlags.AccessShaderReadBit,
+            ImageLayout.ShaderReadOnlyOptimal => AccessFlags.AccessShaderReadBit,
+            ImageLayout.PresentSrcKhr => AccessFlags.AccessMemoryReadBit,
+            ImageLayout.ColorAttachmentOptimal => AccessFlags.AccessColorAttachmentWriteBit,
+            ImageLayout.DepthStencilAttachmentOptimal => AccessFlags.AccessDepthStencilAttachmentWriteBit,
+            _ => throw new NotImplementedException(),
+        };
+
+        public static PipelineStageFlags GetSrcStageFlags(this ImageLayout older, ImageLayout newer) => older switch
+        {
+            ImageLayout.Undefined or
+                ImageLayout.Preinitialized => PipelineStageFlags.PipelineStageTopOfPipeBit,
+            ImageLayout.ShaderReadOnlyOptimal => PipelineStageFlags.PipelineStageFragmentShaderBit,
+            ImageLayout.General => newer switch
+            {
+                ImageLayout.ShaderReadOnlyOptimal => PipelineStageFlags.PipelineStageTransferBit,
+                ImageLayout.TransferSrcOptimal => PipelineStageFlags.PipelineStageComputeShaderBit,
+                _ => throw new NotImplementedException(),
+            },
+            ImageLayout.TransferSrcOptimal or
+                ImageLayout.TransferDstOptimal => PipelineStageFlags.PipelineStageTransferBit,
+            ImageLayout.ColorAttachmentOptimal => PipelineStageFlags.PipelineStageColorAttachmentOutputBit,
+            ImageLayout.DepthStencilAttachmentOptimal => PipelineStageFlags.PipelineStageLateFragmentTestsBit,
+            _ => throw new NotImplementedException(),
+        };
+
+        public static PipelineStageFlags GetDstStageFlags(this ImageLayout newer) => newer switch
+        {
+            ImageLayout.TransferSrcOptimal or
+                ImageLayout.TransferDstOptimal => PipelineStageFlags.PipelineStageTransferBit,
+
+            ImageLayout.General => PipelineStageFlags.PipelineStageComputeShaderBit,
+            ImageLayout.ShaderReadOnlyOptimal => PipelineStageFlags.PipelineStageFragmentShaderBit,
+            ImageLayout.PresentSrcKhr => PipelineStageFlags.PipelineStageBottomOfPipeBit,
+            ImageLayout.ColorAttachmentOptimal => PipelineStageFlags.PipelineStageColorAttachmentOutputBit,
+            ImageLayout.DepthStencilAttachmentOptimal => PipelineStageFlags.PipelineStageLateFragmentTestsBit,
+            _ => throw new NotImplementedException(),
+        };
+
+        public static ImageSubresourceRange ToVk(this TextureSubresourceRange range, Texture texture) => new()
+        {
+            AspectMask = texture.ImageAspect,
+            BaseArrayLayer = range.BaseArrayLayer,
+            BaseMipLevel = range.BaseMipmapLevel,
+            LayerCount = range.ArrayLayerCount,
+            LevelCount = range.MipmapLevelCount,
+        };
+
+        public static Texture RevoluteSubresources(this BaseTexture baseTexture, ReadOnlySpan<TextureSubresourceRange> source, Span<ImageSubresourceRange> destination)
+        {
+            if (baseTexture is null)
+                throw new ArgumentNullException(nameof(baseTexture));
+
+            if (source.Length > destination.Length)
+                throw new ArgumentOutOfRangeException(nameof(destination));
+
+            Texture texture = null;
+            var realBaseArrayLayer = 0u;
+            var realBaseMipmapLevel = 0u;
+            while (texture == null)
+            {
+                if (texture is null)
+                    throw new InvalidOperationException();
+                else if (baseTexture is Texture tTemp)
+                    texture = tTemp;
+                else if (baseTexture is TextureView vTemp)
+                {
+                    baseTexture = (BaseTexture)vTemp.Texture;
+                    realBaseArrayLayer += vTemp.Range.BaseArrayLayer;
+                    realBaseMipmapLevel += vTemp.Range.BaseMipmapLevel;
+                }
+            }
+
+            for(var i = 0; i < source.Length; i++)
+            {
+                destination[i] = source[i].ToVk(texture);
+                destination[i].BaseArrayLayer += realBaseArrayLayer;
+                destination[i].BaseMipLevel += realBaseMipmapLevel;
+            }
+
+            return texture;
+        }
     }
 }

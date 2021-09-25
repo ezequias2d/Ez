@@ -4,7 +4,7 @@ using Silk.NET.Vulkan;
 using System;
 using System.Threading.Tasks;
 
-namespace Ez.Graphics.API.Vulkan.Core
+namespace Ez.Graphics.API.Vulkan.Core.Textures
 {
     internal abstract class BaseTexture : DeviceResource, ITexture
     {
@@ -96,8 +96,6 @@ namespace Ez.Graphics.API.Vulkan.Core
                     break;
             }
 
-            //Device.Vk.GetImageSubresourceLayout(Device, this)
-            //    TransitionImageLayout
             commandBuffer.CopyBufferToTexture(staging, this, new BufferTextureCopy[] { btc });
             commandBuffer.End();
 
