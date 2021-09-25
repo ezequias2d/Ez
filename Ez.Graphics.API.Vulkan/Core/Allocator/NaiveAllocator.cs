@@ -3,9 +3,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using Ez.Graphics.API.CreateInfos;
-using Ez.Memory;
 using Silk.NET.Vulkan;
 using System;
+using System.Buffers;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -18,8 +18,8 @@ namespace Ez.Graphics.API.Vulkan.Core.Allocator
     {
         public NaiveAllocator(Device device) : base(device)
         {
-            Device.Vk.GetPhysicalDeviceMemoryProperties((Silk.NET.Vulkan.PhysicalDevice)Device.PhysicalDevice, out _memoryProperties);
-            Device.Vk.GetPhysicalDeviceProperties((Silk.NET.Vulkan.PhysicalDevice)Device.PhysicalDevice, out _deviceProperties);
+            Device.Vk.GetPhysicalDeviceMemoryProperties(Device.PhysicalDevice, out _memoryProperties);
+            Device.Vk.GetPhysicalDeviceProperties(Device.PhysicalDevice, out _deviceProperties);
 
             _isIntegratedGpu = _deviceProperties.DeviceType == PhysicalDeviceType.IntegratedGpu;
         }
@@ -106,7 +106,7 @@ namespace Ez.Graphics.API.Vulkan.Core.Allocator
         {
             var memoryCount = _memoryProperties.MemoryTypeCount;
             var supportedCount = 0;
-            var supported = ArrayPool<int>.GetT(memoryCount, true);
+            var supported = ArrayPool<int>.Shared.Rent((int)memoryCount);
 
             for (var memoryIndex = 0; memoryIndex < memoryCount; memoryIndex++)
             {
