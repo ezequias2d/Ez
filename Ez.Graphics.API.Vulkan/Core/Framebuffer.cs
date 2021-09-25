@@ -3,6 +3,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using Ez.Graphics.API.Resources;
+using Ez.Graphics.API.Vulkan.Core.Textures;
 using Ez.Memory;
 using Ez.Numerics;
 using Silk.NET.Vulkan;

@@ -4,6 +4,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using Ez.Graphics.API.CreateInfos;
 using Ez.Graphics.API.Resources;
+using Ez.Graphics.API.Vulkan.Core.Textures;
 using Ez.Graphics.Context;
 using Ez.Graphics.Context.SwapchainSources;
 using Ez.Memory;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.KHR;
 using System;
+using System.Buffers;
 using System.Collections.Generic;
 using System.Drawing;
 using Framebuffer = Ez.Graphics.API.Vulkan.Core.Cached.Framebuffers.Framebuffer;
@@ -97,7 +99,7 @@ namespace Ez.Graphics.API.Vulkan.Core
 
             var textures = new Texture[count];
             for (var i = 0; i < count; i++)
-                textures[i] = new Texture(Device, images[i], format, extent, false);
+                textures[i] = new Texture(Device, images[i], format, extent, false, ImageLayout.PresentSrcKhr);
             return textures;
         }
 
@@ -229,7 +231,7 @@ namespace Ez.Graphics.API.Vulkan.Core
 
             if (formatCount != 0)
             {
-                var array = ArrayPool<byte>.GetT(sizeof(SurfaceFormatKHR) * formatCount, true);
+                var array = ArrayPool<byte>.Shared.Rent((int)(sizeof(SurfaceFormatKHR) * formatCount));
                 Span<SurfaceFormatKHR> formats = MemUtil.Cast<byte, SurfaceFormatKHR>(array).Slice(0, (int)formatCount);
 
                 Device.KhrSurface.GetPhysicalDeviceSurfaceFormats(
@@ -255,7 +257,7 @@ namespace Ez.Graphics.API.Vulkan.Core
 
             if (formatCount != 0)
             {
-                var array = ArrayPool<byte>.GetT(sizeof(PresentModeKHR) * formatCount, true);
+                var array = ArrayPool<byte>.Shared.Rent((int)(sizeof(PresentModeKHR) * formatCount));
                 Span<PresentModeKHR> presentModes = MemUtil.Cast<byte, PresentModeKHR>(array).Slice(0, (int)formatCount);
 
                 Device.KhrSurface.GetPhysicalDeviceSurfacePresentModes(

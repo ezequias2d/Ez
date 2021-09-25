@@ -3,7 +3,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using Ez.Graphics.API.Vulkan.Core;
-using Ez.Memory;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using System;
@@ -44,7 +43,7 @@ namespace Ez.Graphics.API.Vulkan
             Span<uint> count = stackalloc uint[1];
             Device.Vk.GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice, count, Span<QueueFamilyProperties>.Empty);
 
-            Span<QueueFamilyProperties> values = ArrayPool<QueueFamilyProperties>.GetT(count[0], true);
+            Span<QueueFamilyProperties> values = new QueueFamilyProperties[count[0]];
             Device.Vk.GetPhysicalDeviceQueueFamilyProperties(VkPhysicalDevice, count, values);
             return values.Slice(0, (int)count[0]);
         }
