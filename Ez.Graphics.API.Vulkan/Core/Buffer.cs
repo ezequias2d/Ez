@@ -14,6 +14,7 @@ namespace Ez.Graphics.API.Vulkan.Core
 {
     internal class Buffer : DeviceResource, IBuffer
     {
+        private IFence _fence;
         public Buffer(Device device, in BufferCreateInfo createInfo) : base(device)
         {
             VkBuffer = CreateBuffer(createInfo);
@@ -64,7 +65,7 @@ namespace Ez.Graphics.API.Vulkan.Core
                     });
                     commandBuffer.End();
 
-                    var fence = Device.Factory.CreateFence();
+                    var fence = GetFence();
 
                     var submitInfo = new SubmitInfo
                     {
@@ -107,7 +108,7 @@ namespace Ez.Graphics.API.Vulkan.Core
                         });
                         commandBuffer.End();
 
-                        var fence = Device.Factory.CreateFence();
+                        var fence = GetFence();
 
                         var submitInfo = new SubmitInfo
                         {
@@ -171,6 +172,15 @@ namespace Ez.Graphics.API.Vulkan.Core
         {
             buffer.CheckDispose();
             return buffer.VkBuffer;
+        }
+
+        private IFence GetFence()
+        {
+            if (_fence == null)
+                _fence = Device.Factory.CreateFence();
+            else
+                _fence.Reset();
+            return _fence;
         }
     }
 }
