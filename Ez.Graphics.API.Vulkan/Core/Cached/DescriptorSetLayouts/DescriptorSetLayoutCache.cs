@@ -8,16 +8,14 @@ namespace Ez.Graphics.API.Vulkan.Core
 {
     internal class DescriptorSetLayoutCache : Cache<DescriptorSetLayoutCreateInfo, DescriptorSetLayout>
     {
-        public DescriptorSetLayoutCache(Device device) : base(null)
+        public DescriptorSetLayoutCache(Device device)
         {
             Device = device;
         }
 
         private Device Device { get; }
 
-        public override CreateCached Create => CreateDescriptorSetLayout;
-
-        private DescriptorSetLayout CreateDescriptorSetLayout(in DescriptorSetLayoutCreateInfo createInfo) =>
+        public override DescriptorSetLayout CreateCached(in DescriptorSetLayoutCreateInfo createInfo) =>
             new(Device, createInfo);
     }
 }

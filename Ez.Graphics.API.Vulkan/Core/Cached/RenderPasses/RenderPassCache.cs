@@ -6,16 +6,13 @@ namespace Ez.Graphics.API.Vulkan.Core.Cached.RenderPasses
 {
     internal class RenderPassCache : Cache<RenderPassBeginInfo, RenderPass>
     {
-        public RenderPassCache(Device device) : base(null)
+        public RenderPassCache(Device device) : base()
         {
             Device = device;
         }
 
         private Device Device { get; }
-
-        public override CreateCached Create => CreateRenderPass;
-
-        private RenderPass CreateRenderPass(in RenderPassBeginInfo renderPassDescription) =>
-            new(Device, renderPassDescription);
+        public override RenderPass CreateCached(in RenderPassBeginInfo createInfo) => 
+            new(Device, createInfo);
     }
 }

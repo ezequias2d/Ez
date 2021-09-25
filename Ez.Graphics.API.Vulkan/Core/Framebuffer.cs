@@ -17,13 +17,13 @@ namespace Ez.Graphics.API.Vulkan.Core.Cached.Framebuffers
 {
     internal class Framebuffer : DeviceResource, IFramebuffer
     {
-        private Cache<VkFramebufferCreateInfo, VkFramebuffer> _cache;
+        private VkFramebufferCache _cache;
         private MemoryBlock _mb;
         private PinnedMemory<ImageView> imageViews;
 
         public Framebuffer(Device device, in FramebufferCreateInfo createInfo, bool isPresented) : base(device)
         {
-            _cache = new Cache<VkFramebufferCreateInfo, VkFramebuffer>(CreateFramebuffer);
+            _cache = new(device);
             IsPresented = isPresented;
             Attachments = Array.AsReadOnly(createInfo.Attachments.ToArray());
 
@@ -52,13 +52,6 @@ namespace Ez.Graphics.API.Vulkan.Core.Cached.Framebuffers
 
         }
 
-        private unsafe VkFramebuffer CreateFramebuffer(in VkFramebufferCreateInfo createInfo)
-        {
-            var result = Device.Vk.CreateFramebuffer(Device, createInfo, null, out var framebuffer);
-            result.CheckResult();
-            return framebuffer;
-        }
-
         public unsafe VkFramebuffer GetHandle(RenderPasses.RenderPass renderPass)
         {
             var ci = new VkFramebufferCreateInfo
@@ -72,7 +65,22 @@ namespace Ez.Graphics.API.Vulkan.Core.Cached.Framebuffers
                 Layers = Size.Depth,
             };
 
-            return _cache.Create(ci);
+            return _cache.Get(ci);
+        }
+
+        internal class VkFramebufferCache : Cache<VkFramebufferCreateInfo, VkFramebuffer>
+        {
+            public VkFramebufferCache(Device device)
+            {
+                Device = device;
+            }
+            public Device Device { get; }
+            public unsafe override VkFramebuffer CreateCached(in VkFramebufferCreateInfo createInfo)
+            {
+                var result = Device.Vk.CreateFramebuffer(Device, createInfo, null, out var framebuffer);
+                result.CheckResult();
+                return framebuffer;
+            }
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Ez.Graphics.API.Vulkan.Core.Cached
     internal class PipelineCache : Cache<PipelineState, Pipeline>
     {
         private readonly VkPipelineCache _pipelineCache;
-        public PipelineCache(Device device) : base(null)
+        public PipelineCache(Device device)
         {
             Device = device;
             var pipelineCacheCreateInfo = new PipelineCacheCreateInfo
@@ -26,15 +26,13 @@ namespace Ez.Graphics.API.Vulkan.Core.Cached
 
         private Device Device { get; }
 
-        public override CreateCached Create => CreatePipeline;
-
-        private Pipeline CreatePipeline(in PipelineState pipelineState) =>
-            new(Device, _pipelineCache, pipelineState);
-
         protected unsafe override void UnmanagedDispose()
         {
             base.UnmanagedDispose();
             Device.Vk.DestroyPipelineCache(Device, _pipelineCache, null);
         }
+
+        public override Pipeline CreateCached(in PipelineState createInfo) =>
+            new(Device, _pipelineCache, createInfo);
     }
 }

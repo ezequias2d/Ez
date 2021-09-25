@@ -9,18 +9,15 @@ using System.Threading.Tasks;
 
 namespace Ez.Graphics.API.Vulkan.Core.Cached
 {
-    internal class Cache<TCreateInfo, TCached> : Disposable
+    internal abstract class Cache<TCreateInfo, TCached> : Disposable
     {
-        public delegate TCached CreateCached(in TCreateInfo createInfo);
-
         private IDictionary<TCreateInfo, Reference> _cache;
-        public Cache(CreateCached create)
+        public Cache()
         {
             _cache = new ConcurrentDictionary<TCreateInfo, Reference>();
-            Create = create;
         }
 
-        public virtual CreateCached Create { get; }
+        public abstract TCached CreateCached(in TCreateInfo createInfo);
 
         public TCached Get(TCreateInfo createInfo)
         {
@@ -30,7 +27,7 @@ namespace Ez.Graphics.API.Vulkan.Core.Cached
                 return reference.Value;
             }
 
-            var cached = Create(createInfo);
+            var cached = CreateCached(createInfo);
             _cache.Add(createInfo, new Reference(cached));
 
             return cached;
