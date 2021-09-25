@@ -5,6 +5,7 @@
 using Silk.NET.Vulkan;
 using System;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Ez.Graphics.API.Vulkan.Core
 {
@@ -34,6 +35,13 @@ namespace Ez.Graphics.API.Vulkan.Core
         public static void SetDefaultName(this DeviceResource resource)
         {
             resource.Name = $"{resource.GetType().Name}{resource.GetHashCode()}";
+        }
+
+        [DebuggerNonUserCode]
+        public static void CheckThreadId(this CommandBuffer cb)
+        {
+            if (cb.CommandPool.PoolThread.ManagedThreadId != Thread.CurrentThread.ManagedThreadId)
+                throw new VkException();
         }
     }
 }

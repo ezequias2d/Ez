@@ -5,8 +5,10 @@
 using Ez.Graphics.API.CreateInfos;
 using Ez.Graphics.API.Resources;
 using Ez.Graphics.API.Vulkan.Core.Cached.Framebuffers;
+using Ez.Graphics.API.Vulkan.Core.Textures;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace Ez.Graphics.API.Vulkan.Core
 {
@@ -23,8 +25,7 @@ namespace Ez.Graphics.API.Vulkan.Core
 
         public IBuffer CreateBuffer(BufferCreateInfo bufferCreateInfo) => new Buffer(Device, bufferCreateInfo);
 
-        public ICommandBuffer CreateCommandBuffer() =>
-            new CommandBuffer(Device, Device.CommandPool);
+        public ICommandBuffer CreateCommandBuffer() => new CommandBuffer(Device);
 
         public IFence CreateFence() => new Fence(Device);
 
@@ -45,10 +46,7 @@ namespace Ez.Graphics.API.Vulkan.Core
 
         public ITexture CreateTexture(in TextureCreateInfo textureCreateInfo) => new Texture(Device, textureCreateInfo);
 
-        public ITextureView CreateTextureView(in TextureViewCreateInfo textureViewCreateInfo)
-        {
-            throw new NotImplementedException();
-        }
+        public ITextureView CreateTextureView(in TextureViewCreateInfo textureViewCreateInfo) => new TextureView(Device, textureViewCreateInfo);
 
         public void Dispose()
         {

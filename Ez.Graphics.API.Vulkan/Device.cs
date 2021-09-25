@@ -7,6 +7,7 @@ using Ez.Graphics.API.Resources;
 using Ez.Graphics.API.Vulkan.Core;
 using Ez.Graphics.API.Vulkan.Core.Allocator;
 using Ez.Graphics.API.Vulkan.Core.Cached.RenderPasses;
+using Ez.Graphics.API.Vulkan.Core.CommandBuffers;
 using Ez.Graphics.Contexts;
 using Ez.Memory;
 using Microsoft.Extensions.Logging;
@@ -69,7 +70,7 @@ namespace Ez.Graphics.API.Vulkan
             RenderPassCache = new(this);
             PipelineCache = new(this);
             DescriptorSetLayoutCache = new(this);
-            CommandPool = new(this);
+            CommandPoolCache = new(this);
 
             if (defaultSwapchainCreateInfo.HasValue)
                 DefaultSwapchain = new Swapchain(this, defaultSwapchainCreateInfo.Value);
@@ -92,7 +93,7 @@ namespace Ez.Graphics.API.Vulkan
         internal ExtDebugUtils DebugUtils => Instance.DebugUtils;
         internal KhrMaintenance1 Maintenance1 { get; }
         internal DescriptorSetLayoutCache LayoutCache { get; }
-        internal Core.CommandPool CommandPool { get; }
+        internal CommandPoolCache CommandPoolCache { get; }
         internal Core.Queue GraphicsQueue { get; }
         internal RenderPassCache RenderPassCache { get; }
         internal Core.Cached.PipelineCache PipelineCache { get; }
