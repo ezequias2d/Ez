@@ -55,6 +55,7 @@ namespace Ez.Memory
             public MemoryBlockPoolAssistant(long tolerance)
             {
                 _tolerance = tolerance;
+                _cache = new Dictionary<MemoryBlock, long>();
             }
 
             public bool IsClear()
