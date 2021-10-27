@@ -7,28 +7,26 @@ using System;
 namespace Ez.Collections.Pools
 {
     /// <summary>
-    /// An default implementation of <see cref="IObjectPoolAssistant{T, TSpecs}"/> that uses
-    /// delegates for <see cref="Create(in TSpecs)"/> and <see cref="Evaluate(in T, in TSpecs, int)"/>.
+    /// An default implementation of <see cref="IObjectPoolAssistant{T}"/> that uses
+    /// delegates for <see cref="Create(object[])"/> and <see cref="Evaluate(in T, object[])"/>.
     /// </summary>
-    /// <typeparam name="T">The type that assistant evaluates and creates.</typeparam>
-    /// <typeparam name="TSpecs">The type of data used to evaluate an item.</typeparam>
-    public sealed class ObjectPoolAssistant<T, TSpecs> : IObjectPoolAssistant<T, TSpecs>
+    /// <typeparam name="T">The type that assistant evaluates and creates.</typeparam>    
+    public sealed class ObjectPoolAssistant<T> : IObjectPoolAssistant<T>
     {
         /// <summary>
         /// A delegate that wraps a create function based on a TSpecs value.
         /// </summary>
-        /// <param name="value">A value used to describe how the created item is.</param>
+        /// <param name="args">Arguments for the object taken from the pool.</param>
         /// <returns>A new T item.</returns>
-        public delegate T CreateFunction(TSpecs value);
+        public delegate T CreateFunction(params object[] args);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="item"></param>
-        /// <param name="specs"></param>
-        /// <param name="currentTolerance"></param>
+        /// <param name="args"></param>
         /// <returns></returns>
-        public delegate bool EvaluateFunction(in T item, object specs, int currentTolerance);
+        public delegate bool EvaluateFunction(in T item, params object[] args);
 
         private readonly CreateFunction _create;
         private readonly EvaluateFunction _evaluate;
@@ -36,7 +34,7 @@ namespace Ez.Collections.Pools
         private uint _count;
 
         /// <summary>
-        /// Initializes a new instance of <see cref="ObjectPoolAssistant{T, TSpecs}"/> thats wraps a create function and evaluate function.
+        /// Initializes a new instance of <see cref="ObjectPoolAssistant{T}"/> thats wraps a create function and evaluate function.
         /// </summary>
         /// <param name="create">The create function of a T item.</param>
         /// <param name="evaluate">The evaluate function of a T item.</param>
@@ -50,11 +48,11 @@ namespace Ez.Collections.Pools
         }
 
         /// <inheritdoc/>
-        public T Create(in TSpecs specs) => _create(specs);
+        public T Create(params object[] args) => _create(args);
 
         /// <inheritdoc/>
-        public bool Evaluate(in T item, in TSpecs specs, int currentTolerance) =>
-            _evaluate.Invoke(item, specs, currentTolerance);
+        public bool Evaluate(in T item, params object[] args) =>
+            _evaluate.Invoke(item, args);
 
         /// <inheritdoc/>
         public bool IsClear()

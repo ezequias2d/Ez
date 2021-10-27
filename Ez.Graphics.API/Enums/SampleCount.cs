@@ -15,26 +15,26 @@ namespace Ez.Graphics.API
         /// <summary>
         /// Specifies an image with one sample per pixel.
         /// </summary>
-        Count1,
+        Count1 = 1,
         /// <summary>
         /// Specifies an image with 2 samples per pixel.
         /// </summary>
-        Count2,
+        Count2 = 2,
         /// <summary>
         /// Specifies an image with 4 samples per pixel.
         /// </summary>
-        Count4,
+        Count4 = 4,
         /// <summary>
         /// Specifies an image with 8 samples per pixel.
         /// </summary>
-        Count8,
+        Count8 = 8,
         /// <summary>
         /// Specifies an image with 16 samples per pixel.
         /// </summary>
-        Count16,
+        Count16 = 16,
         /// <summary>
         /// Specifies an image with 32 samples per pixel.
         /// </summary>
-        Count32
+        Count32 = 32,
     }
 }

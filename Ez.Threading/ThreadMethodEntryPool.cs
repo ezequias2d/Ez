@@ -7,33 +7,36 @@ using System;
 
 namespace Ez.Threading
 {
-    internal static class ThreadMethodEntryPool
+    internal class ThreadMethodEntryPool
     {
-        private readonly static ObjectPool<ThreadMethodEntry, ThreadMethodEntrySpec> _objectPool;
+        private readonly ObjectPool<ThreadMethodEntry> _objectPool;
 
-        static ThreadMethodEntryPool()
+        public ThreadMethodEntryPool(ThreadMethodExecutor executor)
         {
-            _objectPool = new ObjectPool<ThreadMethodEntry, ThreadMethodEntrySpec>(new ThreadMethodEntryAssistant());
+            _objectPool = new ObjectPool<ThreadMethodEntry>(new ThreadMethodEntryAssistant(executor));
         }
 
-        public static ThreadMethodEntry Get() => _objectPool.GetT();
+        public ThreadMethodEntry Get() => _objectPool.GetT();
 
-        public static void Return(in ThreadMethodEntry entry) => _objectPool.Return(entry);
+        public void Return(in ThreadMethodEntry entry) => _objectPool.Return(entry);
 
-        private struct ThreadMethodEntrySpec 
-        {
-        }
-
-        private class ThreadMethodEntryAssistant : IObjectPoolAssistant<ThreadMethodEntry, ThreadMethodEntrySpec>
+        private class ThreadMethodEntryAssistant : IObjectPoolAssistant<ThreadMethodEntry>
         {
             private readonly long CountMax = 128;
             private long count;
-            public ThreadMethodEntry Create(in ThreadMethodEntrySpec specs) => new ThreadMethodEntry();
+            private readonly ThreadMethodExecutor _executor;
+
+            public ThreadMethodEntryAssistant(ThreadMethodExecutor executor)
+            {
+                _executor = executor;
+            }
+
+            public ThreadMethodEntry Create(params object[] args) => new(_executor);
 
             public bool IsClear() =>
-                count >= CountMax;
+                count <= CountMax;
 
-            public bool Evaluate(in ThreadMethodEntry item, in ThreadMethodEntrySpec specs, int currentTolerance)
+            public bool Evaluate(in ThreadMethodEntry item, params object[] args)
             {
                 return true;
             }

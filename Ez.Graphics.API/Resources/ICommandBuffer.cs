@@ -10,7 +10,7 @@ namespace Ez.Graphics.API.Resources
     /// <summary>
     /// A container that stores encoded commands for a <see cref="IDevice"/>
     /// </summary>
-    public interface ICommandBuffer : IResource
+    public interface ICommandBuffer : IResource, IResettable
     {
         /// <summary>
         /// Start recording a command buffer.
@@ -23,11 +23,6 @@ namespace Ez.Graphics.API.Resources
         /// This function must only be called after <see cref="Begin"/> has been called.
         /// </summary>
         void End();
-
-        /// <summary>
-        /// Reset a command buffer to the initial state.
-        /// </summary>
-        void Reset();
 
         /// <summary>
         /// Begin a new render pass.

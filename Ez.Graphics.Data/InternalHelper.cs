@@ -1,5 +1,6 @@
 ﻿using Ez.Memory;
 using System;
+using System.Buffers;
 
 namespace Ez.Graphics.Data
 {
@@ -10,8 +11,8 @@ namespace Ez.Graphics.Data
             if (array == null || !(value.Length <= array.Length))
             {
                 if (array != null && array.Length > 0)
-                    ArrayPool<T>.Return(array);
-                array = ArrayPool<T>.GetT(value.Length);
+                    ArrayPool<T>.Shared.Return(array);
+                array = ArrayPool<T>.Shared.Rent(value.Length);
             }
             length = value.Length;
             MemUtil.Copy(array, value);
@@ -28,8 +29,8 @@ namespace Ez.Graphics.Data
 
             if (!(value.Length <= array.Length))
             {
-                ArrayPool<T>.Return(array);
-                array = ArrayPool<T>.GetT(value.Length);
+                ArrayPool<T>.Shared.Return(array);
+                array = ArrayPool<T>.Shared.Rent(value.Length);
             }
 
             length = value.Length;

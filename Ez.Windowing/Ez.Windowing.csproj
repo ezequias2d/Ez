@@ -6,6 +6,7 @@
   
   <ItemGroup>
     <ProjectReference Include="..\Ez.Graphics.Contexts\Ez.Graphics.Contexts.csproj" />
+    <ProjectReference Include="..\Ez.Threading\Ez.Threading.csproj" />
   </ItemGroup>
 
   <Import Project="..\build\common.props.csproj" />

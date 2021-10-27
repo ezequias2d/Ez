@@ -19,9 +19,10 @@ namespace GlfwExample
 
             while (window.Exists)
             {
-                var task = window.ProcessEventsAsync();
+                using var result = window.BeginProcessEvents();
                 Thread.Sleep(1);
-                task.Wait();
+
+                window.EndProcessEvents(result);
             }
 
             window.WaitClose();

@@ -3,12 +3,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+using Ez.Numerics;
+using System;
+
 namespace Ez.Graphics.API
 {
     /// <summary>
     /// Structure specifying a clear depth stencil value.
     /// </summary>
-    public struct ClearDepthStencilValue
+    public struct ClearDepthStencilValue : IEquatable<ClearDepthStencilValue>
     {
         /// <summary>
         /// Gets or sets the clear value for the depth aspect of the depth/stencil attachment. 
@@ -22,5 +25,30 @@ namespace Ez.Graphics.API
         /// the appropriate number of LSBs.
         /// </summary>
         public uint Stencil;
+
+        /// <inheritdoc/>
+        public bool Equals(ClearDepthStencilValue other) => Depth == other.Depth && Stencil == other.Stencil;
+
+        /// <inheritdoc/>
+        public override int GetHashCode() => HashHelper<ClearDepthStencilValue>.Combine(Depth, Stencil);
+
+        /// <inheritdoc/>
+        public override bool Equals(object obj) => obj is ClearDepthStencilValue cdsv && Equals(cdsv);
+
+        /// <summary>
+        /// Compare two <see cref="ClearDepthStencilValue"/> structures.
+        /// </summary>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns><see langword="true"/> if are equals, otherwise <see langword="false"/>.</returns>
+        public static bool operator ==(ClearDepthStencilValue left, ClearDepthStencilValue right) => left.Equals(right);
+
+        /// <summary>
+        /// Compare two <see cref="ClearDepthStencilValue"/> structures.
+        /// </summary>
+        /// <param name="left">The first value.</param>
+        /// <param name="right">The second value.</param>
+        /// <returns><see langword="true"/> if are not equals, otherwise <see langword="false"/>.</returns>
+        public static bool operator !=(ClearDepthStencilValue left, ClearDepthStencilValue right) => !(left == right);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -357,6 +358,19 @@ namespace Ez.Numerics
             Subtract(left, right);
 
         #endregion
+
+        /// <summary>
+        /// Casts <see cref="Size3"/> to <see cref="Size2"/> losing depth value.
+        /// </summary>
+        /// <param name="size">The value to cast.</param>
+        public static implicit operator Size2(Size3 size) => new(size.Width, size.Height);
+
+        /// <summary>
+        /// Casts <see cref="Size3"/> to <see cref="Size"/> losing depth value.
+        /// </summary>
+        /// <param name="size">The value to cast.</param>
+        public static implicit operator Size(Size3 size) => new((int)size.Width, (int)size.Height);
+
         #endregion
     }
 }

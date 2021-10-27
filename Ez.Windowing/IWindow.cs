@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Ez.Graphics.Contexts;
 using Ez.Graphics.Context;
+using Ez.Threading;
 
 namespace Ez.Windowing
 {
@@ -268,7 +269,9 @@ namespace Ez.Windowing
         /// <summary>
         /// Processes pending <see cref="IWindow"/> events.
         /// </summary>
-        Task ProcessEventsAsync();
+        IAsyncResultDisposable BeginProcessEvents();
+
+        void EndProcessEvents(IAsyncResultDisposable result);
 
         /// <summary>
         /// Gets a <see cref="OpenGLContext"/> needed to use OpenGL.

@@ -1,0 +1,46 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
+    <PackageReference Include="StbiSharp" Version="1.0.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ez.Collections\Ez.Collections.csproj" />
+    <ProjectReference Include="..\Ez.Graphics.API.Vulkan\Ez.Graphics.API.Vulkan.csproj" />
+    <ProjectReference Include="..\Ez.Graphics.API\Ez.Graphics.API.csproj" />
+    <ProjectReference Include="..\Ez.Graphics.Contexts\Ez.Graphics.Contexts.csproj" />
+    <ProjectReference Include="..\Ez.Graphics.Data\Ez.Graphics.Data.csproj" />
+    <ProjectReference Include="..\Ez.Graphics\Ez.Graphics.csproj" />
+    <ProjectReference Include="..\Ez.IO\Ez.IO.csproj" />
+    <ProjectReference Include="..\Ez.Memory\Ez.Memory.csproj" />
+    <ProjectReference Include="..\Ez.Numerics\Ez.Numerics.csproj" />
+    <ProjectReference Include="..\Ez.Threading\Ez.Threading.csproj" />
+    <ProjectReference Include="..\Ez.Windowing.Glfw.Native\Ez.Windowing.Glfw.Native.csproj" />
+    <ProjectReference Include="..\Ez.Windowing.Glfw\Ez.Windowing.Glfw.csproj" />
+    <ProjectReference Include="..\Ez.Windowing\Ez.Windowing.csproj" />
+    <ProjectReference Include="..\Ez\Ez.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

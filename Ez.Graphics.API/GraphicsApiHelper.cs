@@ -9,18 +9,16 @@ using Ez.Numerics;
 
 namespace Ez.Graphics.API
 {
+    /// <summary>
+    /// Graphics.API helpers.
+    /// </summary>
     public static class GraphicsApiHelper
     {
-        public static Size3 GetMipmapDimensions(ITexture texture, uint level) => new()
-        {
-            Width = GetMipmapDimension(texture.Size.Width, level),
-            Height = GetMipmapDimension(texture.Size.Height, level),
-            Depth = GetMipmapDimension(texture.Size.Depth, level)
-        };
-
-        public static uint GetMipmapDimension(uint originalDimension, uint level) =>
-            Math.Max(originalDimension >> (int)level, 1u);
-
+        /// <summary>
+        /// Gets the size of <see cref="VertexElementType"/> in bytes.
+        /// </summary>
+        /// <param name="value">The vertex element type.</param>
+        /// <returns>The size of <paramref name="value"/>.</returns>
         public static uint GetSizeInBytes(VertexElementType value)
         {
             switch (value)
@@ -65,5 +63,18 @@ namespace Ez.Graphics.API
                     throw new GraphicsApiException($"The VertexElementFormat is not supported by this OpenGL backend. Value: {value}");
             }
         }
+
+        /// <summary>
+        /// Gets a <see cref="TextureSubresourceRange"/> that covers the entire <paramref name="texture"/>.
+        /// </summary>
+        /// <param name="texture">The texture.</param>
+        /// <returns>A <see cref="TextureSubresourceRange"/> that covers the entire <paramref name="texture"/>.</returns>
+        public static TextureSubresourceRange GetFullRange(this ITexture texture) => new()
+        {
+            ArrayLayerCount = texture.ArrayLayers,
+            BaseArrayLayer = 0,
+            BaseMipmapLevel = 0,
+            MipmapLevelCount = texture.MipmapLevels,
+        };
     }
 }

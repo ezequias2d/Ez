@@ -595,7 +595,7 @@ namespace Ez.Windowing.GLFW
 
         public bool IsFocused { get => _isFocused; private set => _isFocused.Value = value; }
 
-        public bool IsExiting { get => _isExiting; private set => _isExiting.Value = value; }
+        public bool IsExiting { get => _isExiting; set => _isExiting.Value = value; }
 
         public bool Exists { get => _exist; private set => _exist.Value = value; }
 
@@ -605,7 +605,6 @@ namespace Ez.Windowing.GLFW
             get => throw new NotImplementedException(); 
             set => throw new NotImplementedException(); 
         }
-        bool IWindow.IsExiting { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public Size FramebufferSize => _framebufferSize;
 
@@ -697,12 +696,12 @@ namespace Ez.Windowing.GLFW
             });
         }
 
-        public async Task ProcessEventsAsync()
+        public IAsyncResultDisposable BeginProcessEvents()
         {
             if (!PreProcessEvents())
-                return;
-            
-            await Task.Factory.FromAsync(_glfwThread.BeginInvoke(() =>
+                return null;
+
+            return _glfwThread.BeginInvoke(() =>
             {
                 ProcessInputEvents();
 
@@ -710,7 +709,12 @@ namespace Ez.Windowing.GLFW
                     Glfw.WaitEventsTimeout(1);
                 else
                     Glfw.PollEvents();
-            }), (result) => _glfwThread.EndInvoke(result));
+            });
+        }
+
+        public void EndProcessEvents(IAsyncResultDisposable result)
+        {
+            _glfwThread.EndInvoke(result);
         }
 
         public OpenGLContext GetOpenGLContext() =>
