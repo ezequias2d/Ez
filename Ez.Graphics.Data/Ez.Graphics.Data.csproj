@@ -9,7 +9,6 @@
     <ProjectReference Include="..\Ez.Collections\Ez.Collections.csproj" />
     <ProjectReference Include="..\Ez.Graphics\Ez.Graphics.csproj" />
     <ProjectReference Include="..\Ez.Memory\Ez.Memory.csproj" />
-    <ProjectReference Include="..\Ez.IO\Ez.IO.csproj" />
     <ProjectReference Include="..\Ez.Numerics\Ez.Numerics.csproj" />
   </ItemGroup>
 
