@@ -64,13 +64,13 @@ namespace Ez.IO
                 {
                     if(value > 0)
                     {
-                        MemoryBlock newMemoryBlock = MemoryBlockPool.Get(value);
+                        MemoryBlock newMemoryBlock = new(value);
 
                         if(_length > 0)
                             MemUtil.Copy(newMemoryBlock.Ptr, _memoryBlock.Ptr, _length);
 
-                        if(_memoryBlock != MemoryBlock.Empty)
-                            MemoryBlockPool.Return(_memoryBlock);
+                        if (_memoryBlock != MemoryBlock.Empty)
+                            _memoryBlock.Dispose();
                         _memoryBlock = newMemoryBlock;
                     }
                     else
@@ -198,9 +198,8 @@ namespace Ez.IO
 
             if (toRead <= 0)
                 return 0;
-
             
-            MemUtil.Copy<byte>(buffer, MemUtil.Add(_memoryBlock.Ptr, _position));
+            MemUtil.Copy(new Span<byte>(buffer, 0, toRead), MemUtil.Add(_memoryBlock.Ptr, _position));
 
             _position += toRead;
 
@@ -349,10 +348,10 @@ namespace Ez.IO
                 throw new ArgumentNullException(nameof(buffer));
 
             if (offset < 0)
-                throw new ArgumentOutOfRangeException($"the parameter {nameof(offset)} must be non-negative.");
+                throw new ArgumentOutOfRangeException(nameof(offset), $"the parameter {nameof(offset)} must be non-negative.");
 
             if ((uint)count > buffer.Length - offset)
-                throw new ArgumentException(nameof(count));
+                throw new ArgumentException("buffer is too tinny.", nameof(count));
         }
 
         private static IOException SeekBeforeBegin()
@@ -361,7 +360,7 @@ namespace Ez.IO
         }
 
         /// <summary>
-        /// Return the <see cref="EphemeralMemoryBlock"/> to the <see cref="MemoryBlockPool"/>.
+        /// Release resources.
         /// </summary>
         /// <param name="disposing"><see langword="true"/> to release both managed and
         /// unmanaged resources; <see langword="false"/> to release only unmanaged resources.</param>
@@ -369,8 +368,8 @@ namespace Ez.IO
         {
             if (!_disposed)
             {
-                if(_memoryBlock != MemoryBlock.Empty)
-                    MemoryBlockPool.Return(_memoryBlock);
+                if (_memoryBlock != MemoryBlock.Empty)
+                    _memoryBlock.Dispose();
                 _memoryBlock = null;
                 _disposed = true;
             }
