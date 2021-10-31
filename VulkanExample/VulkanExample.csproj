@@ -18,7 +18,6 @@
     <ProjectReference Include="..\Ez.Graphics.Contexts\Ez.Graphics.Contexts.csproj" />
     <ProjectReference Include="..\Ez.Graphics.Data\Ez.Graphics.Data.csproj" />
     <ProjectReference Include="..\Ez.Graphics\Ez.Graphics.csproj" />
-    <ProjectReference Include="..\Ez.IO\Ez.IO.csproj" />
     <ProjectReference Include="..\Ez.Memory\Ez.Memory.csproj" />
     <ProjectReference Include="..\Ez.Numerics\Ez.Numerics.csproj" />
     <ProjectReference Include="..\Ez.Threading\Ez.Threading.csproj" />

@@ -5,11 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Ez.IO" Version="0.2.0-alpha" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Ez\Ez.csproj" />
     <ProjectReference Include="..\Ez.Collections\Ez.Collections.csproj" />
     <ProjectReference Include="..\Ez.Graphics\Ez.Graphics.csproj" />
     <ProjectReference Include="..\Ez.Memory\Ez.Memory.csproj" />
-    <ProjectReference Include="..\Ez.IO\Ez.IO.csproj" />
     <ProjectReference Include="..\Ez.Numerics\Ez.Numerics.csproj" />
   </ItemGroup>
 
