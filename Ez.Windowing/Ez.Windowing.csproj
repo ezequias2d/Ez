@@ -3,9 +3,12 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Ez.Graphics.Contexts" Version="0.2.0-alpha" />
+  </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\Ez.Graphics.Contexts\Ez.Graphics.Contexts.csproj" />
     <ProjectReference Include="..\Ez.Threading\Ez.Threading.csproj" />
   </ItemGroup>
 

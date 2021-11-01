@@ -10,10 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Ez.Collections\Ez.Collections.csproj" />
-    <ProjectReference Include="..\Ez.Graphics.Contexts\Ez.Graphics.Contexts.csproj" />
-    <ProjectReference Include="..\Ez.Memory\Ez.Memory.csproj" />
-    <ProjectReference Include="..\Ez.Threading\Ez.Threading.csproj" />
     <ProjectReference Include="..\Ez.Windowing.Glfw.Native\Ez.Windowing.Glfw.Native.csproj" />
     <ProjectReference Include="..\Ez.Windowing\Ez.Windowing.csproj" />
   </ItemGroup>
