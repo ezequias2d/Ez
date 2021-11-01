@@ -6,7 +6,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ez.Graphics.Contexts\Ez.Graphics.Contexts.csproj" />
-    <ProjectReference Include="..\Ez.Graphics\Ez.Graphics.csproj" />
     <ProjectReference Include="..\Ez.Numerics\Ez.Numerics.csproj" />
   </ItemGroup>
 
