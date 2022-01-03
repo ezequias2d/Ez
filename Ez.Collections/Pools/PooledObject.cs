@@ -3,6 +3,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ez.Collections.Pools
 {
@@ -12,13 +13,14 @@ namespace Ez.Collections.Pools
     /// <typeparam name="T">Value type</typeparam>
     public class PooledObject<T> : IDisposable, IResettable
     {
-        private protected T _value;
+        private protected T? _value;
         private bool _disposed;
 
         internal PooledObject(ObjectPool<T> pool)
         {
             IsTemporaryUse = true;
             Source = pool;
+            _value = default;
         }
 
         /// <summary>
@@ -34,7 +36,7 @@ namespace Ez.Collections.Pools
         /// <summary>
         /// Gets the value of pooled object.
         /// </summary>
-        public ref readonly T Value => ref _value;
+        public ref readonly T? Value => ref _value;
 
         /// <inheritdoc/>
         public void Reset()
@@ -66,12 +68,12 @@ namespace Ez.Collections.Pools
         {
             if (!_disposed)
             {
-                T aux = _value;
+                var aux = _value;
 
                 if (disposing)
                     Source.Return(this);
 
-                if (IsTemporaryUse && !aux.Equals(default))
+                if (IsTemporaryUse && aux is not null && !aux.Equals(default))
                     Source.Return(aux);
 
                 _disposed = true;

@@ -55,8 +55,8 @@ namespace Ez.Collections
         /// <typeparam name="T">The type of each element in the shallow array copy.</typeparam>
         /// <param name="us">The array to make a copy.</param>
         /// <returns>A shallow copy of <paramref name="us"/> with T type.</returns>
-        public static T[] ShallowCopy<U, T>(this U[] us) where T : U =>
-            Array.ConvertAll(us, (U u) => (T)u);
+        public static T?[] ShallowCopy<U, T>(this U?[] us) where T : U =>
+            Array.ConvertAll(us, (U? u) => (T?)u);
 
         /// <summary>
         /// Resize <paramref name="array"/> to <paramref name="size"/> if it is leass than <paramref name="size"/>, 

@@ -4,6 +4,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ez.Collections.Pools
 {
@@ -40,7 +41,7 @@ namespace Ez.Collections.Pools
         /// <returns>A <see cref="PooledObject{T}"/> object that the <see cref="PooledObject{T}.Value"/> is validated with <paramref name="args"/>.</returns>
         public PooledObject<T> Get(params object[] args)
         {
-            if (!TryGet(out var result, args))
+            if (!TryGet(out var result, args) || result is null)
             {
                 result = GetWrapper();
                 result.UpdateValue(_assistant.Create(args));
@@ -56,7 +57,7 @@ namespace Ez.Collections.Pools
         /// </summary>
         /// <param name="args">Arguments for the object taken from the pool.</param>
         /// <returns>A T object that is validated with <paramref name="args"/>.</returns>
-        public T GetT(params object[] args)
+        public T? GetT(params object[] args)
         {
             if (!TryGetT(out var result, args))
                 result = _assistant.Create(args);
@@ -75,7 +76,7 @@ namespace Ez.Collections.Pools
         /// otherwise, returns <see langword="true"/> and a <see cref="PooledObject{T}"/> with a valid <see cref="PooledObject{T}.Value"/> 
         /// in <paramref name="pooledObject"/>.
         /// </returns>
-        public bool TryGet(out PooledObject<T> pooledObject, params object[] args)
+        public bool TryGet([MaybeNullWhen(false)] out PooledObject<T> pooledObject, params object[] args)
         {
             var count = _bag.Count;
 
@@ -87,16 +88,19 @@ namespace Ez.Collections.Pools
                 //try to catch
                 if (_bag.TryDequeue(out var po))
                 {
-                    //check if the object is acceptable
-                    if (_assistant.Evaluate(po.Value, args))
+                    if (po.Value is not null)
                     {
-                        pooledObject = po;
-                        po.Set();
-                        _assistant.RegisterGet(pooledObject.Value);
-                        return true;
+                        //check if the object is acceptable
+                        if (_assistant.Evaluate(po.Value, args))
+                        {
+                            pooledObject = po;
+                            po.Set();
+                            _assistant.RegisterGet(pooledObject.Value);
+                            return true;
+                        }
+                        else
+                            _bag.Enqueue(po);
                     }
-                    else
-                        _bag.Enqueue(po);
                 }
             }
 
@@ -112,7 +116,7 @@ namespace Ez.Collections.Pools
         /// <returns>If failure to find an object whose <paramref name="args"/> are valid,
         ///  then returns <see langword="false"/> and <paramref name="value"/> = <see langword="default"/>,
         /// otherwise, returns <see langword="true"/> and a valid <paramref name="value"/>.</returns>
-        public bool TryGetT(out T value, params object[] args)
+        public bool TryGetT(out T? value, params object[] args)
         {
             {
                 if (!TryGet(out var pooledObject, args))
@@ -170,7 +174,10 @@ namespace Ez.Collections.Pools
         {
             while (!_bag.IsEmpty)
             {
-                _bag.TryDequeue(out PooledObject<T> pooledObject);
+                _bag.TryDequeue(out PooledObject<T>? pooledObject);
+
+                if (pooledObject is null)
+                    continue;
 
                 pooledObject.IsTemporaryUse = false;
 
@@ -193,7 +200,7 @@ namespace Ez.Collections.Pools
 
         private PooledObject<T> GetWrapper()
         {
-            if (!_objectWrapper.TryDequeue(out PooledObject<T> result))
+            if (!_objectWrapper.TryDequeue(out PooledObject<T>? result))
                 result = new PooledObject<T>(this);
             return result;
         }

@@ -6,7 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ez.Collections
 {
@@ -15,7 +15,7 @@ namespace Ez.Collections
     /// </summary>
     /// <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
     /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
-    public class SelfIndexedDictionary<TKey, TValue> : ISelfIndexedDictionary<TKey, TValue> where TValue : ISelfIndexedElement<TKey>
+    public class SelfIndexedDictionary<TKey, TValue> : ISelfIndexedDictionary<TKey, TValue> where TValue : ISelfIndexedElement<TKey> where TKey : notnull
     {
         private readonly IDictionary<TKey, TValue> _inner;
 
@@ -155,7 +155,7 @@ namespace Ez.Collections
         /// <see cref="SelfIndexedDictionary{TKey, TValue}"/>.</returns>
         public bool Remove(TKey key)
         {
-            if(_inner.TryGetValue(key, out TValue value))
+            if(_inner.TryGetValue(key, out TValue? value))
             {
                 value.KeyPropertyChange -= KeyChange;
                 return _inner.Remove(key);
@@ -189,7 +189,7 @@ namespace Ez.Collections
         /// parameter. This parameter is passed uninitialized.</param>
         /// <returns><see langword="true"/> if the object that implements <see cref="SelfIndexedDictionary{TKey, TValue}"/> 
         /// contains an element with the specified key; otherwise, <see langword="false"/>.</returns>
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out TValue value)
         {
             return _inner.TryGetValue(key, out value);
         }

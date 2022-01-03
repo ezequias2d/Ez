@@ -48,7 +48,7 @@ namespace Ez.Collections
         }
 
 
-        object IEnumerator.Current => Current;
+        object? IEnumerator.Current => Current;
 
         /// <inheritdoc/>
         public ReaderWriterLockSlim Lock { get; }

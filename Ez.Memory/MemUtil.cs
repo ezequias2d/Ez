@@ -419,7 +419,7 @@ namespace Ez.Memory
         /// </summary>
         /// <param name="ptr">The pointer of memory to read from.</param>
         /// <returns>A string with the characters read from <paramref name="ptr"/>.</returns>
-        public static string GetUtf8String(IntPtr ptr) => Marshal.PtrToStringUTF8(ptr);
+        public static string? GetUtf8String(IntPtr ptr) => Marshal.PtrToStringUTF8(ptr);
 
         /// <summary>
         /// Casts a span of one primitive type to a span of another primitive type.

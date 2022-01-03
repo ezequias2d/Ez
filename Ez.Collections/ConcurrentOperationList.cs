@@ -19,10 +19,10 @@ namespace Ez.Collections
 
         #region Constructors/Destructors
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConcurrentOperationList{T}"/> class that wraps a <see cref="IList{T}"/> instance and define a <see cref="Sync"/> object.
+        /// Initializes a new instance of the <see cref="ConcurrentOperationList{T}"/> class that wraps a <see cref="IList{T}"/> instance and define a <see cref="Lock"/> object.
         /// </summary>
         /// <param name="list">Wrapped instance.</param>
-        /// <param name="sync">Sync instance.</param>
+        /// <param name="lock">Sync instance.</param>
         public ConcurrentOperationList(IList<T> list, ReaderWriterLockSlim @lock)
         {
             _list = list;

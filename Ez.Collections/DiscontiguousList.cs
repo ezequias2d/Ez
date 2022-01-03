@@ -161,7 +161,7 @@ namespace Ez.Collections
             int index = 0;
             foreach(var element in this)
             {
-                if (element.Equals(item))
+                if (element is not null && element.Equals(item))
                     return index;
                 index++;
             }
@@ -189,7 +189,9 @@ namespace Ez.Collections
             {
                 _removeds.Add(index);
                 _invalids[index] = true;
+#pragma warning disable CS8601
                 _list[index] = default;
+#pragma warning restore CS8601
                 return true;
             }
             return false;

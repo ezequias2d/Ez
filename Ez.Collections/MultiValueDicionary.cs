@@ -5,6 +5,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Ez.Collections
 {
@@ -13,7 +14,7 @@ namespace Ez.Collections
     /// </summary>
     /// <typeparam name="TKey">The type of the keys in the dictionary.</typeparam>
     /// <typeparam name="TValue">The type of the values in the dictionary.</typeparam>
-    public class MultiValueDicionary<TKey, TValue> : IReadOnlyDictionary<TKey, IReadOnlyCollection<TValue>>
+    public class MultiValueDicionary<TKey, TValue> : IReadOnlyDictionary<TKey, IReadOnlyCollection<TValue>> where TKey : notnull
     {
         #region Variables
 
@@ -65,7 +66,7 @@ namespace Ez.Collections
                 if (key == null)
                     throw new ArgumentNullException(nameof(key));
 
-                if (_dicionary.TryGetValue(key, out ICollection<TValue> collection))
+                if (_dicionary.TryGetValue(key, out ICollection<TValue>? collection))
                     return collection.AsReadOnly();
 
                 throw new KeyNotFoundException();
@@ -139,7 +140,7 @@ namespace Ez.Collections
             if (values == null)
                 throw new ArgumentNullException(nameof(values));
 
-            if (!_dicionary.TryGetValue(key, out ICollection<TValue> collection))
+            if (!_dicionary.TryGetValue(key, out ICollection<TValue>? collection))
             {
                 collection = NewCollectionFactory();
                 _dicionary.Add(key, collection);
@@ -215,7 +216,7 @@ namespace Ez.Collections
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
-            return _dicionary.TryGetValue(key, out ICollection<TValue> collection) && collection.Contains(value);
+            return _dicionary.TryGetValue(key, out ICollection<TValue>? collection) && collection.Contains(value);
         }
 
         /// <summary>
@@ -252,17 +253,17 @@ namespace Ez.Collections
         public IEnumerator<KeyValuePair<TKey, IReadOnlyCollection<TValue>>> GetEnumerator() => new Enumerator(this);
 
         /// <inheritdoc/>
-        public bool TryGetValue(TKey key, out IReadOnlyCollection<TValue> value)
+        public bool TryGetValue(TKey key, [MaybeNullWhen(false)] out IReadOnlyCollection<TValue> value)
         {
             if (key == null)
                 throw new ArgumentNullException(nameof(key));
 
-            if(_dicionary.TryGetValue(key, out ICollection<TValue> collection))
+            if(_dicionary.TryGetValue(key, out ICollection<TValue>? collection))
             {
                 value = collection.AsReadOnly();
                 return true;
             }
-            value = null;
+            value = default;
             return false;
         }
 
