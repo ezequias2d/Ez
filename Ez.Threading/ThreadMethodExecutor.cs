@@ -3,10 +3,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 using System;
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.Runtime.ExceptionServices;
 using System.Threading;
+using System.Threading.Tasks;
+
 namespace Ez.Threading
 {
     /// <summary>
@@ -14,10 +13,10 @@ namespace Ez.Threading
     /// </summary>
     public class ThreadMethodExecutor : IDisposable
     {
-        private readonly Thread _thread;
-        private readonly BlockingCollection<ThreadMethodEntry> _entries;
+        private readonly SingleTaskScheduler _taskScheduler;
+        private readonly TaskFactory _taskFactory;
+
         private bool _disposed;
-        internal readonly ThreadMethodEntryPool Pool;
 
         /// <summary>
         /// Initializes a new <see cref="ThreadMethodExecutor"/> class.
@@ -25,16 +24,11 @@ namespace Ez.Threading
         /// <param name="autostart">Auto starts the thread.</param>
         public ThreadMethodExecutor(bool autostart = true)
         {
-            Pool = new(this);
-            _thread = new Thread(Main)
-            {
-                IsBackground = true
-            };
-            _entries = new BlockingCollection<ThreadMethodEntry>(new ConcurrentQueue<ThreadMethodEntry>());
-            _disposed = false;
+            _taskScheduler = new();
+            _taskFactory = new TaskFactory(_taskScheduler);
 
             if (autostart)
-                StartThread();
+                _taskScheduler.StartThread();
         }
 
         /// <summary>
@@ -48,39 +42,60 @@ namespace Ez.Threading
         /// <summary>
         /// Occurs when the thread is started, before the <see cref="Start"/> event.
         /// </summary>
-        public event EventHandler Awake;
+        public event EventHandler Awake
+        {
+            add
+            {
+                _taskScheduler.Awake += value;
+            }
+            remove 
+            {
+                _taskScheduler.Awake -= value;
+            } 
+        }
 
         /// <summary>
         /// Occurs when the thread is started, after the <see cref="Awake"/> event.
         /// </summary>
-        public event EventHandler Start;
+        public event EventHandler Start
+        {
+            add
+            {
+                _taskScheduler.Start += value;
+            }
+            remove
+            {
+                _taskScheduler.Start -= value;
+            }
+        }
 
         /// <summary>
         /// Occurs just before a consumed delegate is invoked.
         /// </summary>
-        public event EventHandler BeforeInvoking;
+        public event EventHandler BeforeInvoking
+        {
+            add
+            {
+                _taskScheduler.BeforeInvoking += value;
+            }
+            remove
+            {
+                _taskScheduler.BeforeInvoking -= value;
+            }
+        }
 
         /// <summary>
         /// Occurs just after a consumed delegate is invoked.
         /// </summary>
-        public event EventHandler AfterInvoking;
-
-        private void Main()
+        public event EventHandler AfterInvoking
         {
-            Awake?.Invoke(this, EventArgs.Empty);
-            Start?.Invoke(this, EventArgs.Empty);
-
-            ThreadMethodEntry methodEntry;
-            while (!_disposed)
+            add
             {
-                methodEntry = _entries.Take();
-
-                if (!methodEntry.IsCompleted)
-                {
-                    BeforeInvoking?.Invoke(this, EventArgs.Empty);
-                    methodEntry.Invoke();
-                    AfterInvoking?.Invoke(this, EventArgs.Empty);
-                }
+                _taskScheduler.AfterInvoking += value;
+            }
+            remove
+            {
+                _taskScheduler.AfterInvoking -= value;
             }
         }
 
@@ -90,7 +105,11 @@ namespace Ez.Threading
         ///     The default value is <see cref="ThreadPriority.Normal"/>.
         /// </para>
         /// </summary>
-        public ThreadPriority Priority { get => _thread.Priority; set => _thread.Priority = value; }
+        public ThreadPriority Priority
+        {
+            get => _taskScheduler.Priority;
+            set => _taskScheduler.Priority = value;
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether or not a thread is a background thread.
@@ -98,179 +117,185 @@ namespace Ez.Threading
         ///     The default value is <see langword="true"/>.
         /// </para>
         /// </summary>
-        public bool IsBackground { get => _thread.IsBackground; set => _thread.IsBackground = value; }
+        public bool IsBackground
+        {
+            get => _taskScheduler.IsBackground;
+            set => _taskScheduler.IsBackground = value;
+        }
 
         /// <summary>
         /// Starts the execution of this <see cref="ThreadMethodExecutor"/>.
         /// </summary>
-        public void StartThread() => _thread.Start();
+        public void StartThread() => _taskScheduler.StartThread();
 
         /// <summary>
         /// Synchronously executes the <paramref name="action"/> on this <see cref="ThreadMethodExecutor"/>.
         /// </summary>
         /// <param name="action">A <see cref="Action"/> delegate that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
-        public void Invoke(Action action) =>
-            Invoke(action, null, true);
+        public void Invoke(Action action)
+        {
+            var task = InvokeAsync(action);
+            var awaiter = task.GetAwaiter();
+            awaiter.GetResult();
+        }
 
         /// <summary>
-        /// Synchronously executes the <paramref name="eventHandler"/> on this <see cref="ThreadMethodExecutor"/>.
+        /// Synchronously executes the <paramref name="action"/> on this <see cref="ThreadMethodExecutor"/>.
         /// </summary>
-        /// <param name="eventHandler">A <see cref="EventHandler"/> delegate that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
-        /// <param name="sender">The sender parameter of <see cref="EventHandler"/> to pass to the given method.</param>
-        /// <param name="args">The e parameter of the <see cref="EventHandler"/> to pass to the given method.</param>
-        public void Invoke(EventHandler eventHandler, object sender, EventArgs args) =>
-            Invoke(eventHandler, new object[] { sender, args }, true);
-
-        /// <summary>
-        /// Synchronously executes the <paramref name="waitCallback"/> on this <see cref="ThreadMethodExecutor"/>.
-        /// </summary>
-        /// <param name="waitCallback">A <see cref="WaitCallback"/> delegate that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="action">A <see cref="WaitCallback"/> delegate that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
         /// <param name="state">The state parameter of <see cref="WaitCallback"/> to pass to the given method.</param>
-        public void Invoke(WaitCallback waitCallback, object state) =>
-            Invoke(waitCallback, new object[] { state }, true);
+        public void Invoke(Action<object?> action, object? state)
+        {
+            InvokeAsync(action, state).GetAwaiter().GetResult();
+        }
 
         /// <summary>
-        /// Synchronously executes the <paramref name="method"/> on this <see cref="ThreadMethodExecutor"/>.
-        /// </summary>
-        /// <param name="method">A <see cref="Delegate"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
-        /// <param name="args">An array of type <see cref="Object"/> that represents the arguments to pass to the given method.</param>
-        /// <returns>An <see cref="object"/> that represents the return value from the delegate being invoked, or <see langword="null"/> 
-        /// if the delegate has no return value</returns>
-        public object Invoke(Delegate method, params object[] args) =>
-            Invoke(method, args, true);
-
-        /// <summary>
-        /// Synchronously executes the <paramref name="func"/> on this <see cref="ThreadMethodExecutor"/>.
+        /// Synchronously executes the <paramref name="function"/> on this <see cref="ThreadMethodExecutor"/>.
         /// </summary>
         /// <typeparam name="T">The type of return value.</typeparam>
-        /// <param name="func">A <see cref="Func{TResult}"/> delegate that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="function">A <see cref="Func{TResult}"/> delegate that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
         /// <returns>The return value from the delegate being invoked.</returns>
-        public T Invoke<T>(Func<T> func)
+        public T Invoke<T>(Func<T> function)
         {
-            object obj = Invoke(func, null, true);
-
-            if (obj is T t)
-                return t;
-
-            throw new EzThreadException($"The returned value is not of {typeof(T)} type, the returned value is of {obj.GetType()} type.");
-        }
-
-        /// <summary>
-        /// Synchronously executes the <paramref name="method"/> on this <see cref="ThreadMethodExecutor"/>.
-        /// </summary>
-        /// <typeparam name="T">The type of return value.</typeparam>
-        /// <param name="method">A <see cref="Delegate"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
-        /// <param name="args">An array of type <see cref="Object"/> that represents the arguments to pass to the given method.</param>
-        /// <returns>The return value from the delegate being invoked, or <see langword="null"/> if the delegate has no return value.</returns>
-        public T Invoke<T>(Delegate method, params object[] args)
-        {
-            object obj = Invoke(method, args, true);
-
-            if (obj is T t)
-                return t;
-
-            throw new EzThreadException($"The returned value is not of {typeof(T)} type, the returned value is of {obj.GetType()} type.");
-        }
-
-        private object Invoke(Delegate method, object[] args, bool synchronous)
-        {
-            ThreadMethodEntry methodEntry = Pool.Get();
-            methodEntry.Initialize(method, args, synchronous);
-
-
-            if (synchronous && (Thread.CurrentThread.ManagedThreadId == _thread.ManagedThreadId))
-                methodEntry.Invoke();
-            else
-                _entries.Add(methodEntry);
-
-            if (synchronous)
-            {
-                methodEntry.Wait();
-
-                Exception exception = methodEntry.Exception;
-                object returnValue = methodEntry.ReturnValue;
-
-                Pool.Return(methodEntry);
-                if (exception != null)
-                    throw exception;
-
-                return returnValue;
-            }
-            else
-                return methodEntry;
+            var task = InvokeAsync(function);
+            task.Wait();
+            return task.Result;
         }
 
         /// <summary>
         /// Asynchronously executes the <see cref="Action"/> delegate on the thread that created this object.
         /// </summary>
         /// <param name="action">A <see cref="Action"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
-        /// <returns>An <see cref="IAsyncResultDisposable"/> interface that represents the asynchronous operation started by calling this method.</returns>
-        public IAsyncResultDisposable BeginInvoke(Action action) =>
-            (ThreadMethodEntry)Invoke(action, null, false);
-
-        /// <summary>
-        /// Asynchronously executes the <see cref="Delegate"/> on the thread that created this object.
-        /// </summary>
-        /// <param name="method">A <see cref="Delegate"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
-        /// <param name="args">An array of type <see cref="Object"/> that represents the arguments to pass to the given method.</param>
-        /// <returns>An <see cref="IAsyncResultDisposable"/> interface that represents the asynchronous operation started by calling this method.</returns>
-        public IAsyncResultDisposable BeginInvoke(Delegate method, params object[] args) =>
-            (ThreadMethodEntry)Invoke(method, args, false);
-
-        /// <summary>
-        /// Waits until the process started by calling <see cref="BeginInvoke(Action)"/> or  <see cref="BeginInvoke(Delegate, object[])"/> completes, 
-        /// and then returns the value generated by the process.
-        /// </summary>
-        /// <param name="result">An <see cref="IAsyncResultDisposable"/> interface that represents the asynchronous operation started by calling 
-        /// <see cref="BeginInvoke(Action)"/> or <see cref="BeginInvoke(Delegate, object[])"/>.</param>
-        /// <returns>An <see cref="object"/> that represents the return value generated by the asynchronous operation.</returns>
-        public object EndInvoke(IAsyncResultDisposable result)
+        /// <returns>An <see cref="Task"/> that represents the asynchronous operation started by calling this method.</returns>
+        public Task InvokeAsync(Action action)
         {
-            if (!(result is ThreadMethodEntry entry))
-                throw new ArgumentException($"The {nameof(result)} object was not created by a preceding call of the {nameof(BeginInvoke)} method from this object.");
-
-            int currentThreadID = Thread.CurrentThread.ManagedThreadId;
-
-            if (entry.Executor != this)
-                throw new EzThreadException("The EndInvoke method must be used on the same thread executor as BeginInvoke.");
-
-            if (entry is null)
-                throw new ArgumentNullException(nameof(entry));
-
-            if (!entry.IsCompleted)
-            {
-                if (_thread.ManagedThreadId == Thread.CurrentThread.ManagedThreadId)
-                    entry.Invoke();
-                else
-                    entry.Wait();
-            }
-
-            Debug.Assert(entry.IsCompleted, "Oops, this should have been done.");
-
-            if (entry.Exception != null)
-            {
-                ExceptionDispatchInfo.Capture(entry.Exception).Throw();
-                throw new Exception();
-            }
-            return entry.ReturnValue;
+            return _taskFactory.StartNew(action);
         }
 
         /// <summary>
-        /// Waits until the process started by calling <see cref="BeginInvoke(Action)"/> or  <see cref="BeginInvoke(Delegate, object[])"/> completes, 
-        /// and then returns the value generated by the process.
+        /// Asynchronously executes the <see cref="Action"/> delegate on the thread that created this object.
         /// </summary>
-        /// <typeparam name="T">The type of return value.</typeparam>
-        /// <param name="result">n <see cref="IAsyncResult"/> interface that represents the asynchronous operation started by calling 
-        /// <see cref="BeginInvoke(Action)"/> or <see cref="BeginInvoke(Delegate, object[])"/>.</param>
-        /// <returns>An T value that represents the return value generated by the asynchronous operation.</returns>
-        public T EndInvoke<T>(IAsyncResultDisposable result)
+        /// <param name="action">A <see cref="Action"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="cancellationToken">The cancellation token that will be assigned to the new task.</param>
+        /// <returns>An <see cref="Task"/> that represents the asynchronous operation started by calling this method.</returns>
+        public async Task InvokeAsync(Action action, CancellationToken cancellationToken)
         {
-            object obj = EndInvoke(result);
+            await _taskFactory.StartNew(action, cancellationToken);
+        }
 
-            if (obj is T t)
-                return t;
+        /// <summary>
+        /// Asynchronously executes the <see cref="Action"/> delegate on the thread that created this object.
+        /// </summary>
+        /// <param name="action">A <see cref="Action"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="cancellationToken">The cancellation token that will be assigned to the new task.</param>
+        /// <param name="creationOptions">One of the enumeration values that controls the behavior of the created task.</param>
+        /// <returns>An <see cref="Task"/> that represents the asynchronous operation started by calling this method.</returns>
+        public async Task InvokeAsync(Action action, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
+        {
+            await _taskFactory.StartNew(action, cancellationToken, creationOptions, _taskScheduler);
+        }
 
-            throw new EzThreadException($"The returned value is not of {typeof(T)} type, the returned value is of {obj.GetType()} type.");
+        /// <summary>
+        /// Asynchronously executes the <see cref="Action"/> delegate on the thread that created this object.
+        /// </summary>
+        /// <param name="action">A <see cref="Action"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="creationOptions">One of the enumeration values that controls the behavior of the created task.</param>
+        /// <returns>An <see cref="Task"/> that represents the asynchronous operation started by calling this method.</returns>
+        public async Task InvokeAsync(Action action, TaskCreationOptions creationOptions)
+        {
+            await _taskFactory.StartNew(action, creationOptions);
+        }
+
+        /// <summary>
+        /// Asynchronously executes the <see cref="Action"/> delegate on the thread that created this object.
+        /// </summary>
+        /// <param name="action">A <see cref="Action"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="state">The state parameter of <see cref="Action{T1}"/> to pass to the given method.</param>
+        /// <returns>An <see cref="Task"/> that represents the asynchronous operation started by calling this method.</returns>
+        public async Task InvokeAsync(Action<object?> action, object? state)
+        {
+            await _taskFactory.StartNew(action, state);
+        }
+
+        /// <summary>
+        /// Asynchronously executes the <see cref="Action"/> delegate on the thread that created this object.
+        /// </summary>
+        /// <param name="action">A <see cref="Action"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="state">The state parameter of <see cref="Action{T1}"/> to pass to the given method.</param>
+        /// <param name="cancellationToken">The cancellation token that will be assigned to the new task.</param>
+        /// <returns>An <see cref="Task"/> that represents the asynchronous operation started by calling this method.</returns>
+        public async Task InvokeAsync(Action<object?> action, object? state, CancellationToken cancellationToken)
+        {
+            await _taskFactory.StartNew(action, state, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously executes the <see cref="Action"/> delegate on the thread that created this object.
+        /// </summary>
+        /// <param name="action">A <see cref="Action"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="state">The state parameter of <see cref="Action{T1}"/> to pass to the given method.</param>
+        /// <param name="cancellationToken">The cancellation token that will be assigned to the new task.</param>
+        /// <param name="creationOptions">One of the enumeration values that controls the behavior of the created task.</param>
+        /// <returns>An <see cref="Task"/> that represents the asynchronous operation started by calling this method.</returns>
+        public async Task InvokeAsync(Action<object?> action, object? state, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
+        {
+            await _taskFactory.StartNew(action, state, cancellationToken, creationOptions, _taskScheduler);
+        }
+
+        /// <summary>
+        /// Asynchronously executes the <see cref="Action"/> delegate on the thread that created this object.
+        /// </summary>
+        /// <param name="action">A <see cref="Action"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="state">The state parameter of <see cref="Action{T1}"/> to pass to the given method.</param>
+        /// <param name="creationOptions">One of the enumeration values that controls the behavior of the created task.</param>
+        /// <returns>An <see cref="Task"/> that represents the asynchronous operation started by calling this method.</returns>
+        public async Task InvokeAsync(Action<object?> action, object? state, TaskCreationOptions creationOptions)
+        {
+            await _taskFactory.StartNew(action, state, creationOptions);
+        }
+
+        /// <summary>
+        /// Asynchronously executes the <see cref="Func{T, TResult}"/> delegate on the thread that created this object.
+        /// </summary>
+        /// <param name="function">A <see cref="Func{T, TResult}"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <returns>An <see cref="Task"/> that represents the asynchronous operation started by calling this method.</returns>
+        public async Task<TResult> InvokeAsync<TResult>(Func<TResult> function)
+        {
+            return await _taskFactory.StartNew(function);
+        }
+
+        /// <summary>
+        /// Asynchronously executes the <see cref="Func{T, TResult}"/> delegate on the thread that created this object.
+        /// </summary>
+        /// <param name="function">A <see cref="Func{T, TResult}"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="cancellationToken">The cancellation token that will be assigned to the new task.</param>
+        /// <returns>An <see cref="Task"/> that represents the asynchronous operation started by calling this method.</returns>
+        public async Task<TResult> InvokeAsync<TResult>(Func<TResult> function, CancellationToken cancellationToken)
+        {
+            return await _taskFactory.StartNew(function, cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously executes the <see cref="Func{T, TResult}"/> delegate on the thread that created this object.
+        /// </summary>
+        /// <param name="function">A <see cref="Func{T, TResult}"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="creationOptions">One of the enumeration values that controls the behavior of the created task.</param>
+        /// <param name="cancellationToken">The cancellation token that will be assigned to the new task.</param>
+        /// <returns>An <see cref="Task"/> that represents the asynchronous operation started by calling this method.</returns>
+        public async Task<TResult> InvokeAsync<TResult>(Func<TResult> function, CancellationToken cancellationToken, TaskCreationOptions creationOptions)
+        {
+            return await _taskFactory.StartNew(function, cancellationToken, creationOptions, _taskScheduler);
+        }
+
+        /// <summary>
+        /// Asynchronously executes the <see cref="Func{T, TResult}"/> delegate on the thread that created this object.
+        /// </summary>
+        /// <param name="function">A <see cref="Func{T, TResult}"/> that contains a method to call in this <see cref="ThreadMethodExecutor"/>.</param>
+        /// <param name="creationOptions">One of the enumeration values that controls the behavior of the created task.</param>
+        /// <returns>An <see cref="Task"/> that represents the asynchronous operation started by calling this method.</returns>
+        public async Task<TResult> InvokeAsync<TResult>(Func<TResult> function, TaskCreationOptions creationOptions)
+        {
+            return await _taskFactory.StartNew(function, creationOptions);
         }
 
         private void Dispose(bool disposing)
@@ -278,7 +303,7 @@ namespace Ez.Threading
             if (!_disposed)
             {
                 _disposed = true;
-                _thread.Join();
+                _taskScheduler.Dispose();
             }
         }
 

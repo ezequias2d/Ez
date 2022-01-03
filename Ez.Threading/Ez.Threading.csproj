@@ -2,12 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Ez\Ez.csproj" />
-    <ProjectReference Include="..\Ez.Collections\Ez.Collections.csproj" />
-  </ItemGroup>
 
   <Import Project="..\build\common.props.csproj" />
 </Project>
