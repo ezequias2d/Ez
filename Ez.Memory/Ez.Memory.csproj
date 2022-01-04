@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
 	<Nullable>enable</Nullable>
+	<Description>The basic set of Ez.Memory APIs.
+
+Provides MemoryBlock, EphemeralMemoryBlock, PinnedMemory, ReadOnlyPinnedMemory, MemoryBlockPool, MemUtil and UnmanagedMemoryManager.</Description>
   </PropertyGroup>
 
   <ItemGroup>

@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
 	<Nullable>enable</Nullable>
+	<Description>The basic set of Ez APIs.</Description>
   </PropertyGroup>
 
   <Import Project="..\build\common.props.csproj" />

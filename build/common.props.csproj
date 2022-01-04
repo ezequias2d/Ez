@@ -5,7 +5,7 @@
     <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
     <PackageProjectUrl>https://github.com/ezequias2d/Ez</PackageProjectUrl>
     <Copyright>ezequias2d and Ez contributors.</Copyright>
-    <Version>0.2.0-alpha</Version>
+    <Version>0.3.0-alpha</Version>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageOutputPath>..\build\nupkgs</PackageOutputPath>
     <PackageIcon>ez-gear2x.png</PackageIcon>
